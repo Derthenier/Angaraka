@@ -1,0 +1,49 @@
+# Engine-level configuration
+engine:
+  name: Angaraka
+  version: 0.1.0
+  game: Threads of Kaliyuga
+  
+# Logging (example)
+logging:
+  level: "info"      # debug, info, warning, error
+  engine: "angaraka.log"
+  game: "threads_of_kaliyuga.log"
+
+# Window config (example)
+window:
+  width: 1920
+  title: "Angaraka RPG - The Journey Begins!"
+
+renderer:
+  # General settings
+  general:
+    vsync: true                  # Enable vertical sync
+    backbuffer_count: 3          # Number of swap chain buffers
+    clear_color:
+      red: 0.3
+      green: 0.3
+      blue: 0.3
+    resolution:
+      fullscreen: false          # Start in fullscreen mode
+      refresh_rate: 60           # Target refresh rate (Hz)
+  
+  # Advanced options
+  advanced:
+    debug_layer: true            # Enable DirectX debug layer (development only)
+    tear_support: false          # Allow tearing if supported (usually only windowed)
+  
+  # MSAA/Anti-aliasing
+  msaa:
+    enabled: true
+    sample_count: 4              # 1, 2, 4, 8 etc.
+    quality_level: 0
+  
+  # Shader cache
+  shaders:
+    shader_cache_dir: "shaders/cache"
+  
+  # Feature toggles
+  features:
+    raytracing: false            # Enable DirectX Raytracing (DXR)
+    variable_rate_shading: false # Enable VRS if supported

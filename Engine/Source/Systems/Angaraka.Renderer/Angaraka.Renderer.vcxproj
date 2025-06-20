@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\..\packages\Microsoft.Direct3D.D3D12.1.616.1\build\native\Microsoft.Direct3D.D3D12.props" Condition="Exists('..\..\..\..\packages\Microsoft.Direct3D.D3D12.1.616.1\build\native\Microsoft.Direct3D.D3D12.props')" />
+  <Import Project="..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props')" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{1cf8a41d-c991-4861-9d71-f5b90a0caf01}</ProjectGuid>
+    <RootNamespace>AngarakaRenderer</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IntDir>$(SolutionDir)Build\$(Platform)\int\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
+    <PublicIncludeDirectories>$(ProjectDir)Source\Renderer\Public</PublicIncludeDirectories>
+    <PublicModuleDirectories>$(ProjectDir)Source\Renderer\Modules</PublicModuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IntDir>$(SolutionDir)Build\$(Platform)\int\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
+    <PublicIncludeDirectories>$(ProjectDir)Source\Renderer\Public</PublicIncludeDirectories>
+    <PublicModuleDirectories>$(ProjectDir)Source\Renderer\Modules</PublicModuleDirectories>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard_C>stdclatest</LanguageStandard_C>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source\Renderer\Public;$(ProjectDir);$(SolutionDir)Engine\Source\Core\Angaraka.Core\Source\Core\Public;</AdditionalIncludeDirectories>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PostBuildEvent>
+      <Command>if not exist "$(OutDir)Shaders" (
+  mkdir "$(OutDir)Shaders" 
+) else ( 
+  echo "Shaders folder exists"
+)
+xcopy "$(ProjectDir)Shaders\SimpleShader.hlsl" "$(OutDir)Shaders" /d /i /y</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard_C>stdclatest</LanguageStandard_C>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source\Renderer\Public;$(ProjectDir);$(SolutionDir)Engine\Source\Core\Angaraka.Core\Source\Core\Public;</AdditionalIncludeDirectories>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PostBuildEvent>
+      <Command>if not exist "$(OutDir)Shaders" (
+  mkdir "$(OutDir)Shaders" 
+) else ( 
+  echo "Shaders folder exists"
+)
+xcopy "$(ProjectDir)Shaders\SimpleShader.hlsl" "$(OutDir)Shaders" /d /i /y</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Angaraka.Core\Angaraka.Core.vcxproj">
+      <Project>{4e87a4e8-238c-4cda-840e-2da0ea59955a}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Renderer\Modules\BufferManager.ixx" />
+    <ClCompile Include="Source\Renderer\Modules\Camera.ixx" />
+    <ClCompile Include="Source\Renderer\Modules\CommandManager.ixx" />
+    <ClCompile Include="Source\Renderer\Modules\DeviceManager.ixx" />
+    <ClCompile Include="Source\Renderer\Modules\PSOManager.ixx" />
+    <ClCompile Include="Source\Renderer\Modules\Renderer.ixx" />
+    <ClCompile Include="Source\Renderer\Modules\ShaderManager.ixx" />
+    <ClCompile Include="Source\Renderer\Modules\SwapChainManager.ixx" />
+    <ClCompile Include="Source\Renderer\Modules\BufferManager.cpp" />
+    <ClCompile Include="Source\Renderer\Modules\Camera.cpp" />
+    <ClCompile Include="Source\Renderer\Modules\CommandManager.cpp" />
+    <ClCompile Include="Source\Renderer\Modules\DeviceManager.cpp" />
+    <ClCompile Include="Source\Renderer\Modules\Renderer.cpp" />
+    <ClCompile Include="Source\Renderer\Modules\PSOManager.cpp" />
+    <ClCompile Include="Source\Renderer\Modules\ShaderManager.cpp" />
+    <ClCompile Include="Source\Renderer\Modules\SwapChainManager.cpp" />
+    <ClCompile Include="Source\Renderer\Modules\Texture.cpp" />
+    <ClCompile Include="Source\Renderer\Modules\Texture.ixx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Shaders\SimpleShader.hpp" />
+    <ClInclude Include="Source\Renderer\Public\Angaraka\GraphicsBase.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
+    <Import Project="..\..\..\..\packages\Microsoft.Direct3D.D3D12.1.616.1\build\native\Microsoft.Direct3D.D3D12.targets" Condition="Exists('..\..\..\..\packages\Microsoft.Direct3D.D3D12.1.616.1\build\native\Microsoft.Direct3D.D3D12.targets')" />
+    <Import Project="..\..\..\..\packages\directxtex_desktop_2019.2025.3.25.2\build\native\directxtex_desktop_2019.targets" Condition="Exists('..\..\..\..\packages\directxtex_desktop_2019.2025.3.25.2\build\native\directxtex_desktop_2019.targets')" />
+    <Import Project="..\..\..\..\packages\directxtk12_desktop_2019.2025.3.21.3\build\native\directxtk12_desktop_2019.targets" Condition="Exists('..\..\..\..\packages\directxtk12_desktop_2019.2025.3.21.3\build\native\directxtk12_desktop_2019.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props'))" />
+    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.Direct3D.D3D12.1.616.1\build\native\Microsoft.Direct3D.D3D12.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.Direct3D.D3D12.1.616.1\build\native\Microsoft.Direct3D.D3D12.props'))" />
+    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.Direct3D.D3D12.1.616.1\build\native\Microsoft.Direct3D.D3D12.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.Direct3D.D3D12.1.616.1\build\native\Microsoft.Direct3D.D3D12.targets'))" />
+    <Error Condition="!Exists('..\..\..\..\packages\directxtex_desktop_2019.2025.3.25.2\build\native\directxtex_desktop_2019.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\directxtex_desktop_2019.2025.3.25.2\build\native\directxtex_desktop_2019.targets'))" />
+    <Error Condition="!Exists('..\..\..\..\packages\directxtk12_desktop_2019.2025.3.21.3\build\native\directxtk12_desktop_2019.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\directxtk12_desktop_2019.2025.3.21.3\build\native\directxtk12_desktop_2019.targets'))" />
+  </Target>
+</Project>

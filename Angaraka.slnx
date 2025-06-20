@@ -1,0 +1,31 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/Applications/">
+    <Project Path="Applications/Editor/Editor.vcxproj" Id="3cdaae00-1da8-4c2b-af6e-11f10765c3ba">
+      <BuildDependency Project="Engine/Source/Core/Angaraka.Core/Angaraka.Core.vcxproj" />
+    </Project>
+    <Project Path="Applications/ThreadsOfKaliyuga/ThreadsOfKaliyuga.vcxproj" Id="5d4e4a84-822a-4152-9302-a8183bf22553">
+      <BuildDependency Project="Engine/Source/Core/Angaraka.Core/Angaraka.Core.vcxproj" />
+    </Project>
+  </Folder>
+  <Folder Name="/Engine Core/">
+    <Project Path="Engine/Source/Core/Angaraka.Core/Angaraka.Core.vcxproj" Id="4e87a4e8-238c-4cda-840e-2da0ea59955a" />
+  </Folder>
+  <Folder Name="/Engine Systems/">
+    <Project Path="Engine/Source/Systems/Angaraka.AI/Angaraka.AI.vcxproj" Id="669bde97-b08d-4c55-b35a-2afdc4f6250b" />
+    <Project Path="Engine/Source/Systems/Angaraka.Audio/Angaraka.Audio.vcxproj" Id="90ae5093-627a-43c2-9ec6-d8d3bcb2cf84" />
+    <Project Path="Engine/Source/Systems/Angaraka.Input/Angaraka.Input.vcxproj" Id="c2c30e95-37bc-4825-bb9e-801cf87a9aee" />
+    <Project Path="Engine/Source/Systems/Angaraka.Physics/Angaraka.Physics.vcxproj" Id="ea092948-2164-4036-ba5e-e3d3057ba11f" />
+    <Project Path="Engine/Source/Systems/Angaraka.Renderer/Angaraka.Renderer.vcxproj" Id="1cf8a41d-c991-4861-9d71-f5b90a0caf01" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="LICENSE" />
+    <File Path="Readme.md" />
+    <File Path="Angaraka.png" />
+  </Folder>
+</Solution>
