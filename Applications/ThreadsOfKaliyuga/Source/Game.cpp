@@ -7,8 +7,9 @@ import Angaraka.Core.Config;
 import Angaraka.Core.Window;
 import Angaraka.Core.Resources;
 import Angaraka.Core.ResourceCache;
-import Angaraka.Graphics.DirectX12;
 import Angaraka.Input.Windows;
+import Angaraka.Graphics.DirectX12;
+import Angaraka.Graphics.DirectX12.Texture;
 
 
 import ThreadsOfKaliyuga.Input;
@@ -27,6 +28,8 @@ namespace ThreadsOfKaliyuga
     namespace {
         Angaraka::Window window;
         Angaraka::Config::EngineConfig config;
+
+        Angaraka::Graphics::DirectX12::TextureResource* uvGridTexture;
 
         std::string WStringToUTF8(const std::wstring& wstr) {
             if (wstr.empty()) return {};
@@ -145,6 +148,16 @@ namespace ThreadsOfKaliyuga
 
         AGK_APP_INFO("BundleManager initialized and loading started.");
 
+        uvGridTexture = new Angaraka::Graphics::DirectX12::TextureResource("uv-grid-texture");
+        if (uvGridTexture->Load("Assets/uv-grid-texture.png", m_graphicsSystem))
+        {
+            AGK_INFO("Dummy texture loaded and uploaded to GPU!");
+        }
+        else
+        {
+            AGK_WARN("Could not load dummy texture from path: Assets/uv-grid-texture.png");
+        }
+
         m_resourceManager->LogCacheStatus();
 
         return true;
@@ -169,7 +182,8 @@ namespace ThreadsOfKaliyuga
 
             m_inputSystem->Update(m_deltaTime); // Update input system
 
-            m_graphicsSystem->BeginFrame(m_deltaTime, config.renderer.clearRed, config.renderer.clearGreen, config.renderer.clearBlue, 0.7f);
+            m_graphicsSystem->BeginFrame(m_deltaTime, uvGridTexture, config.renderer.clearRed, config.renderer.clearGreen, config.renderer.clearBlue, 0.7f);
+
             m_graphicsSystem->EndFrame();
 
 

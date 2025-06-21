@@ -38,6 +38,7 @@ namespace Angaraka { // Use the Angaraka namespace here
 #endif
         void Shutdown();
         void BeginFrame(float deltaTime, float r, float g, float b, float a);
+        void BeginFrame(float deltaTime, Graphics::DirectX12::TextureResource* texture, float r, float g, float b, float a);
         void EndFrame();
         void OnWindowResize(unsigned int newWidth, unsigned int newHeight);
 
@@ -45,6 +46,10 @@ namespace Angaraka { // Use the Angaraka namespace here
         inline Graphics::DirectX12::TextureManager* GetTextureManager() const { return m_textureManager.get(); }
 
         std::shared_ptr<Core::GraphicsResourceFactory> GetGraphicsFactory();
+
+    private:
+        void BeginFrameStartInternal(ID3D12GraphicsCommandList* commandList, float deltaTime);
+        void BeginFrameEndInternal(ID3D12GraphicsCommandList* commandList, float r, float g, float b, float a);
 
     private:
         std::unique_ptr<Graphics::DirectX12::DeviceManager> m_deviceManager;

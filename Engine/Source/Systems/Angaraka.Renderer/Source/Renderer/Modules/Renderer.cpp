@@ -2,8 +2,6 @@
 // Implementation of Angaraka.Graphics.DirectX12 module.
 module;
 
-#define TEST_IMAGE "Assets/uv-grid-texture.png" // Path to a test image for loading
-
 #include "Angaraka/GraphicsBase.hpp" // For AGK_INFO, AGK_ERROR, etc.
 #include <windows.h>
 #include <string>
@@ -30,7 +28,6 @@ import Angaraka.Camera;
 // This will remain here for now, as it's geometry data.
 namespace {
     Angaraka::Graphics::DirectX12::ModelViewProjectionConstantBuffer mvpCPUData{};
-    Angaraka::Graphics::DirectX12::TextureResource* dummyTextureResource = nullptr;
 
     // Define the input layout for our vertex structure
     const D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
@@ -129,21 +126,6 @@ namespace Angaraka { // Use the Angaraka namespace here
             return false;
         }
 
-
-        // Example: Load a dummy texture (replace with your actual texture path)
-        // You might need to place a PNG or DDS file in your RPGGame's Data/Assets folder
-        // or directly in the Angaraka/Build/Debug folder for testing.
-        std::string dummyTexturePath = TEST_IMAGE; // Adjust path as needed
-        dummyTextureResource = new Angaraka::Graphics::DirectX12::TextureResource(dummyTexturePath);
-        if (dummyTextureResource->Load(dummyTexturePath, this))
-        {
-            AGK_INFO("Dummy texture loaded and uploaded to GPU!");
-        }
-        else
-        {
-            AGK_WARN("Could not load dummy texture from path: {}", dummyTexturePath);
-        }
-
         // --- IMPORTANT: Now that GPU is finished, safely release the temporary upload heaps ---
         m_textureManager->ClearUploadHeaps();
 
@@ -200,12 +182,12 @@ namespace Angaraka { // Use the Angaraka namespace here
         }
     }
 
-    void DirectX12GraphicsSystem::BeginFrame(float deltaTime, float r, float g, float b, float a) {        // --- Update InputManager state and broadcast events ---
+    void DirectX12GraphicsSystem::BeginFrameStartInternal(ID3D12GraphicsCommandList* commandList, float deltaTime) {
+
+        // --- Update InputManager state and broadcast events ---
         // Mouse movement is now event-driven and handled in the subscription callback.
         // We only ensure camera updates its matrices after all input processing
         m_camera->Update(deltaTime);
-
-        unsigned int currentBackBufferIndex = m_swapChainManager->GetCurrentBackBufferIndex();
 
         m_elapsedTime += deltaTime;
 
@@ -217,11 +199,6 @@ namespace Angaraka { // Use the Angaraka namespace here
         mvpCPUData.view = DirectX::XMMatrixTranspose(m_camera->GetViewMatrix());
         mvpCPUData.projection = DirectX::XMMatrixTranspose(m_camera->GetProjectionMatrix());
 
-        // Wait for previous frame to finish before resetting command list
-        m_commandManager->WaitForGPU(m_deviceManager->GetCommandQueue());
-
-        // Reset command allocator and command list
-        ID3D12GraphicsCommandList* commandList = m_commandManager->Reset(m_pipelineManager->GetPipelineState());
         commandList->SetGraphicsRootSignature(m_pipelineManager->GetRootSignature());
 
         // Set the descriptor heaps (important for SRVs)
@@ -232,21 +209,11 @@ namespace Angaraka { // Use the Angaraka namespace here
         m_bufferManager->UpdateConstantBuffer(mvpCPUData);
 
         commandList->SetGraphicsRootConstantBufferView(0, m_bufferManager->GetConstantBufferGPUAddress());
+    }
 
-        if (dummyTextureResource && dummyTextureResource->GetSrvIndex() >= 0)
-        {
-            // Bind the texture SRV (Root Parameter 1)
-            // You stored the texture's SRV descriptor CPU handle in m_DummyTexture->SrvDescriptor
-            // Now you need its GPU handle.
-            CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle(m_textureManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart(), dummyTextureResource->GetSrvIndex(), m_textureManager->GetSrvDescriptorSize());
+    void DirectX12GraphicsSystem::BeginFrameEndInternal(ID3D12GraphicsCommandList* commandList, float r, float g, float b, float a) {
 
-            UINT srvIndex = dummyTextureResource->GetSrvIndex(); // Assuming you store the index where it was allocated
-            CD3DX12_GPU_DESCRIPTOR_HANDLE gpuSrvHandle(m_textureManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart());
-            gpuSrvHandle.Offset(srvIndex, m_textureManager->GetSrvDescriptorSize());
-
-
-            commandList->SetGraphicsRootDescriptorTable(1, gpuSrvHandle); // Root Parameter 1 binds the descriptor table
-        }
+        unsigned int currentBackBufferIndex = m_swapChainManager->GetCurrentBackBufferIndex();
 
         commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         commandList->IASetVertexBuffers(0, 1, &m_bufferManager->GetVertexBufferView());
@@ -278,6 +245,37 @@ namespace Angaraka { // Use the Angaraka namespace here
             0,
             0
         );
+    }
+
+    void DirectX12GraphicsSystem::BeginFrame(float deltaTime, Graphics::DirectX12::TextureResource* texture, float r, float g, float b, float a) {
+        // Wait for previous frame to finish before resetting command list
+        m_commandManager->WaitForGPU(m_deviceManager->GetCommandQueue());
+
+        // Reset command allocator and command list
+        ID3D12GraphicsCommandList* commandList = m_commandManager->Reset(m_pipelineManager->GetPipelineState());
+        BeginFrameStartInternal(commandList, deltaTime);
+        if (texture && texture->GetSrvIndex() >= 0)
+        {
+            // Bind the texture SRV (Root Parameter 1)
+            // You stored the texture's SRV descriptor CPU handle in m_DummyTexture->SrvDescriptor
+            // Now you need its GPU handle.
+            UINT srvIndex = texture->GetSrvIndex(); // Assuming you store the index where it was allocated
+            CD3DX12_GPU_DESCRIPTOR_HANDLE gpuSrvHandle(m_textureManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart());
+            gpuSrvHandle.Offset(srvIndex, m_textureManager->GetSrvDescriptorSize());
+
+            commandList->SetGraphicsRootDescriptorTable(1, gpuSrvHandle); // Root Parameter 1 binds the descriptor table
+        }
+        BeginFrameEndInternal(commandList, r, g, b, a);
+    }
+
+    void DirectX12GraphicsSystem::BeginFrame(float deltaTime, float r, float g, float b, float a) {
+        // Wait for previous frame to finish before resetting command list
+        m_commandManager->WaitForGPU(m_deviceManager->GetCommandQueue());
+
+        // Reset command allocator and command list
+        ID3D12GraphicsCommandList* commandList = m_commandManager->Reset(m_pipelineManager->GetPipelineState());
+        BeginFrameStartInternal(commandList, deltaTime);
+        BeginFrameEndInternal(commandList, r, g, b, a);
     }
 
     void DirectX12GraphicsSystem::EndFrame() {

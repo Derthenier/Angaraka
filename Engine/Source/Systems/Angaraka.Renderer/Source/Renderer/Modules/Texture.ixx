@@ -18,6 +18,7 @@ namespace Angaraka::Graphics::DirectX12 {
         UINT                                         Width = 0;
         UINT                                         Height = 0;
         DXGI_FORMAT                                  Format = DXGI_FORMAT_UNKNOWN;
+        size_t                                       MemorySizeBytes = 0; // Size in bytes for this texture
     };
 
     // TextureManager to handle creation and management of GPU textures
@@ -92,6 +93,10 @@ namespace Angaraka::Graphics::DirectX12 {
         // Implement pure virtual methods from base Resource class
         bool Load(const std::string& filePath, void* context = nullptr) override;
         void Unload() override;
+
+        inline size_t GetSizeInBytes() const override {
+            return m_textureData ? m_textureData->MemorySizeBytes : 0;
+        }
 
         // Getters for the underlying D3D12 texture data (e.g., for binding)
         ID3D12Resource* GetD3D12Resource() const;

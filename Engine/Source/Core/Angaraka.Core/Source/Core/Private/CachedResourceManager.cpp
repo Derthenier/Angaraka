@@ -77,8 +77,7 @@ namespace Angaraka::Core {
     }
 
     size_t CachedResourceManager::EstimateResourceSize(const std::shared_ptr<Resource>& resource) const {
-        // Generic fallback - specific resource types should override this
-        return 1024 * 1024; // 1MB default estimate
+        return resource->GetSizeInBytes();
     }
 
 } // namespace Angaraka::Core

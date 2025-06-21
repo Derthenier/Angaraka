@@ -67,6 +67,14 @@ namespace Angaraka::Core {
          */
         virtual void Unload() = 0;
 
+        /**
+         * @brief Get the size of the resource in bytes.
+         *
+         * This is used for memory accounting in the ResourceCache.
+         * @return Size in bytes.
+         */
+        virtual size_t GetSizeInBytes() const = 0;
+
         // Optionally, add a virtual method to prepare for GPU upload,
         // or ensure GPU-specific setup happens in a specialized system.
 
