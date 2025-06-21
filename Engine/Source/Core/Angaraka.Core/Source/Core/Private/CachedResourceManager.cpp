@@ -7,9 +7,11 @@ module Angaraka.Core.ResourceCache;
 namespace Angaraka::Core {
 
     CachedResourceManager::CachedResourceManager(
+        const std::string& basePath,
         Angaraka::Events::EventManager& eventBus,
         const MemoryBudget& cacheConfig)
-        : m_cache(cacheConfig)
+        : m_basePath(basePath)
+        , m_cache(cacheConfig)
         , m_eventBus(eventBus)
     {
         AGK_INFO("CachedResourceManager: Initialized with {}MB cache budget",
@@ -75,8 +77,7 @@ namespace Angaraka::Core {
     }
 
     size_t CachedResourceManager::EstimateResourceSize(const std::shared_ptr<Resource>& resource) const {
-        // Generic fallback - specific resource types should override this
-        return 1024 * 1024; // 1MB default estimate
+        return resource->GetSizeInBytes();
     }
 
 } // namespace Angaraka::Core

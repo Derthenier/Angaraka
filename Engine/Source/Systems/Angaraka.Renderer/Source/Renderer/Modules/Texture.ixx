@@ -18,6 +18,7 @@ namespace Angaraka::Graphics::DirectX12 {
         UINT                                         Width = 0;
         UINT                                         Height = 0;
         DXGI_FORMAT                                  Format = DXGI_FORMAT_UNKNOWN;
+        size_t                                       MemorySizeBytes = 0; // Size in bytes for this texture
     };
 
     // TextureManager to handle creation and management of GPU textures
@@ -28,7 +29,7 @@ namespace Angaraka::Graphics::DirectX12 {
         ~TextureManager();
 
         // Initialize with D3D12 device and command list for upload
-        bool Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
+        bool Initialize(ID3D12Device* device, ID3D12CommandQueue* commandQueue);
         void Shutdown();
 
         // Creates a GPU texture from CPU ImageData
@@ -43,13 +44,21 @@ namespace Angaraka::Graphics::DirectX12 {
         // Call this after GPU has finished processing initialization commands
         void ClearUploadHeaps();
 
+        // Add method to get fresh command list for loading
+        ID3D12GraphicsCommandList* GetOrCreateCommandList();
+        void ExecuteAndWaitForGPU();
+
         // Get the SRV heap and descriptor size
         inline ID3D12DescriptorHeap* GetSrvHeap() const { return m_SrvHeap.Get(); }
         inline UINT GetSrvDescriptorSize() const { return m_SrvDescriptorSize; }
 
     private:
         ID3D12Device* m_Device = nullptr;
-        ID3D12GraphicsCommandList* m_CommandList = nullptr; // Used for texture uploads
+
+        // Add command allocator for texture loading
+        Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_LoadingCommandAllocator;
+        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_LoadingCommandList;
+        Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_CommandQueue; // Store command queue reference
 
         std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> m_UploadHeapsToRelease;
 
@@ -84,6 +93,10 @@ namespace Angaraka::Graphics::DirectX12 {
         // Implement pure virtual methods from base Resource class
         bool Load(const std::string& filePath, void* context = nullptr) override;
         void Unload() override;
+
+        inline size_t GetSizeInBytes() const override {
+            return m_textureData ? m_textureData->MemorySizeBytes : 0;
+        }
 
         // Getters for the underlying D3D12 texture data (e.g., for binding)
         ID3D12Resource* GetD3D12Resource() const;

@@ -61,7 +61,8 @@ namespace Angaraka::Core {
             existingIt->second->memorySizeBytes = memorySize;
             existingIt->second->lastAccessTime = std::chrono::steady_clock::now();
 
-            m_currentMemoryUsage = m_currentMemoryUsage - oldSize + memorySize;
+            m_currentMemoryUsage -= oldSize;
+            m_currentMemoryUsage += memorySize;
             TouchResource(existingIt->second);
 
             AGK_DEBUG("ResourceCache: Updated existing resource '{}' ({}MB -> {}MB)",
@@ -97,12 +98,12 @@ namespace Angaraka::Core {
     }
 
     void ResourceCache::Clear() {
-        m_isShuttingDown = true;
         // Don't lock if already shutting down
         if (!m_isShuttingDown) {
             std::lock_guard<std::mutex> lock(m_cacheMutex);
         }
 
+        m_isShuttingDown = true;
         size_t resourceCount = m_resourceMap.size();
         size_t memoryFreed = m_currentMemoryUsage;
 
@@ -182,7 +183,6 @@ namespace Angaraka::Core {
             else {
                 // Resource still in use, move to front and try next
                 TouchResource(std::prev(m_lruList.end()));
-                break;
             }
         }
 

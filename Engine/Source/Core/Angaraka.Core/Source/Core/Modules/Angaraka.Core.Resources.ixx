@@ -67,6 +67,14 @@ namespace Angaraka::Core {
          */
         virtual void Unload() = 0;
 
+        /**
+         * @brief Get the size of the resource in bytes.
+         *
+         * This is used for memory accounting in the ResourceCache.
+         * @return Size in bytes.
+         */
+        virtual size_t GetSizeInBytes() const = 0;
+
         // Optionally, add a virtual method to prepare for GPU upload,
         // or ensure GPU-specific setup happens in a specialized system.
 
@@ -76,91 +84,6 @@ namespace Angaraka::Core {
 
     private:
         std::string m_id; // Unique identifier for this resource (e.g., its file path)
-
-    };
-
-    /**
-     * @brief Singleton-like manager for all engine resources.
-     *
-     * Handles loading, caching, and managing the lifetime of various asset types.
-     */
-    export class ResourceManager
-    {
-    public:
-        explicit ResourceManager(Angaraka::Events::EventManager& eventBus);
-        ~ResourceManager();
-
-        // Delete copy constructor and assignment operator for singleton-like behavior
-        ResourceManager(const ResourceManager&) = delete;
-        ResourceManager& operator=(const ResourceManager&) = delete;
-
-
-        /**
-         * @brief Get a resource by its identifier.
-         *
-         * If the resource is already loaded and cached, it's returned directly.
-         * Otherwise, it attempts to load the resource.
-         * @tparam T The concrete type of the resource (must derive from Resource).
-         * @param id The unique identifier/path of the resource.
-         * @return A shared_ptr to the requested resource, or nullptr if loading fails.
-         */
-        template<typename T>
-        inline std::shared_ptr<T> GetResource(const std::string& id) {
-            std::lock_guard<std::mutex> lock(m_resourcesMutex);
-
-            // 1. Check if resource is already loaded
-            auto it = m_loadedResources.find(id);
-            if (it != m_loadedResources.end()) {
-                // Check if the type matches. Dynamic cast for safety/correctness.
-                std::shared_ptr<T> resource = std::dynamic_pointer_cast<T>(it->second);
-                if (resource) {
-                    AGK_INFO("ResourceManager: Found cached resource '{0}' of type {1}.", id, typeid(T).name());
-                    return resource;
-                }
-                else {
-                    AGK_ERROR("ResourceManager: Cached resource '{0}' found but type mismatch! Requested {1}, got {2}.", id, typeid(T).name(), typeid(*it->second).name());
-                    // In a real engine, you might throw an exception or return nullptr
-                    return nullptr;
-                }
-            }
-
-            // 2. Resource not found, attempt to load it
-            AGK_INFO("ResourceManager: Resource '{0}' not found in cache. Attempting to load...", id);
-            std::shared_ptr<T> newResource = std::make_shared<T>(id); // Resource constructor takes ID
-
-            // Attempt to load the resource
-            if (newResource->Load(id)) { // Pass id as filePath for now
-                m_loadedResources[id] = newResource; // Add to cache
-                AGK_INFO("ResourceManager: Successfully loaded and cached resource '{0}'.", id);
-                return newResource;
-            }
-            else {
-                AGK_ERROR("ResourceManager: Failed to load resource '{0}'.", id);
-                return nullptr; // Loading failed
-            }
-        }
-
-        /**
-         * @brief Unload a specific resource from memory.
-         * @param id The unique identifier/path of the resource to unload.
-         */
-        void UnloadResource(const std::string& id);
-
-        /**
-         * @brief Unload all currently loaded resources.
-         */
-        void UnloadAllResources();
-
-    private:
-        // Use a map to store currently loaded resources, keyed by their ID.
-        // Use shared_ptr to manage lifetime based on references.
-        std::unordered_map<std::string, std::shared_ptr<Resource>> m_loadedResources;
-        mutable std::mutex m_resourcesMutex; // Protect access to m_loadedResources
-
-        Angaraka::Events::EventManager& m_eventBus;
-
-        // Private helper to load a resource given its type ID and file path
-        std::shared_ptr<Resource> LoadResourceInternal(size_t typeId, const std::string& filePath);
 
     };
 }
