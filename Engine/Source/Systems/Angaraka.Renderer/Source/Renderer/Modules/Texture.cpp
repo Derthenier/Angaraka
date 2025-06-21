@@ -9,6 +9,7 @@ module;
 module Angaraka.Graphics.DirectX12.Texture;
 
 import Angaraka.Core.Resources;
+import Angaraka.Graphics.DirectX12;
 
 namespace Angaraka::Graphics::DirectX12 {
 
@@ -29,7 +30,8 @@ namespace Angaraka::Graphics::DirectX12 {
     bool TextureResource::Load(const std::string& filePath, void* context) {
         AGK_INFO("TextureResource: Loading texture from '{0}'...", filePath);
 
-        TextureManager* textureManager = static_cast<TextureManager*>(context);
+        DirectX12GraphicsSystem* graphicsSystem = static_cast<DirectX12GraphicsSystem*>(context);
+        TextureManager* textureManager = graphicsSystem ? graphicsSystem->GetTextureManager() : nullptr;
         if (!textureManager) {
             AGK_ERROR("TextureResource: TextureManager context is null. Cannot load texture.");
             return false;
@@ -72,19 +74,31 @@ namespace Angaraka::Graphics::DirectX12 {
 
 
 
-    TextureManager::TextureManager() {}
+    TextureManager::TextureManager() { m_LoadedTextures.clear(); }
     TextureManager::~TextureManager() { Shutdown(); }
 
-    bool TextureManager::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
+    bool TextureManager::Initialize(ID3D12Device* device, ID3D12CommandQueue* commandQueue)
     {
-        if (!device || !commandList)
+        if (!device || !commandQueue)
         {
-            AGK_ERROR("TextureManager::Initialize: Invalid D3D12 device or command list.");
+            AGK_ERROR("TextureManager::Initialize: Invalid D3D12 device or command queue.");
             return false;
         }
 
         m_Device = device;
-        m_CommandList = commandList;
+        m_CommandQueue = commandQueue;
+
+        // Create dedicated command allocator for texture loading
+        DXCall(m_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
+            IID_PPV_ARGS(&m_LoadingCommandAllocator)));
+
+        // Create dedicated command list for texture loading
+        DXCall(m_Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
+            m_LoadingCommandAllocator.Get(), nullptr,
+            IID_PPV_ARGS(&m_LoadingCommandList)));
+
+        // Close it initially
+        DXCall(m_LoadingCommandList->Close());
 
         // Allocate a small descriptor heap for SRVs (Shader Resource Views)
         // This is a very basic, fixed-size heap for now. A real engine would have a dynamic allocator.
@@ -107,9 +121,40 @@ namespace Angaraka::Graphics::DirectX12 {
         m_LoadedTextures.clear(); // Release shared_ptrs to textures
         m_SrvHeap.Reset();
         m_Device = nullptr;
-        m_CommandList = nullptr;
+
         initialized = false;
         AGK_INFO("TextureManager shut down.");
+    }
+
+    ID3D12GraphicsCommandList* TextureManager::GetOrCreateCommandList() {
+        // Reset allocator and command list for new recording
+        DXCall(m_LoadingCommandAllocator->Reset());
+        DXCall(m_LoadingCommandList->Reset(m_LoadingCommandAllocator.Get(), nullptr));
+
+        return m_LoadingCommandList.Get();
+    }
+
+    void TextureManager::ExecuteAndWaitForGPU() {
+        // Close command list
+        DXCall(m_LoadingCommandList->Close());
+
+        // Execute on command queue
+        ID3D12CommandList* commandLists[] = { m_LoadingCommandList.Get() };
+        m_CommandQueue->ExecuteCommandLists(1, commandLists);
+
+        // Wait for completion (simple synchronization)
+        // In production, use proper fence synchronization
+        Microsoft::WRL::ComPtr<ID3D12Fence> fence;
+        DXCall(m_Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence)));
+
+        DXCall(m_CommandQueue->Signal(fence.Get(), 1));
+
+        if (fence->GetCompletedValue() < 1) {
+            HANDLE fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+            DXCall(fence->SetEventOnCompletion(1, fenceEvent));
+            WaitForSingleObject(fenceEvent, INFINITE);
+            CloseHandle(fenceEvent);
+        }
     }
 
     bool TextureManager::CreateSrvDescriptorHeap(UINT numDescriptors)
@@ -200,11 +245,12 @@ namespace Angaraka::Graphics::DirectX12 {
 
     std::shared_ptr<Texture> TextureManager::CreateTextureFromImageData(const Angaraka::Core::ImageData& imageData)
     {
-        if (!m_Device || !m_CommandList)
+        if (!m_Device)
         {
             AGK_ERROR("TextureManager not initialized when attempting to create texture from ImageData.");
             return nullptr;
         }
+
         if (!imageData.Pixels)
         {
             AGK_ERROR("ImageData provided has no pixel data.");
@@ -286,13 +332,14 @@ namespace Angaraka::Graphics::DirectX12 {
         subresourceData.SlicePitch = imageData.SlicePitch;
 
         // Use the currentUploadHeap obtained from the vector
-        UpdateSubresources(m_CommandList, texture->Resource.Get(), currentUploadHeap, 0, 0, 1, &subresourceData);
+        auto commandList = GetOrCreateCommandList();
+        UpdateSubresources(commandList, texture->Resource.Get(), currentUploadHeap, 0, 0, 1, &subresourceData);
 
 
         // 5. Transition the texture resource to a shader resource state
         CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(texture->Resource.Get(),
             D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-        m_CommandList->ResourceBarrier(1, &barrier);
+        commandList->ResourceBarrier(1, &barrier);
 
         // 6. Create Shader Resource View (SRV)
         if (m_NextSrvDescriptorIndex >= m_SrvHeap->GetDesc().NumDescriptors)
@@ -317,6 +364,8 @@ namespace Angaraka::Graphics::DirectX12 {
         m_NextSrvDescriptorIndex++; // Increment for next texture
 
         m_LoadedTextures[tempName] = texture; // Add to cache
+
+        ExecuteAndWaitForGPU();
 
         AGK_INFO("GPU Texture created for '{}'.", tempName);
         return texture;

@@ -11,6 +11,8 @@ module;
 
 export module Angaraka.Graphics.DirectX12;
 
+import Angaraka.Core.GraphicsFactory;
+
 import Angaraka.Graphics.DirectX12.DeviceManager;
 import Angaraka.Graphics.DirectX12.SwapChainManager;
 import Angaraka.Graphics.DirectX12.CommandQueueAndListManager;
@@ -42,6 +44,8 @@ namespace Angaraka { // Use the Angaraka namespace here
         inline Angaraka::Camera* GetCamera() { return m_camera.get(); }
         inline Graphics::DirectX12::TextureManager* GetTextureManager() const { return m_textureManager.get(); }
 
+        std::shared_ptr<Core::GraphicsResourceFactory> GetGraphicsFactory();
+
     private:
         std::unique_ptr<Graphics::DirectX12::DeviceManager> m_deviceManager;
         std::unique_ptr<Graphics::DirectX12::SwapChainManager> m_swapChainManager;
@@ -57,6 +61,38 @@ namespace Angaraka { // Use the Angaraka namespace here
         unsigned int m_width{ 0 };
         unsigned int m_height{ 0 };
         float m_elapsedTime = 0.0f;
+    };
+
+
+    export class DirectX12ResourceFactory : public Core::IGraphicsResourceFactory<DirectX12ResourceFactory> {
+    public:
+        inline DirectX12ResourceFactory(DirectX12GraphicsSystem* graphicsSystem)
+            : m_graphicsSystem(graphicsSystem) {
+        }
+
+        inline std::shared_ptr<Core::Resource> CreateTextureImpl(const Core::AssetDefinition& asset, void* context) {
+            std::shared_ptr<Graphics::DirectX12::TextureResource> textureResource = std::make_shared<Graphics::DirectX12::TextureResource>(asset.id);
+            textureResource->Load(asset.path, context);
+            return textureResource;
+        }
+
+        inline std::shared_ptr<Core::Resource> CreateMeshImpl(const Core::AssetDefinition& asset, void* context) {
+            // TODO: Implement mesh creation
+            return nullptr;
+        }
+
+        inline std::shared_ptr<Core::Resource> CreateMaterialImpl(const Core::AssetDefinition& asset, void* context) {
+            // TODO: Implement material creation  
+            return nullptr;
+        }
+
+        inline std::shared_ptr<Core::Resource> CreateSoundImpl(const Core::AssetDefinition& asset, void* context) {
+            // TODO: Implement sound creation
+            return nullptr;
+        }
+
+    private:
+        DirectX12GraphicsSystem* m_graphicsSystem;
     };
 
 } // namespace Angaraka

@@ -28,7 +28,7 @@ namespace Angaraka::Graphics::DirectX12 {
         ~TextureManager();
 
         // Initialize with D3D12 device and command list for upload
-        bool Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
+        bool Initialize(ID3D12Device* device, ID3D12CommandQueue* commandQueue);
         void Shutdown();
 
         // Creates a GPU texture from CPU ImageData
@@ -43,13 +43,21 @@ namespace Angaraka::Graphics::DirectX12 {
         // Call this after GPU has finished processing initialization commands
         void ClearUploadHeaps();
 
+        // Add method to get fresh command list for loading
+        ID3D12GraphicsCommandList* GetOrCreateCommandList();
+        void ExecuteAndWaitForGPU();
+
         // Get the SRV heap and descriptor size
         inline ID3D12DescriptorHeap* GetSrvHeap() const { return m_SrvHeap.Get(); }
         inline UINT GetSrvDescriptorSize() const { return m_SrvDescriptorSize; }
 
     private:
         ID3D12Device* m_Device = nullptr;
-        ID3D12GraphicsCommandList* m_CommandList = nullptr; // Used for texture uploads
+
+        // Add command allocator for texture loading
+        Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_LoadingCommandAllocator;
+        Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_LoadingCommandList;
+        Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_CommandQueue; // Store command queue reference
 
         std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> m_UploadHeapsToRelease;
 

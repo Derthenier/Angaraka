@@ -4,14 +4,27 @@ module;
 
 #define TEST_IMAGE "Assets/uv-grid-texture.png" // Path to a test image for loading
 
-
-// Includes for internal implementation details
-#include "Angaraka/GraphicsBase.hpp"
+#include "Angaraka/GraphicsBase.hpp" // For AGK_INFO, AGK_ERROR, etc.
+#include <windows.h>
+#include <string>
+#include <memory>    // For std::unique_ptr
+#include <DirectXMath.h>
+#include <wrl/client.h>
 #include <stdexcept>
 
 module Angaraka.Graphics.DirectX12; // Specifies this file belongs to the module
 
-import Angaraka.Core.Resources;
+import Angaraka.Core.GraphicsFactory;
+
+import Angaraka.Graphics.DirectX12.DeviceManager;
+import Angaraka.Graphics.DirectX12.SwapChainManager;
+import Angaraka.Graphics.DirectX12.CommandQueueAndListManager;
+import Angaraka.Graphics.DirectX12.ShaderManager;
+import Angaraka.Graphics.DirectX12.PipelineManager;
+import Angaraka.Graphics.DirectX12.BufferManager;
+
+import Angaraka.Graphics.DirectX12.Texture;
+import Angaraka.Camera;
 
 // Global/Static Data (specific to this implementation unit)
 // This will remain here for now, as it's geometry data.
@@ -110,8 +123,7 @@ namespace Angaraka { // Use the Angaraka namespace here
 
 
         // Initialize the TextureManager
-        ID3D12GraphicsCommandList* commandList = m_commandManager->Reset(nullptr);
-        if (!m_textureManager->Initialize(m_deviceManager->GetDevice(), commandList)) // Pass your D3D12 device and command list
+        if (!m_textureManager->Initialize(m_deviceManager->GetDevice(), m_deviceManager->GetCommandQueue())) // Pass your D3D12 device and command list
         {
             AGK_ERROR("Failed to initialize Texture Manager.");
             return false;
@@ -123,7 +135,7 @@ namespace Angaraka { // Use the Angaraka namespace here
         // or directly in the Angaraka/Build/Debug folder for testing.
         std::string dummyTexturePath = TEST_IMAGE; // Adjust path as needed
         dummyTextureResource = new Angaraka::Graphics::DirectX12::TextureResource(dummyTexturePath);
-        if (dummyTextureResource->Load(dummyTexturePath))
+        if (dummyTextureResource->Load(dummyTexturePath, this))
         {
             AGK_INFO("Dummy texture loaded and uploaded to GPU!");
         }
@@ -131,10 +143,6 @@ namespace Angaraka { // Use the Angaraka namespace here
         {
             AGK_WARN("Could not load dummy texture from path: {}", dummyTexturePath);
         }
-
-        m_commandManager->Close();
-        m_commandManager->Execute(m_deviceManager->GetCommandQueue());
-        m_commandManager->WaitForGPU(m_deviceManager->GetCommandQueue());
 
         // --- IMPORTANT: Now that GPU is finished, safely release the temporary upload heaps ---
         m_textureManager->ClearUploadHeaps();
@@ -308,5 +316,9 @@ namespace Angaraka { // Use the Angaraka namespace here
             // No need to call m_camera->Update() here unless it specifically re-calculates projection
             // which SetLens already does.
         }
+    }
+
+    std::shared_ptr<Core::GraphicsResourceFactory> DirectX12GraphicsSystem::GetGraphicsFactory() {
+        return std::make_shared<Core::GraphicsResourceFactory>(Core::GraphicsResourceFactory(DirectX12ResourceFactory(this)));
     }
 } // namespace Angaraka

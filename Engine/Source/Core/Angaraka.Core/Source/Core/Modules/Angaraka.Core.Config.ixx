@@ -76,6 +76,8 @@ namespace Angaraka::Config {
         std::string engineName;
         std::string engineVersion;
         std::string gameName;
+        std::string assetsBasePath{ "Assets" };
+        std::string shadersBasePath{ "Shaders" };
 
         std::vector<PluginInfo> plugins;
         std::vector<std::string> pluginPaths;
@@ -159,6 +161,10 @@ namespace Angaraka::Config {
                         ec.engineVersion = engineNode["version"].as<std::string>();
                     if (engineNode["game"])
                         ec.gameName = engineNode["game"].as<std::string>();
+                    if (engineNode["assets"])
+                        ec.assetsBasePath = engineNode["assets"].as<std::string>();
+                    if (engineNode["shaders"])
+                        ec.shadersBasePath = engineNode["shaders"].as<std::string>();
                 }
 
                 // plugins list

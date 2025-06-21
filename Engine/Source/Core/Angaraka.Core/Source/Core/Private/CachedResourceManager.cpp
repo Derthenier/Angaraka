@@ -7,9 +7,11 @@ module Angaraka.Core.ResourceCache;
 namespace Angaraka::Core {
 
     CachedResourceManager::CachedResourceManager(
+        const std::string& basePath,
         Angaraka::Events::EventManager& eventBus,
         const MemoryBudget& cacheConfig)
-        : m_cache(cacheConfig)
+        : m_basePath(basePath)
+        , m_cache(cacheConfig)
         , m_eventBus(eventBus)
     {
         AGK_INFO("CachedResourceManager: Initialized with {}MB cache budget",

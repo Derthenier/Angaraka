@@ -1,6 +1,7 @@
 #include "Game.hpp"
-#include <Angaraka/Log.hpp>
 #include <objbase.h> // For CoInitializeEx and CoUninitialize
+#include <Angaraka/Log.hpp>
+#include <Angaraka/AssetBundleManager.hpp>
 
 import Angaraka.Core.Config;
 import Angaraka.Core.Window;
@@ -47,6 +48,20 @@ namespace ThreadsOfKaliyuga
             std::wstring wstr(size - 1, 0); // exclude null terminator
             MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &wstr[0], size);
             return wstr;
+        }
+
+        void OnBundleProgress(const Angaraka::Core::BundleLoadProgress& progress) {
+            AGK_APP_INFO("Bundle '{}' loading: {:.1f}% ({}/{})",
+                progress.bundleName, progress.progress * 100.0f,
+                progress.assetsLoaded, progress.totalAssets);
+
+            if (progress.state == Angaraka::Core::BundleLoadState::Loaded) {
+                AGK_APP_INFO("Bundle '{}' loaded successfully!", progress.bundleName);
+            }
+            else if (progress.state == Angaraka::Core::BundleLoadState::Failed) {
+                AGK_APP_ERROR("Bundle '{}' failed to load: {}",
+                    progress.bundleName, progress.errorMessage);
+            }
         }
     }
 
@@ -104,11 +119,31 @@ namespace ThreadsOfKaliyuga
         auto cacheConfig = config.renderer.resourceCache.ToMemoryBudget();
 
         m_resourceManager = new Angaraka::Core::CachedResourceManager(
+            config.assetsBasePath,
             Angaraka::Events::EventManager::Get(),
             cacheConfig
         );
+        m_resourceManager->SetGraphicsFactory(m_graphicsSystem->GetGraphicsFactory());
 
-        auto gridTexture = m_resourceManager->GetResource<Angaraka::Graphics::DirectX12::TextureResource>(R"(Assets\uv-grid-texture.png)");
+        // Initialize bundle manager
+        m_bundleManager = new Angaraka::Core::BundleManager(m_resourceManager, m_graphicsSystem);
+
+        // Set global progress callback
+        m_bundleManager->SetGlobalProgressCallback(OnBundleProgress);
+
+        // Initialize with bundles directory
+        std::filesystem::path bundlesPath = "Assets/bundles";
+        if (!m_bundleManager->Initialize(bundlesPath)) {
+            AGK_APP_WARN("No asset bundles found in {}", bundlesPath.string());
+        }
+
+        // Start async loading
+        m_bundleManager->StartAsyncLoading();
+
+        // Load all auto-load bundles
+        m_bundleManager->LoadAllAutoLoadBundles();
+
+        AGK_APP_INFO("BundleManager initialized and loading started.");
 
         m_resourceManager->LogCacheStatus();
 
@@ -155,10 +190,19 @@ namespace ThreadsOfKaliyuga
     {
         AGK_APP_INFO("Shutting down Threads of Kaliyuga...");
 
+        window.Destroy();
+
         if (m_inputSystem) {
             m_inputSystem->Shutdown();
             delete m_inputSystem;
             m_inputSystem = nullptr;
+        }
+
+        // Shutdown bundle manager first (stops async loading)
+        if (m_bundleManager) {
+            m_bundleManager->Shutdown();
+            delete m_bundleManager;
+            m_bundleManager = nullptr;
         }
 
         if (m_resourceManager) {
@@ -188,6 +232,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         return -1;
     }
 
+    bool failure{ false };
     ThreadsOfKaliyuga::Game game;
     if (game.Initialize())
     {
@@ -195,11 +240,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     }
     else
     {
-        return -1; // Initialization failed
+        failure = true;
     }
 
     game.Shutdown();
     CoUninitialize(); // Uninitialize COM
 
-    return 0; // Exit successfully
+    return failure ? -1 : 0; // Exit successfully
 }
