@@ -7,7 +7,7 @@ namespace Angaraka {
     class DirectX12GraphicsSystem;
 
     namespace Core {
-        class ResourceManager;
+        class CachedResourceManager;
     }
 }
 
@@ -26,8 +26,10 @@ namespace ThreadsOfKaliyuga
         void Shutdown();
 
     private:
+
+    private:
         Angaraka::DirectX12GraphicsSystem* m_graphicsSystem{ nullptr };
-        Angaraka::Core::ResourceManager* m_resourceManager{ nullptr };
+        Angaraka::Core::CachedResourceManager* m_resourceManager{ nullptr };
         InputSystem* m_inputSystem{ nullptr };
 
         // --- Timing ---

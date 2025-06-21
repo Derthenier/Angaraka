@@ -12,17 +12,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\Modules\Angaraka.Core.Config.ixx" />
-    <ClCompile Include="Source\Core\Modules\Angaraka.Core.Events.cpp" />
+    <ClCompile Include="Source\Core\Modules\Angaraka.Core.GraphicsFactory.ixx" />
+    <ClCompile Include="Source\Core\Modules\Angaraka.Core.ResourceCache.ixx" />
+    <ClCompile Include="Source\Core\Private\Angaraka.Core.Events.cpp" />
     <ClCompile Include="Source\Core\Modules\Angaraka.Core.Events.ixx" />
-    <ClCompile Include="Source\Core\Modules\Angaraka.Core.Window.cpp" />
+    <ClCompile Include="Source\Core\Private\Angaraka.Core.Window.cpp" />
     <ClCompile Include="Source\Core\Modules\Angaraka.Core.Window.ixx" />
-    <ClCompile Include="Source\Core\Modules\Angaraka.Core.Resources.cpp" />
+    <ClCompile Include="Source\Core\Private\Angaraka.Core.Resources.cpp" />
     <ClCompile Include="Source\Core\Modules\Angaraka.Core.Resources.ixx" />
+    <ClCompile Include="Source\Core\Private\CachedResourceManager.cpp" />
     <ClCompile Include="Source\Core\Private\Log.cpp" />
+    <ClCompile Include="Source\Core\Private\ResourceCache.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Core\Public\Angaraka\Base.hpp" />
     <ClInclude Include="Source\Core\Public\Angaraka\Log.hpp" />
+    <ClInclude Include="Source\Core\Public\Angaraka\ResourceCache.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

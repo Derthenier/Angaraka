@@ -47,3 +47,10 @@ renderer:
   features:
     raytracing: false            # Enable DirectX Raytracing (DXR)
     variable_rate_shading: false # Enable VRS if supported
+
+  resource_cache:
+    max_memory_mb: 512          # Total cache budget in MB
+    max_single_resource_mb: 64  # Per-resource size limit
+    eviction_threshold: 85      # Percentage to trigger cleanup
+    enable_eviction: true       # Allow automatic eviction
+    log_evictions: true         # Log eviction events

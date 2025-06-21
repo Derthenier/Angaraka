@@ -54,9 +54,10 @@ namespace Angaraka::Core {
          * Derived classes must implement this to perform their specific loading logic.
          * This method should handle parsing file formats and preparing data.
          * @param filePath The path from which to load the resource.
+         * @param context Optional context pointer for additional data (e.g., for async loading).
          * @return True if loading was successful, false otherwise.
          */
-        virtual bool Load(const std::string& filePath) = 0;
+        virtual bool Load(const std::string& filePath, void* context = nullptr) = 0;
 
         /**
          * @brief Pure virtual method for unloading/releasing the resource data.

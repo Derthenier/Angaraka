@@ -13,30 +13,12 @@ import Angaraka.Core.Resources;
 namespace Angaraka::Graphics::DirectX12 {
 
     namespace {
-        TextureManager* g_GlobalTextureManager = nullptr;
-
-        TextureManager* GetGlobalTextureManager() {
-            if (!g_GlobalTextureManager) {
-                g_GlobalTextureManager = new TextureManager();
-            }
-            return g_GlobalTextureManager;
-        }
     }
-
-
 
     TextureResource::TextureResource(const std::string& id)
         : Resource(id)
-        , m_textureManager(g_GlobalTextureManager)
     {
         AGK_INFO("TextureResource: Created with ID '{0}'.", id);
-    }
-
-    TextureResource::TextureResource(const std::string& id, TextureManager* const textureManager)
-        : Resource(id)
-        , m_textureManager(textureManager)
-    {
-        AGK_INFO("TextureResource: Created with ID '{0}' and texture manager.", id);
     }
 
     TextureResource::~TextureResource() {
@@ -44,12 +26,16 @@ namespace Angaraka::Graphics::DirectX12 {
         Unload(); // Ensure cleanup on destruction
     }
 
-    bool TextureResource::Load(const std::string& filePath) {
+    bool TextureResource::Load(const std::string& filePath, void* context) {
         AGK_INFO("TextureResource: Loading texture from '{0}'...", filePath);
 
-        // Use the existing TextureManager to load the actual DirectX12 texture data
-        // Assume TextureManager::LoadTexture takes a path and returns a shared_ptr<Texture> struct/class
-        m_textureData = m_textureManager->LoadTexture(filePath);
+        TextureManager* textureManager = static_cast<TextureManager*>(context);
+        if (!textureManager) {
+            AGK_ERROR("TextureResource: TextureManager context is null. Cannot load texture.");
+            return false;
+        }
+        
+        m_textureData = textureManager->LoadTexture(filePath);
 
         if (m_textureData) {
             AGK_INFO("TextureResource: Successfully loaded D3D12 texture data for '{0}'.", filePath);
@@ -153,7 +139,7 @@ namespace Angaraka::Graphics::DirectX12 {
             return nullptr;
         }
 
-        DirectX::TexMetadata metadata;
+        [[maybe_unused]] DirectX::TexMetadata metadata;
         DirectX::ScratchImage scratchImage;
 
         DirectX::WIC_FLAGS wicFlags{ DirectX::WIC_FLAGS_NONE };

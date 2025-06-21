@@ -117,11 +117,12 @@ namespace Angaraka { // Use the Angaraka namespace here
             return false;
         }
 
+
         // Example: Load a dummy texture (replace with your actual texture path)
         // You might need to place a PNG or DDS file in your RPGGame's Data/Assets folder
         // or directly in the Angaraka/Build/Debug folder for testing.
         std::string dummyTexturePath = TEST_IMAGE; // Adjust path as needed
-        dummyTextureResource = new Angaraka::Graphics::DirectX12::TextureResource(dummyTexturePath, m_textureManager.get());
+        dummyTextureResource = new Angaraka::Graphics::DirectX12::TextureResource(dummyTexturePath);
         if (dummyTextureResource->Load(dummyTexturePath))
         {
             AGK_INFO("Dummy texture loaded and uploaded to GPU!");
@@ -204,7 +205,7 @@ namespace Angaraka { // Use the Angaraka namespace here
         DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationY(m_elapsedTime * 0.5f); // Rotate around Y-axis
         DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(0.0f, 0.0f, 5.0f); // Move away from camera
         mvpCPUData.model = DirectX::XMMatrixTranspose(scale * rotation * translation); // Combine transformations
-        
+
         mvpCPUData.view = DirectX::XMMatrixTranspose(m_camera->GetViewMatrix());
         mvpCPUData.projection = DirectX::XMMatrixTranspose(m_camera->GetProjectionMatrix());
 
@@ -223,16 +224,21 @@ namespace Angaraka { // Use the Angaraka namespace here
         m_bufferManager->UpdateConstantBuffer(mvpCPUData);
 
         commandList->SetGraphicsRootConstantBufferView(0, m_bufferManager->GetConstantBufferGPUAddress());
-        // Bind the texture SRV (Root Parameter 1)
-        // You stored the texture's SRV descriptor CPU handle in m_DummyTexture->SrvDescriptor
-        // Now you need its GPU handle.
-        CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle(m_textureManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart(), dummyTextureResource->GetSrvIndex(), m_textureManager->GetSrvDescriptorSize());
 
-        UINT srvIndex = dummyTextureResource->GetSrvIndex(); // Assuming you store the index where it was allocated
-        CD3DX12_GPU_DESCRIPTOR_HANDLE gpuSrvHandle(m_textureManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart());
-        gpuSrvHandle.Offset(srvIndex, m_textureManager->GetSrvDescriptorSize());
+        if (dummyTextureResource && dummyTextureResource->GetSrvIndex() >= 0)
+        {
+            // Bind the texture SRV (Root Parameter 1)
+            // You stored the texture's SRV descriptor CPU handle in m_DummyTexture->SrvDescriptor
+            // Now you need its GPU handle.
+            CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle(m_textureManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart(), dummyTextureResource->GetSrvIndex(), m_textureManager->GetSrvDescriptorSize());
 
-        commandList->SetGraphicsRootDescriptorTable(1, gpuSrvHandle); // Root Parameter 1 binds the descriptor table
+            UINT srvIndex = dummyTextureResource->GetSrvIndex(); // Assuming you store the index where it was allocated
+            CD3DX12_GPU_DESCRIPTOR_HANDLE gpuSrvHandle(m_textureManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart());
+            gpuSrvHandle.Offset(srvIndex, m_textureManager->GetSrvDescriptorSize());
+
+
+            commandList->SetGraphicsRootDescriptorTable(1, gpuSrvHandle); // Root Parameter 1 binds the descriptor table
+        }
 
         commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         commandList->IASetVertexBuffers(0, 1, &m_bufferManager->GetVertexBufferView());

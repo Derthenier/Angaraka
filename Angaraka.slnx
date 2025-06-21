@@ -28,4 +28,7 @@
     <File Path="Readme.md" />
     <File Path="Angaraka.png" />
   </Folder>
+  <Folder Name="/Solution Items/Documentation/">
+    <File Path="Documentation/architecture.md" />
+  </Folder>
 </Solution>
