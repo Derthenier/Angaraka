@@ -18,7 +18,7 @@
     <ClCompile Include="Source\Core\Modules\Angaraka.Core.Window.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Modules\Angaraka.Core.Window.cpp">
+    <ClCompile Include="Source\Core\Private\Angaraka.Core.Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Modules\Angaraka.Core.Config.ixx">
@@ -30,13 +30,25 @@
     <ClCompile Include="Source\Core\Modules\Angaraka.Core.Events.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Modules\Angaraka.Core.Events.cpp">
+    <ClCompile Include="Source\Core\Private\Angaraka.Core.Events.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Modules\Angaraka.Core.Resources.cpp">
+    <ClCompile Include="Source\Core\Private\Angaraka.Core.Resources.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Modules\Angaraka.Core.Resources.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Private\ResourceCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Modules\Angaraka.Core.ResourceCache.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Private\CachedResourceManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Modules\Angaraka.Core.GraphicsFactory.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -45,6 +57,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Public\Angaraka\Log.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Public\Angaraka\ResourceCache.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -11,6 +11,8 @@ module;
 
 export module Angaraka.Core.Config;
 
+import Angaraka.Core.ResourceCache;
+
 namespace Angaraka::Config {
 
     // Plugin info for new YAML format
@@ -33,6 +35,24 @@ namespace Angaraka::Config {
         bool fullscreen{ false };
     };
 
+    export struct ResourceCacheConfig {
+        int maxMemoryMB = 512;
+        int maxSingleResourceMB = 64;
+        int evictionThreshold = 85;
+        bool enableEviction = true;
+        bool logEvictions = true;
+
+        Core::MemoryBudget ToMemoryBudget() const {
+            Core::MemoryBudget budget;
+            budget.maxTotalMemory = maxMemoryMB * 1024 * 1024;
+            budget.maxSingleResource = maxSingleResourceMB * 1024 * 1024;
+            budget.evictionThreshold = evictionThreshold;
+            budget.enableEviction = enableEviction;
+            budget.logEvictions = logEvictions;
+            return budget;
+        }
+    };
+
     export struct RendererConfig {
         bool vsyncEnabled{ false };
         bool msaa_enabled{ false };
@@ -49,6 +69,7 @@ namespace Angaraka::Config {
         float clearGreen{ 0.0f };
         float clearBlue{0.0f};
         std::string shaderCachePath{ "shaders/cache" }; // Path to the shader cache directory
+        ResourceCacheConfig resourceCache;
     };
 
     export struct EngineConfig {
@@ -228,6 +249,19 @@ namespace Angaraka::Config {
                             ec.renderer.raytracingEnabled = featuresNode["raytracing"].as<bool>(false);
                         if (featuresNode["variable_rate_shading"])
                             ec.renderer.variableRateShadingEnabled = featuresNode["variable_rate_shading"].as<bool>(false);
+                    }
+
+                    if (auto cacheNode = rendererNode["resource_cache"]) {
+                        if (cacheNode["max_memory_mb"])
+                            ec.renderer.resourceCache.maxMemoryMB = cacheNode["max_memory_mb"].as<int>();
+                        if (cacheNode["max_single_resource_mb"])
+                            ec.renderer.resourceCache.maxSingleResourceMB = cacheNode["max_single_resource_mb"].as<int>();
+                        if (cacheNode["eviction_threshold"])
+                            ec.renderer.resourceCache.evictionThreshold = cacheNode["eviction_threshold"].as<int>();
+                        if (cacheNode["enable_eviction"])
+                            ec.renderer.resourceCache.enableEviction = cacheNode["enable_eviction"].as<bool>();
+                        if (cacheNode["log_evictions"])
+                            ec.renderer.resourceCache.logEvictions = cacheNode["log_evictions"].as<bool>();
                     }
                 }
 

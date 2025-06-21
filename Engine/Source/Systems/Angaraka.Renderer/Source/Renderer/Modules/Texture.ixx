@@ -77,13 +77,12 @@ namespace Angaraka::Graphics::DirectX12 {
     public:
         // Constructor that takes the resource ID (file path)
         explicit TextureResource(const std::string& id);
-        explicit TextureResource(const std::string& id, TextureManager* const textureManager);
         ~TextureResource();
 
         AGK_RESOURCE_TYPE_ID(TextureResource); // Define static TypeId
 
         // Implement pure virtual methods from base Resource class
-        bool Load(const std::string& filePath) override;
+        bool Load(const std::string& filePath, void* context = nullptr) override;
         void Unload() override;
 
         // Getters for the underlying D3D12 texture data (e.g., for binding)
@@ -92,14 +91,6 @@ namespace Angaraka::Graphics::DirectX12 {
         const INT GetSrvIndex() const;
 
     private:
-        // A pointer/reference to the low-level TextureManager (e.g., if it's a global singleton or passed in)
-        // For simplicity, let's assume TextureManager is accessible via a global accessor or dependency injection.
-        // Or, more realistically, TextureManager becomes a private member of DirectX12GraphicsSystem,
-        // and we would pass its services down to the ResourceManager/TextureResource.
-        // For this example, let's assume we can get a singleton instance of TextureManager.
-        // This is where dependency injection would shine if TextureManager is not a singleton.
-        TextureManager* const m_textureManager;
-
         // Hold the actual texture data managed by TextureManager
         // You might define a simple struct in Texture.hpp that contains these,
         // or get direct access. Let's assume TextureManager gives us a simple ID or struct.

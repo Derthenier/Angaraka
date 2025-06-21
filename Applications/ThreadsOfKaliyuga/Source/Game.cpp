@@ -5,8 +5,10 @@
 import Angaraka.Core.Config;
 import Angaraka.Core.Window;
 import Angaraka.Core.Resources;
+import Angaraka.Core.ResourceCache;
 import Angaraka.Graphics.DirectX12;
 import Angaraka.Input.Windows;
+
 
 import ThreadsOfKaliyuga.Input;
 
@@ -77,8 +79,6 @@ namespace ThreadsOfKaliyuga
         }
 
         AGK_APP_INFO("GraphicsSystem initialized.");
-
-        m_resourceManager = new Angaraka::Core::ResourceManager(Angaraka::Events::EventManager::Get());
         
         m_inputSystem = new InputSystem();
         if (!m_inputSystem->Initialize(window.GetHandle(), m_graphicsSystem->GetCamera(), config.window.fullscreen)) {
@@ -100,7 +100,17 @@ namespace ThreadsOfKaliyuga
             return false;
         }
 
+        // Get cache config from engine config
+        auto cacheConfig = config.renderer.resourceCache.ToMemoryBudget();
 
+        m_resourceManager = new Angaraka::Core::CachedResourceManager(
+            Angaraka::Events::EventManager::Get(),
+            cacheConfig
+        );
+
+        auto gridTexture = m_resourceManager->GetResource<Angaraka::Graphics::DirectX12::TextureResource>(R"(Assets\uv-grid-texture.png)");
+
+        m_resourceManager->LogCacheStatus();
 
         return true;
     }
@@ -126,6 +136,18 @@ namespace ThreadsOfKaliyuga
 
             m_graphicsSystem->BeginFrame(m_deltaTime, config.renderer.clearRed, config.renderer.clearGreen, config.renderer.clearBlue, 0.7f);
             m_graphicsSystem->EndFrame();
+
+
+            // Periodic cache monitoring (every 5 seconds)
+            static float cacheMonitorTimer = 0.0f;
+            cacheMonitorTimer += m_deltaTime;
+            if (cacheMonitorTimer >= 5.0f) {
+                if (!m_resourceManager->IsCacheHealthy()) {
+                    AGK_APP_WARN("Resource cache health degraded - {}% utilization",
+                        static_cast<int>(m_resourceManager->GetCacheUtilization() * 100));
+                }
+                cacheMonitorTimer = 0.0f;
+            }
         }
     }
 
