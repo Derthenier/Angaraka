@@ -7,6 +7,7 @@ namespace Angaraka {
     class DirectX12GraphicsSystem;
 
     namespace Core {
+        class BundleManager;
         class CachedResourceManager;
     }
 }
@@ -30,6 +31,7 @@ namespace ThreadsOfKaliyuga
     private:
         Angaraka::DirectX12GraphicsSystem* m_graphicsSystem{ nullptr };
         Angaraka::Core::CachedResourceManager* m_resourceManager{ nullptr };
+        Angaraka::Core::BundleManager* m_bundleManager{ nullptr };
         InputSystem* m_inputSystem{ nullptr };
 
         // --- Timing ---

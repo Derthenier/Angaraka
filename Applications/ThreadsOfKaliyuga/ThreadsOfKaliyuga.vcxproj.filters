@@ -39,6 +39,11 @@
   <ItemGroup>
     <None Include="config\engine.yaml" />
     <None Include="packages.config" />
+    <None Include="Assets\bundles\core_ui.yaml" />
+    <None Include="Assets\bundles\audio_music.yaml" />
+    <None Include="Assets\bundles\debug_assets.yaml" />
+    <None Include="Assets\bundles\environment_forest.yaml" />
+    <None Include="Assets\bundles\player_character.yaml" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Angaraka.Application.ico">

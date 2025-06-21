@@ -2,6 +2,7 @@ module;
 
 #include "Angaraka/Base.hpp"
 #include "Angaraka/ResourceCache.hpp"
+#include "Angaraka/AssetBundleConfig.hpp"
 
 export module Angaraka.Core.ResourceCache;
 
@@ -24,13 +25,14 @@ namespace Angaraka::Core {
     export class CachedResourceManager {
     public:
         explicit CachedResourceManager(
+            const std::string& basePath,
             Angaraka::Events::EventManager& eventBus,
             const MemoryBudget& cacheConfig = MemoryBudget{}
         );
         ~CachedResourceManager();
 
         // Dependency injection
-        inline void SetGraphicsFactory(std::shared_ptr<IGraphicsResourceFactory> factory) {
+        inline void SetGraphicsFactory(std::shared_ptr<Core::GraphicsResourceFactory> factory) {
             std::lock_guard<std::mutex> lock(m_managerMutex);
             m_graphicsFactory = factory;
             AGK_INFO("CachedResourceManager: Graphics factory injected");
@@ -52,17 +54,18 @@ namespace Angaraka::Core {
                 AGK_WARN("CachedResourceManager: Type mismatch for cached resource '{}', removing", id);
             }
 
-            // Cache miss - load new resource
-            AGK_DEBUG("CachedResourceManager: Cache miss for '{}', loading...", id);
-            auto newResource = std::make_shared<T>(id);
+            // For cache miss, use factory instead of direct construction:
+            std::shared_ptr<Resource> newResource;
+            if (m_graphicsFactory) {
+                // Determine asset type and use appropriate factory method
+                AssetDefinition tempAsset{};
+                tempAsset.id = id;
+                tempAsset.path = m_basePath + "/" + id;
+                // You'll need logic to determine asset type from ID/extension
 
-            if (newResource->Load(id, context)) {
-                // Calculate memory size and cache it
-                size_t memorySize = EstimateResourceSize(newResource);
-                m_cache.Put(id, newResource, memorySize);
+                newResource = m_graphicsFactory->Create(tempAsset, context);
+                // Update GraphicsFactor to handle the different asset types
 
-                AGK_INFO("CachedResourceManager: Loaded and cached '{}' ({}MB)",
-                    id, memorySize / (1024 * 1024));
                 return newResource;
             }
 
@@ -86,11 +89,12 @@ namespace Angaraka::Core {
         void LogCacheStatus() const;
 
     private:
+        std::string m_basePath;
         ResourceCache m_cache;
         Angaraka::Events::EventManager& m_eventBus;
         mutable std::mutex m_managerMutex;
 
-        std::shared_ptr<IGraphicsResourceFactory> m_graphicsFactory;
+        std::shared_ptr<Core::GraphicsResourceFactory> m_graphicsFactory;
 
         // Generic fallback estimation
         size_t EstimateResourceSize(const std::shared_ptr<Resource>& resource) const;

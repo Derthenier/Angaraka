@@ -9,10 +9,306 @@ module;
 module Angaraka.Graphics.DirectX12.Texture;
 
 import Angaraka.Core.Resources;
+import Angaraka.Graphics.DirectX12;
 
 namespace Angaraka::Graphics::DirectX12 {
 
     namespace {
+        std::string GetDXGIFormatAsString(DXGI_FORMAT format)
+        {
+            switch (format)
+            {
+                case DXGI_FORMAT_UNKNOWN: return "DXGI_FORMAT_UNKNOWN";
+                case DXGI_FORMAT_R32G32B32A32_TYPELESS: return "DXGI_FORMAT_R32G32B32A32_TYPELESS";
+                case DXGI_FORMAT_R32G32B32A32_FLOAT: return "DXGI_FORMAT_R32G32B32A32_FLOAT";
+                case DXGI_FORMAT_R32G32B32A32_UINT: return "DXGI_FORMAT_R32G32B32A32_UINT";
+                case DXGI_FORMAT_R32G32B32A32_SINT: return "DXGI_FORMAT_R32G32B32A32_SINT";
+                case DXGI_FORMAT_R32G32B32_TYPELESS: return "DXGI_FORMAT_R32G32B32_TYPELESS";
+                case DXGI_FORMAT_R32G32B32_FLOAT: return "DXGI_FORMAT_R32G32B32_FLOAT";
+                case DXGI_FORMAT_R32G32B32_UINT: return "DXGI_FORMAT_R32G32B32_UINT";
+                case DXGI_FORMAT_R32G32B32_SINT: return "DXGI_FORMAT_R32G32B32_SINT";
+                case DXGI_FORMAT_R16G16B16A16_TYPELESS: return "DXGI_FORMAT_R16G16B16A16_TYPELESS";
+                case DXGI_FORMAT_R16G16B16A16_FLOAT: return "DXGI_FORMAT_R16G16B16A16_FLOAT ";
+                case DXGI_FORMAT_R16G16B16A16_UNORM: return "DXGI_FORMAT_R16G16B16A16_UNORM ";
+                case DXGI_FORMAT_R16G16B16A16_UINT: return "DXGI_FORMAT_R16G16B16A16_UINT ";
+                case DXGI_FORMAT_R16G16B16A16_SNORM: return "DXGI_FORMAT_R16G16B16A16_SNORM ";
+                case DXGI_FORMAT_R16G16B16A16_SINT: return "DXGI_FORMAT_R16G16B16A16_SINT ";
+                case DXGI_FORMAT_R32G32_TYPELESS: return "DXGI_FORMAT_R32G32_TYPELESS ";
+                case DXGI_FORMAT_R32G32_FLOAT: return "DXGI_FORMAT_R32G32_FLOAT ";
+                case DXGI_FORMAT_R32G32_UINT: return "DXGI_FORMAT_R32G32_UINT ";
+                case DXGI_FORMAT_R32G32_SINT: return "DXGI_FORMAT_R32G32_SINT ";
+                case DXGI_FORMAT_R32G8X24_TYPELESS: return "DXGI_FORMAT_R32G8X24_TYPELESS ";
+                case DXGI_FORMAT_D32_FLOAT_S8X24_UINT: return "DXGI_FORMAT_D32_FLOAT_S8X24_UINT ";
+                case DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS: return "DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS ";
+                case DXGI_FORMAT_X32_TYPELESS_G8X24_UINT: return "DXGI_FORMAT_X32_TYPELESS_G8X24_UINT ";
+                case DXGI_FORMAT_R10G10B10A2_TYPELESS: return "DXGI_FORMAT_R10G10B10A2_TYPELESS ";
+                case DXGI_FORMAT_R10G10B10A2_UNORM: return "DXGI_FORMAT_R10G10B10A2_UNORM ";
+                case DXGI_FORMAT_R10G10B10A2_UINT: return "DXGI_FORMAT_R10G10B10A2_UINT ";
+                case DXGI_FORMAT_R11G11B10_FLOAT: return "DXGI_FORMAT_R11G11B10_FLOAT ";
+                case DXGI_FORMAT_R8G8B8A8_TYPELESS: return "DXGI_FORMAT_R8G8B8A8_TYPELESS ";
+                case DXGI_FORMAT_R8G8B8A8_UNORM: return "DXGI_FORMAT_R8G8B8A8_UNORM ";
+                case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB: return "DXGI_FORMAT_R8G8B8A8_UNORM_SRGB ";
+                case DXGI_FORMAT_R8G8B8A8_UINT: return "DXGI_FORMAT_R8G8B8A8_UINT ";
+                case DXGI_FORMAT_R8G8B8A8_SNORM: return "DXGI_FORMAT_R8G8B8A8_SNORM ";
+                case DXGI_FORMAT_R8G8B8A8_SINT: return "DXGI_FORMAT_R8G8B8A8_SINT ";
+                case DXGI_FORMAT_R16G16_TYPELESS: return "DXGI_FORMAT_R16G16_TYPELESS ";
+                case DXGI_FORMAT_R16G16_FLOAT: return "DXGI_FORMAT_R16G16_FLOAT ";
+                case DXGI_FORMAT_R16G16_UNORM: return "DXGI_FORMAT_R16G16_UNORM ";
+                case DXGI_FORMAT_R16G16_UINT: return "DXGI_FORMAT_R16G16_UINT ";
+                case DXGI_FORMAT_R16G16_SNORM: return "DXGI_FORMAT_R16G16_SNORM ";
+                case DXGI_FORMAT_R16G16_SINT: return "DXGI_FORMAT_R16G16_SINT ";
+                case DXGI_FORMAT_R32_TYPELESS: return "DXGI_FORMAT_R32_TYPELESS ";
+                case DXGI_FORMAT_D32_FLOAT: return "DXGI_FORMAT_D32_FLOAT ";
+                case DXGI_FORMAT_R32_FLOAT: return "DXGI_FORMAT_R32_FLOAT ";
+                case DXGI_FORMAT_R32_UINT: return "DXGI_FORMAT_R32_UINT ";
+                case DXGI_FORMAT_R32_SINT: return "DXGI_FORMAT_R32_SINT ";
+                case DXGI_FORMAT_R24G8_TYPELESS: return "DXGI_FORMAT_R24G8_TYPELESS ";
+                case DXGI_FORMAT_D24_UNORM_S8_UINT: return "DXGI_FORMAT_D24_UNORM_S8_UINT ";
+                case DXGI_FORMAT_R24_UNORM_X8_TYPELESS: return "DXGI_FORMAT_R24_UNORM_X8_TYPELESS ";
+                case DXGI_FORMAT_X24_TYPELESS_G8_UINT: return "DXGI_FORMAT_X24_TYPELESS_G8_UINT ";
+                case DXGI_FORMAT_R8G8_TYPELESS: return "DXGI_FORMAT_R8G8_TYPELESS ";
+                case DXGI_FORMAT_R8G8_UNORM: return "DXGI_FORMAT_R8G8_UNORM ";
+                case DXGI_FORMAT_R8G8_UINT: return "DXGI_FORMAT_R8G8_UINT ";
+                case DXGI_FORMAT_R8G8_SNORM: return "DXGI_FORMAT_R8G8_SNORM ";
+                case DXGI_FORMAT_R8G8_SINT: return "DXGI_FORMAT_R8G8_SINT ";
+                case DXGI_FORMAT_R16_TYPELESS: return "DXGI_FORMAT_R16_TYPELESS ";
+                case DXGI_FORMAT_R16_FLOAT: return "DXGI_FORMAT_R16_FLOAT ";
+                case DXGI_FORMAT_D16_UNORM: return "DXGI_FORMAT_D16_UNORM ";
+                case DXGI_FORMAT_R16_UNORM: return "DXGI_FORMAT_R16_UNORM ";
+                case DXGI_FORMAT_R16_UINT: return "DXGI_FORMAT_R16_UINT ";
+                case DXGI_FORMAT_R16_SNORM: return "DXGI_FORMAT_R16_SNORM ";
+                case DXGI_FORMAT_R16_SINT: return "DXGI_FORMAT_R16_SINT ";
+                case DXGI_FORMAT_R8_TYPELESS: return "DXGI_FORMAT_R8_TYPELESS ";
+                case DXGI_FORMAT_R8_UNORM: return "DXGI_FORMAT_R8_UNORM ";
+                case DXGI_FORMAT_R8_UINT: return "DXGI_FORMAT_R8_UINT ";
+                case DXGI_FORMAT_R8_SNORM: return "DXGI_FORMAT_R8_SNORM ";
+                case DXGI_FORMAT_R8_SINT: return "DXGI_FORMAT_R8_SINT ";
+                case DXGI_FORMAT_A8_UNORM: return "DXGI_FORMAT_A8_UNORM ";
+                case DXGI_FORMAT_R1_UNORM: return "DXGI_FORMAT_R1_UNORM ";
+                case DXGI_FORMAT_R9G9B9E5_SHAREDEXP: return "DXGI_FORMAT_R9G9B9E5_SHAREDEXP ";
+                case DXGI_FORMAT_R8G8_B8G8_UNORM: return "DXGI_FORMAT_R8G8_B8G8_UNORM ";
+                case DXGI_FORMAT_G8R8_G8B8_UNORM: return "DXGI_FORMAT_G8R8_G8B8_UNORM ";
+                case DXGI_FORMAT_BC1_TYPELESS: return "DXGI_FORMAT_BC1_TYPELESS ";
+                case DXGI_FORMAT_BC1_UNORM: return "DXGI_FORMAT_BC1_UNORM ";
+                case DXGI_FORMAT_BC1_UNORM_SRGB: return "DXGI_FORMAT_BC1_UNORM_SRGB ";
+                case DXGI_FORMAT_BC2_TYPELESS: return "DXGI_FORMAT_BC2_TYPELESS ";
+                case DXGI_FORMAT_BC2_UNORM: return "DXGI_FORMAT_BC2_UNORM ";
+                case DXGI_FORMAT_BC2_UNORM_SRGB: return "DXGI_FORMAT_BC2_UNORM_SRGB ";
+                case DXGI_FORMAT_BC3_TYPELESS: return "DXGI_FORMAT_BC3_TYPELESS ";
+                case DXGI_FORMAT_BC3_UNORM: return "DXGI_FORMAT_BC3_UNORM ";
+                case DXGI_FORMAT_BC3_UNORM_SRGB: return "DXGI_FORMAT_BC3_UNORM_SRGB ";
+                case DXGI_FORMAT_BC4_TYPELESS: return "DXGI_FORMAT_BC4_TYPELESS ";
+                case DXGI_FORMAT_BC4_UNORM: return "DXGI_FORMAT_BC4_UNORM ";
+                case DXGI_FORMAT_BC4_SNORM: return "DXGI_FORMAT_BC4_SNORM ";
+                case DXGI_FORMAT_BC5_TYPELESS: return "DXGI_FORMAT_BC5_TYPELESS ";
+                case DXGI_FORMAT_BC5_UNORM: return "DXGI_FORMAT_BC5_UNORM ";
+                case DXGI_FORMAT_BC5_SNORM: return "DXGI_FORMAT_BC5_SNORM ";
+                case DXGI_FORMAT_B5G6R5_UNORM: return "DXGI_FORMAT_B5G6R5_UNORM ";
+                case DXGI_FORMAT_B5G5R5A1_UNORM: return "DXGI_FORMAT_B5G5R5A1_UNORM ";
+                case DXGI_FORMAT_B8G8R8A8_UNORM: return "DXGI_FORMAT_B8G8R8A8_UNORM ";
+                case DXGI_FORMAT_B8G8R8X8_UNORM: return "DXGI_FORMAT_B8G8R8X8_UNORM ";
+                case DXGI_FORMAT_R10G10B10_XR_BIAS_A2_UNORM: return "DXGI_FORMAT_R10G10B10_XR_BIAS_A2_UNORM ";
+                case DXGI_FORMAT_B8G8R8A8_TYPELESS: return "DXGI_FORMAT_B8G8R8A8_TYPELESS ";
+                case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB: return "DXGI_FORMAT_B8G8R8A8_UNORM_SRGB ";
+                case DXGI_FORMAT_B8G8R8X8_TYPELESS: return "DXGI_FORMAT_B8G8R8X8_TYPELESS ";
+                case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB: return "DXGI_FORMAT_B8G8R8X8_UNORM_SRGB ";
+                case DXGI_FORMAT_BC6H_TYPELESS: return "DXGI_FORMAT_BC6H_TYPELESS ";
+                case DXGI_FORMAT_BC6H_UF16: return "DXGI_FORMAT_BC6H_UF16 ";
+                case DXGI_FORMAT_BC6H_SF16: return "DXGI_FORMAT_BC6H_SF16 ";
+                case DXGI_FORMAT_BC7_TYPELESS: return "DXGI_FORMAT_BC7_TYPELESS ";
+                case DXGI_FORMAT_BC7_UNORM: return "DXGI_FORMAT_BC7_UNORM ";
+                case DXGI_FORMAT_BC7_UNORM_SRGB: return "DXGI_FORMAT_BC7_UNORM_SRGB ";
+                case DXGI_FORMAT_AYUV: return "DXGI_FORMAT_AYUV =";
+                case DXGI_FORMAT_Y410: return "DXGI_FORMAT_Y410 =";
+                case DXGI_FORMAT_Y416: return "DXGI_FORMAT_Y416 =";
+                case DXGI_FORMAT_NV12: return "DXGI_FORMAT_NV12 =";
+                case DXGI_FORMAT_P010: return "DXGI_FORMAT_P010 =";
+                case DXGI_FORMAT_P016: return "DXGI_FORMAT_P016 =";
+                case DXGI_FORMAT_420_OPAQUE: return "DXGI_FORMAT_420_OPAQUE =";
+                case DXGI_FORMAT_YUY2: return "DXGI_FORMAT_YUY2 =";
+                case DXGI_FORMAT_Y210: return "DXGI_FORMAT_Y210 =";
+                case DXGI_FORMAT_Y216: return "DXGI_FORMAT_Y216 =";
+                case DXGI_FORMAT_NV11: return "DXGI_FORMAT_NV11 =";
+                case DXGI_FORMAT_AI44: return "DXGI_FORMAT_AI44 =";
+                case DXGI_FORMAT_IA44: return "DXGI_FORMAT_IA44 =";
+                case DXGI_FORMAT_P8: return "DXGI_FORMAT_P8 =";
+                case DXGI_FORMAT_A8P8: return "DXGI_FORMAT_A8P8 =";
+                case DXGI_FORMAT_B4G4R4A4_UNORM: return "DXGI_FORMAT_B4G4R4A4_UNORM =";
+                case DXGI_FORMAT_P208: return "DXGI_FORMAT_P208 =";
+                case DXGI_FORMAT_V208: return "DXGI_FORMAT_V208 =";
+                case DXGI_FORMAT_V408: return "DXGI_FORMAT_V408 =";
+                case DXGI_FORMAT_SAMPLER_FEEDBACK_MIN_MIP_OPAQUE: return "DXGI_FORMAT_SAMPLER_FEEDBACK_MIN_MIP_OPAQUE =";
+                case DXGI_FORMAT_SAMPLER_FEEDBACK_MIP_REGION_USED_OPAQUE: return "DXGI_FORMAT_SAMPLER_FEEDBACK_MIP_REGION_USED_OPAQUE =";
+                default: return "DXGI_FORMAT_UNKNOWN";
+            }
+        }
+
+        size_t GetDXGIFormatBytesPerPixel(DXGI_FORMAT format)
+        {
+            switch (format)
+            {
+            case DXGI_FORMAT_R32G32B32A32_TYPELESS:
+            case DXGI_FORMAT_R32G32B32A32_FLOAT:
+            case DXGI_FORMAT_R32G32B32A32_UINT:
+            case DXGI_FORMAT_R32G32B32A32_SINT:
+                return 16; // 4 components * 4 bytes/component
+            case DXGI_FORMAT_R32G32B32_TYPELESS:
+            case DXGI_FORMAT_R32G32B32_FLOAT:
+            case DXGI_FORMAT_R32G32B32_UINT:
+            case DXGI_FORMAT_R32G32B32_SINT:
+                return 12; // 3 components * 4 bytes/component
+            case DXGI_FORMAT_R16G16B16A16_TYPELESS:
+            case DXGI_FORMAT_R16G16B16A16_FLOAT:
+            case DXGI_FORMAT_R16G16B16A16_UNORM:
+            case DXGI_FORMAT_R16G16B16A16_UINT:
+            case DXGI_FORMAT_R16G16B16A16_SNORM:
+            case DXGI_FORMAT_R16G16B16A16_SINT:
+                return 8; // 4 components * 2 bytes/component
+            case DXGI_FORMAT_R32G32_TYPELESS:
+            case DXGI_FORMAT_R32G32_FLOAT:
+            case DXGI_FORMAT_R32G32_UINT:
+            case DXGI_FORMAT_R32G32_SINT:
+                return 8; // 2 components * 4 bytes/component
+            case DXGI_FORMAT_R10G10B10A2_TYPELESS:
+            case DXGI_FORMAT_R10G10B10A2_UNORM:
+            case DXGI_FORMAT_R10G10B10A2_UINT:
+            case DXGI_FORMAT_R11G11B10_FLOAT:
+            case DXGI_FORMAT_R8G8B8A8_TYPELESS:
+            case DXGI_FORMAT_R8G8B8A8_UNORM:
+            case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
+            case DXGI_FORMAT_R8G8B8A8_UINT:
+            case DXGI_FORMAT_R8G8B8A8_SNORM:
+            case DXGI_FORMAT_R8G8B8A8_SINT:
+                return 4; // 4 bytes/pixel
+            case DXGI_FORMAT_R16G16_TYPELESS:
+            case DXGI_FORMAT_R16G16_FLOAT:
+            case DXGI_FORMAT_R16G16_UNORM:
+            case DXGI_FORMAT_R16G16_UINT:
+            case DXGI_FORMAT_R16G16_SNORM:
+            case DXGI_FORMAT_R16G16_SINT:
+                return 4; // 2 components * 2 bytes/component
+            case DXGI_FORMAT_R32_TYPELESS:
+            case DXGI_FORMAT_D32_FLOAT:
+            case DXGI_FORMAT_R32_FLOAT:
+            case DXGI_FORMAT_R32_UINT:
+            case DXGI_FORMAT_R32_SINT:
+                return 4; // 1 component * 4 bytes/component
+            case DXGI_FORMAT_R8G8_TYPELESS:
+            case DXGI_FORMAT_R8G8_UNORM:
+            case DXGI_FORMAT_R8G8_UINT:
+            case DXGI_FORMAT_R8G8_SNORM:
+            case DXGI_FORMAT_R8G8_SINT:
+                return 2; // 2 components * 1 byte/component
+            case DXGI_FORMAT_R16_TYPELESS:
+            case DXGI_FORMAT_R16_FLOAT:
+            case DXGI_FORMAT_D16_UNORM:
+            case DXGI_FORMAT_R16_UNORM:
+            case DXGI_FORMAT_R16_UINT:
+            case DXGI_FORMAT_R16_SNORM:
+            case DXGI_FORMAT_R16_SINT:
+                return 2; // 1 component * 2 bytes/component
+            case DXGI_FORMAT_R8_TYPELESS:
+            case DXGI_FORMAT_R8_UNORM:
+            case DXGI_FORMAT_R8_UINT:
+            case DXGI_FORMAT_R8_SNORM:
+            case DXGI_FORMAT_R8_SINT:
+            case DXGI_FORMAT_A8_UNORM:
+                return 1; // 1 component * 1 byte/component
+            case DXGI_FORMAT_BC1_TYPELESS:
+            case DXGI_FORMAT_BC1_UNORM:
+            case DXGI_FORMAT_BC1_UNORM_SRGB:
+                return 8; // 8 bytes per 4x4 block
+            case DXGI_FORMAT_BC2_TYPELESS:
+            case DXGI_FORMAT_BC2_UNORM:
+            case DXGI_FORMAT_BC2_UNORM_SRGB:
+            case DXGI_FORMAT_BC3_TYPELESS:
+            case DXGI_FORMAT_BC3_UNORM:
+            case DXGI_FORMAT_BC3_UNORM_SRGB:
+                return 16; // 16 bytes per 4x4 block
+            case DXGI_FORMAT_BC4_TYPELESS:
+            case DXGI_FORMAT_BC4_UNORM:
+            case DXGI_FORMAT_BC4_SNORM:
+                return 8; // 8 bytes per 4x4 block
+            case DXGI_FORMAT_BC5_TYPELESS:
+            case DXGI_FORMAT_BC5_UNORM:
+            case DXGI_FORMAT_BC5_SNORM:
+                return 16; // 16 bytes per 4x4 block
+            case DXGI_FORMAT_BC6H_TYPELESS:
+            case DXGI_FORMAT_BC6H_UF16:
+            case DXGI_FORMAT_BC6H_SF16:
+                return 16; // 16 bytes per 4x4 block
+            case DXGI_FORMAT_BC7_TYPELESS:
+            case DXGI_FORMAT_BC7_UNORM:
+            case DXGI_FORMAT_BC7_UNORM_SRGB:
+                return 16; // 16 bytes per 4x4 block
+                // Add other formats as needed. A comprehensive list can be found
+                // in DirectXTex library's TexMetadata.cpp or similar sources.
+            default:
+                // Handle unknown formats, perhaps log an error or assert
+                return 0;
+            }
+        }
+
+        // This helper function checks if a given DXGI_FORMAT is a block-compressed format.
+        inline bool IsDXGIFormatBlockCompressed(DXGI_FORMAT format)
+        {
+            switch (format)
+            {
+            case DXGI_FORMAT_BC1_TYPELESS:
+            case DXGI_FORMAT_BC1_UNORM:
+            case DXGI_FORMAT_BC1_UNORM_SRGB:
+            case DXGI_FORMAT_BC2_TYPELESS:
+            case DXGI_FORMAT_BC2_UNORM:
+            case DXGI_FORMAT_BC2_UNORM_SRGB:
+            case DXGI_FORMAT_BC3_TYPELESS:
+            case DXGI_FORMAT_BC3_UNORM:
+            case DXGI_FORMAT_BC3_UNORM_SRGB:
+            case DXGI_FORMAT_BC4_TYPELESS:
+            case DXGI_FORMAT_BC4_UNORM:
+            case DXGI_FORMAT_BC4_SNORM:
+            case DXGI_FORMAT_BC5_TYPELESS:
+            case DXGI_FORMAT_BC5_UNORM:
+            case DXGI_FORMAT_BC5_SNORM:
+            case DXGI_FORMAT_BC6H_TYPELESS:
+            case DXGI_FORMAT_BC6H_UF16:
+            case DXGI_FORMAT_BC6H_SF16:
+            case DXGI_FORMAT_BC7_TYPELESS:
+            case DXGI_FORMAT_BC7_UNORM:
+            case DXGI_FORMAT_BC7_UNORM_SRGB:
+                return true;
+            default:
+                return false;
+            }
+        }
+
+        // This function calculates the total memory size in bytes for a texture.
+        // It considers both uncompressed and block-compressed formats.
+        size_t CalculateTextureMemorySize(UINT width, UINT height, DXGI_FORMAT format)
+        {
+            if (width == 0 || height == 0)
+            {
+                return 0;
+            }
+
+            if (IsDXGIFormatBlockCompressed(format))
+            {
+                // For block-compressed formats, dimensions must be multiples of 4 (or padded).
+                // Calculate the number of blocks in width and height.
+                UINT numBlocksWide = (width + 3) / 4;
+                UINT numBlocksHigh = (height + 3) / 4;
+
+                // Get the size of one block for the given format.
+                size_t bytesPerBlock = GetDXGIFormatBytesPerPixel(format);
+
+                return static_cast<size_t>(numBlocksWide) * numBlocksHigh * bytesPerBlock;
+            }
+            else
+            {
+                // For uncompressed formats, it's a direct pixel count * bytes per pixel.
+                size_t bytesPerPixel = GetDXGIFormatBytesPerPixel(format);
+                return static_cast<size_t>(width) * height * bytesPerPixel;
+            }
+        }
     }
 
     TextureResource::TextureResource(const std::string& id)
@@ -29,7 +325,8 @@ namespace Angaraka::Graphics::DirectX12 {
     bool TextureResource::Load(const std::string& filePath, void* context) {
         AGK_INFO("TextureResource: Loading texture from '{0}'...", filePath);
 
-        TextureManager* textureManager = static_cast<TextureManager*>(context);
+        DirectX12GraphicsSystem* graphicsSystem = static_cast<DirectX12GraphicsSystem*>(context);
+        TextureManager* textureManager = graphicsSystem ? graphicsSystem->GetTextureManager() : nullptr;
         if (!textureManager) {
             AGK_ERROR("TextureResource: TextureManager context is null. Cannot load texture.");
             return false;
@@ -72,19 +369,31 @@ namespace Angaraka::Graphics::DirectX12 {
 
 
 
-    TextureManager::TextureManager() {}
+    TextureManager::TextureManager() { m_LoadedTextures.clear(); }
     TextureManager::~TextureManager() { Shutdown(); }
 
-    bool TextureManager::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
+    bool TextureManager::Initialize(ID3D12Device* device, ID3D12CommandQueue* commandQueue)
     {
-        if (!device || !commandList)
+        if (!device || !commandQueue)
         {
-            AGK_ERROR("TextureManager::Initialize: Invalid D3D12 device or command list.");
+            AGK_ERROR("TextureManager::Initialize: Invalid D3D12 device or command queue.");
             return false;
         }
 
         m_Device = device;
-        m_CommandList = commandList;
+        m_CommandQueue = commandQueue;
+
+        // Create dedicated command allocator for texture loading
+        DXCall(m_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
+            IID_PPV_ARGS(&m_LoadingCommandAllocator)));
+
+        // Create dedicated command list for texture loading
+        DXCall(m_Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
+            m_LoadingCommandAllocator.Get(), nullptr,
+            IID_PPV_ARGS(&m_LoadingCommandList)));
+
+        // Close it initially
+        DXCall(m_LoadingCommandList->Close());
 
         // Allocate a small descriptor heap for SRVs (Shader Resource Views)
         // This is a very basic, fixed-size heap for now. A real engine would have a dynamic allocator.
@@ -107,9 +416,40 @@ namespace Angaraka::Graphics::DirectX12 {
         m_LoadedTextures.clear(); // Release shared_ptrs to textures
         m_SrvHeap.Reset();
         m_Device = nullptr;
-        m_CommandList = nullptr;
+
         initialized = false;
         AGK_INFO("TextureManager shut down.");
+    }
+
+    ID3D12GraphicsCommandList* TextureManager::GetOrCreateCommandList() {
+        // Reset allocator and command list for new recording
+        DXCall(m_LoadingCommandAllocator->Reset());
+        DXCall(m_LoadingCommandList->Reset(m_LoadingCommandAllocator.Get(), nullptr));
+
+        return m_LoadingCommandList.Get();
+    }
+
+    void TextureManager::ExecuteAndWaitForGPU() {
+        // Close command list
+        DXCall(m_LoadingCommandList->Close());
+
+        // Execute on command queue
+        ID3D12CommandList* commandLists[] = { m_LoadingCommandList.Get() };
+        m_CommandQueue->ExecuteCommandLists(1, commandLists);
+
+        // Wait for completion (simple synchronization)
+        // In production, use proper fence synchronization
+        Microsoft::WRL::ComPtr<ID3D12Fence> fence;
+        DXCall(m_Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence)));
+
+        DXCall(m_CommandQueue->Signal(fence.Get(), 1));
+
+        if (fence->GetCompletedValue() < 1) {
+            HANDLE fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+            DXCall(fence->SetEventOnCompletion(1, fenceEvent));
+            WaitForSingleObject(fenceEvent, INFINITE);
+            CloseHandle(fenceEvent);
+        }
     }
 
     bool TextureManager::CreateSrvDescriptorHeap(UINT numDescriptors)
@@ -193,18 +533,19 @@ namespace Angaraka::Graphics::DirectX12 {
 
         AGK_INFO("Successfully loaded texture '{}'. Dimensions: {}x{}, Format: {}",
             std::string(filePath.begin(), filePath.end()),
-            imageData->Width, imageData->Height, imageData->Format);
+            imageData->Width, imageData->Height, GetDXGIFormatAsString(image->format));
 
         return CreateTextureFromImageData(*imageData);
     }
 
     std::shared_ptr<Texture> TextureManager::CreateTextureFromImageData(const Angaraka::Core::ImageData& imageData)
     {
-        if (!m_Device || !m_CommandList)
+        if (!m_Device)
         {
             AGK_ERROR("TextureManager not initialized when attempting to create texture from ImageData.");
             return nullptr;
         }
+
         if (!imageData.Pixels)
         {
             AGK_ERROR("ImageData provided has no pixel data.");
@@ -225,6 +566,7 @@ namespace Angaraka::Graphics::DirectX12 {
         texture->Width = static_cast<UINT>(imageData.Width);
         texture->Height = static_cast<UINT>(imageData.Height);
         texture->Format = static_cast<DXGI_FORMAT>(imageData.Format);
+        texture->MemorySizeBytes = CalculateTextureMemorySize(texture->Width, texture->Height, texture->Format);
 
         // 1. Describe the texture resource
         D3D12_RESOURCE_DESC textureDesc = {};
@@ -286,13 +628,14 @@ namespace Angaraka::Graphics::DirectX12 {
         subresourceData.SlicePitch = imageData.SlicePitch;
 
         // Use the currentUploadHeap obtained from the vector
-        UpdateSubresources(m_CommandList, texture->Resource.Get(), currentUploadHeap, 0, 0, 1, &subresourceData);
+        auto commandList = GetOrCreateCommandList();
+        UpdateSubresources(commandList, texture->Resource.Get(), currentUploadHeap, 0, 0, 1, &subresourceData);
 
 
         // 5. Transition the texture resource to a shader resource state
         CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(texture->Resource.Get(),
             D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-        m_CommandList->ResourceBarrier(1, &barrier);
+        commandList->ResourceBarrier(1, &barrier);
 
         // 6. Create Shader Resource View (SRV)
         if (m_NextSrvDescriptorIndex >= m_SrvHeap->GetDesc().NumDescriptors)
@@ -317,6 +660,8 @@ namespace Angaraka::Graphics::DirectX12 {
         m_NextSrvDescriptorIndex++; // Increment for next texture
 
         m_LoadedTextures[tempName] = texture; // Add to cache
+
+        ExecuteAndWaitForGPU();
 
         AGK_INFO("GPU Texture created for '{}'.", tempName);
         return texture;

@@ -128,8 +128,11 @@ namespace Angaraka
     {
         if (m_hWindow != nullptr)
         {
-            // Remove from the static map before destroying
-            s_WindowMap.erase(m_hWindow);
+            // Safety check: only erase if the window exists in map
+            auto it = s_WindowMap.find(m_hWindow);
+            if (it != s_WindowMap.end() && it->second == this) {
+                s_WindowMap.erase(it);
+            }
 
             if (!DestroyWindow(m_hWindow))
             {
@@ -141,7 +144,6 @@ namespace Angaraka
             }
             m_hWindow = nullptr;
         }
-        UnregisterWindowClass(); // Unregister class when the last window instance is destroyed (simple approach for now)
     }
 
     bool Window::ProcessMessages()
