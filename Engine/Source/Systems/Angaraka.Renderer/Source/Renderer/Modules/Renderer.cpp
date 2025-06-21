@@ -317,6 +317,6 @@ namespace Angaraka { // Use the Angaraka namespace here
     }
 
     std::shared_ptr<Core::GraphicsResourceFactory> DirectX12GraphicsSystem::GetGraphicsFactory() {
-        return std::make_shared<Core::GraphicsResourceFactory>(Core::GraphicsResourceFactory(DirectX12ResourceFactory(this)));
+        return std::make_shared<Core::GraphicsResourceFactory>(DirectX12ResourceFactory(this));
     }
 } // namespace Angaraka
