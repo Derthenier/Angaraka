@@ -5,7 +5,9 @@
 The Angaraka Engine is a modern C++ game engine designed for 3D graphics, leveraging the latest C++23 features and DirectX12. Our core philosophy emphasizes modularity, performance, clear separation of concerns, and maintainable, production-ready code.
 
 **Target Game**: First-person RPG inspired by ancient hindu stories and mythology - set in 6400 AD.
+
 **Architecture Strategy**: Immediate pivot capability for third-person perspective when team scales
+
 **Development Approach**: Build engine MVP alongside RPG game systems for rapid iteration
 
 ## 2. Core Principles
