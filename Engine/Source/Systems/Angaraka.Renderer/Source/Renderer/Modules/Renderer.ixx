@@ -25,6 +25,7 @@ import Angaraka.Graphics.DirectX12.Texture;
 import Angaraka.Graphics.DirectX12.Mesh;
 import Angaraka.Camera;
 import Angaraka.Core.Config;
+import Angaraka.Core.Resources;
 
 namespace Angaraka { // Use the Angaraka namespace here
 
@@ -44,8 +45,8 @@ namespace Angaraka { // Use the Angaraka namespace here
         void EndFrame();
         void Present();
 
-        void RenderTexture(Graphics::DirectX12::TextureResource* texture);
-        void RenderMesh(Graphics::DirectX12::MeshResource* mesh);
+        void RenderTexture(Core::Resource* texture);
+        void RenderMesh(Core::Resource* mesh);
 
         void OnWindowResize(unsigned int newWidth, unsigned int newHeight);
 

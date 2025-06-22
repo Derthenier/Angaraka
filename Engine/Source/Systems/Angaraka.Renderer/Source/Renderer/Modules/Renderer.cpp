@@ -22,6 +22,8 @@ import Angaraka.Graphics.DirectX12.PipelineManager;
 import Angaraka.Graphics.DirectX12.BufferManager;
 
 import Angaraka.Graphics.DirectX12.Texture;
+import Angaraka.Graphics.DirectX12.Mesh;
+
 import Angaraka.Camera;
 
 // Global/Static Data (specific to this implementation unit)
@@ -163,7 +165,7 @@ namespace Angaraka { // Use the Angaraka namespace here
         return true;
     }
 #else
-    bool DirectX12GraphicsSystem::Initialize(void* windowHandle, unsigned int width, unsigned int height, bool debugEnabled) {
+    bool DirectX12GraphicsSystem::Initialize(void* windowHandle, const Config::EngineConfig& config) {
         AGK_ERROR("DirectX12GraphicsSystem: Not implemented for non-Windows platforms.");
         return false;
     }
@@ -202,8 +204,9 @@ namespace Angaraka { // Use the Angaraka namespace here
         }
     }
 
-    void DirectX12GraphicsSystem::RenderTexture(Graphics::DirectX12::TextureResource* texture)
+    void DirectX12GraphicsSystem::RenderTexture(Core::Resource* resource)
     {
+        Graphics::DirectX12::TextureResource* texture = dynamic_cast<Graphics::DirectX12::TextureResource*>(resource);
         if (texture && texture->GetSrvIndex() >= 0)
         {
             // Bind the texture SRV (Root Parameter 1)
@@ -217,8 +220,9 @@ namespace Angaraka { // Use the Angaraka namespace here
         }
     }
 
-    void DirectX12GraphicsSystem::RenderMesh(Graphics::DirectX12::MeshResource* mesh)
+    void DirectX12GraphicsSystem::RenderMesh(Core::Resource* resource)
     {
+        Graphics::DirectX12::MeshResource* mesh = dynamic_cast<Graphics::DirectX12::MeshResource*>(resource);
         if (mesh && mesh->IsLoaded())
         {
             DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationY(m_elapsedTime * 0.5f); // Rotate around Y-axis

@@ -144,6 +144,8 @@ namespace ThreadsOfKaliyuga
         // Load all auto-load bundles
         m_bundleManager->LoadAllAutoLoadBundles();
 
+        m_bundleManager->LoadBundle("Environment_Forest");
+
         AGK_APP_INFO("BundleManager initialized and loading started.");
 
         m_resourceManager->LogCacheStatus();
@@ -172,10 +174,12 @@ namespace ThreadsOfKaliyuga
 
             m_graphicsSystem->BeginFrame(m_deltaTime);
 
-            Angaraka::Graphics::DirectX12::TextureResource* uvGridTexture = dynamic_cast<Angaraka::Graphics::DirectX12::TextureResource*>(m_resourceManager->GetResource<Angaraka::Core::Resource>("character/player_diffuse").get());
+            Angaraka::Core::Resource* uvGridTexture = m_resourceManager->GetResource<Angaraka::Core::Resource>("character/player_diffuse").get();
             m_graphicsSystem->RenderTexture(uvGridTexture);
-            Angaraka::Graphics::DirectX12::MeshResource* player = dynamic_cast<Angaraka::Graphics::DirectX12::MeshResource*>(m_resourceManager->GetResource<Angaraka::Core::Resource>("character/player_mesh").get());
+            Angaraka::Core::Resource* player = m_resourceManager->GetResource<Angaraka::Core::Resource>("character/player_mesh").get();
             m_graphicsSystem->RenderMesh(player);
+            Angaraka::Core::Resource* tree = m_resourceManager->GetResource<Angaraka::Core::Resource>("environment/tree_oak").get();
+            m_graphicsSystem->RenderMesh(tree);
 
             m_graphicsSystem->EndFrame();
             m_graphicsSystem->Present();
