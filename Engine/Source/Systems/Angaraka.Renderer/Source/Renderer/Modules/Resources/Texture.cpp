@@ -14,7 +14,7 @@ import Angaraka.Graphics.DirectX12;
 namespace Angaraka::Graphics::DirectX12 {
 
     namespace {
-        std::string GetDXGIFormatAsString(DXGI_FORMAT format)
+        String GetDXGIFormatAsString(DXGI_FORMAT format)
         {
             switch (format)
             {
@@ -311,7 +311,7 @@ namespace Angaraka::Graphics::DirectX12 {
         }
     }
 
-    TextureResource::TextureResource(const std::string& id)
+    TextureResource::TextureResource(const String& id)
         : Resource(id)
     {
         AGK_INFO("TextureResource: Created with ID '{0}'.", id);
@@ -322,7 +322,7 @@ namespace Angaraka::Graphics::DirectX12 {
         Unload(); // Ensure cleanup on destruction
     }
 
-    bool TextureResource::Load(const std::string& filePath, void* context) {
+    bool TextureResource::Load(const String& filePath, void* context) {
         AGK_INFO("TextureResource: Loading texture from '{0}'...", filePath);
 
         DirectX12GraphicsSystem* graphicsSystem = static_cast<DirectX12GraphicsSystem*>(context);
@@ -471,11 +471,11 @@ namespace Angaraka::Graphics::DirectX12 {
         return true;
     }
 
-    std::shared_ptr<Texture> TextureManager::LoadTexture(const std::string& filePath) {
+    Reference<Texture> TextureManager::LoadTexture(const String& filePath) {
 
         if (!std::filesystem::exists(filePath))
         {
-            AGK_ERROR("Texture file not found: {}", std::string(filePath.begin(), filePath.end()));
+            AGK_ERROR("Texture file not found: {}", String(filePath.begin(), filePath.end()));
             return nullptr;
         }
 
@@ -505,7 +505,7 @@ namespace Angaraka::Graphics::DirectX12 {
         }
         if (FAILED(hr))
         {
-            AGK_ERROR("Failed to load texture '{}'. HRESULT: {:#x}", std::string(filePath.begin(), filePath.end()), hr);
+            AGK_ERROR("Failed to load texture '{}'. HRESULT: {:#x}", String(filePath.begin(), filePath.end()), hr);
             return nullptr;
         }
 
@@ -516,11 +516,11 @@ namespace Angaraka::Graphics::DirectX12 {
         const DirectX::Image* image = scratchImage.GetImage(0, 0, 0);
         if (!image)
         {
-            AGK_ERROR("Failed to get image data from loaded texture '{}'.", std::string(filePath.begin(), filePath.end()));
+            AGK_ERROR("Failed to get image data from loaded texture '{}'.", String(filePath.begin(), filePath.end()));
             return nullptr;
         }
 
-        std::unique_ptr<Angaraka::Core::ImageData> imageData = std::make_unique<Angaraka::Core::ImageData>();
+        Scope<Angaraka::Core::ImageData> imageData = CreateScope<Angaraka::Core::ImageData>();
         imageData->Width = image->width;
         imageData->Height = image->height;
         imageData->RowPitch = image->rowPitch;
@@ -528,17 +528,17 @@ namespace Angaraka::Graphics::DirectX12 {
         imageData->Format = static_cast<int>(image->format); // Store DXGI_FORMAT as int
 
         // Allocate memory for pixels and copy data
-        imageData->Pixels = std::make_unique<uint8_t[]>(image->slicePitch);
+        imageData->Pixels = CreateScope<U8[]>(image->slicePitch);
         memcpy(imageData->Pixels.get(), image->pixels, image->slicePitch);
 
         AGK_INFO("Successfully loaded texture '{}'. Dimensions: {}x{}, Format: {}",
-            std::string(filePath.begin(), filePath.end()),
+            String(filePath.begin(), filePath.end()),
             imageData->Width, imageData->Height, GetDXGIFormatAsString(image->format));
 
         return CreateTextureFromImageData(*imageData);
     }
 
-    std::shared_ptr<Texture> TextureManager::CreateTextureFromImageData(const Angaraka::Core::ImageData& imageData)
+    Reference<Texture> TextureManager::CreateTextureFromImageData(const Angaraka::Core::ImageData& imageData)
     {
         if (!m_Device)
         {
@@ -554,7 +554,7 @@ namespace Angaraka::Graphics::DirectX12 {
 
         // For now, let's create a temporary unique name based on a counter
         // Later, this would be based on the file path or a proper asset ID
-        std::string tempName = "TempTexture_" + std::to_string(m_LoadedTextures.size());
+        String tempName = "TempTexture_" + std::to_string(m_LoadedTextures.size());
         if (m_LoadedTextures.count(tempName))
         {
             AGK_WARN("Texture with temporary name '{}' already exists in cache. This indicates a potential issue with unique naming.", tempName);
@@ -562,7 +562,7 @@ namespace Angaraka::Graphics::DirectX12 {
             return m_LoadedTextures.at(tempName);
         }
 
-        std::shared_ptr<Texture> texture = std::make_shared<Texture>();
+        Reference<Texture> texture = CreateReference<Texture>();
         texture->Width = static_cast<UINT>(imageData.Width);
         texture->Height = static_cast<UINT>(imageData.Height);
         texture->Format = static_cast<DXGI_FORMAT>(imageData.Format);

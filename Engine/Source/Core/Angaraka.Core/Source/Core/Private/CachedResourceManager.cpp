@@ -7,7 +7,7 @@ module Angaraka.Core.ResourceCache;
 namespace Angaraka::Core {
 
     CachedResourceManager::CachedResourceManager(
-        const std::string& basePath,
+        const String& basePath,
         Angaraka::Events::EventManager& eventBus,
         const MemoryBudget& cacheConfig)
         : m_basePath(basePath)
@@ -23,7 +23,7 @@ namespace Angaraka::Core {
         UnloadAllResources();
     }
 
-    void CachedResourceManager::UnloadResource(const std::string& id) {
+    void CachedResourceManager::UnloadResource(const String& id) {
         std::lock_guard<std::mutex> lock(m_managerMutex);
         m_cache.Remove(id);
         AGK_DEBUG("CachedResourceManager: Unloaded resource '{}'", id);
@@ -63,7 +63,7 @@ namespace Angaraka::Core {
         auto stats = m_cache.GetEvictionStats();
         size_t memoryUsage = m_cache.GetCurrentMemoryUsage();
         size_t resourceCount = m_cache.GetResourceCount();
-        float utilization = m_cache.GetMemoryUtilization();
+        F32 utilization = m_cache.GetMemoryUtilization();
 
         AGK_INFO("Cache Status: {} resources, {}MB used ({:.1f}% utilization), {} total evictions",
             resourceCount,
@@ -76,7 +76,7 @@ namespace Angaraka::Core {
         }
     }
 
-    size_t CachedResourceManager::EstimateResourceSize(const std::shared_ptr<Resource>& resource) const {
+    size_t CachedResourceManager::EstimateResourceSize(const Reference<Resource>& resource) const {
         return resource->GetSizeInBytes();
     }
 

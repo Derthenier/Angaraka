@@ -117,6 +117,9 @@ xcopy "$(ProjectDir)Shaders\SimpleShader.hlsl" "$(OutDir)Shaders" /d /i /y</Comm
     <ClCompile Include="Source\Renderer\Modules\Camera.ixx" />
     <ClCompile Include="Source\Renderer\Modules\CommandManager.ixx" />
     <ClCompile Include="Source\Renderer\Modules\DeviceManager.ixx" />
+    <ClCompile Include="Source\Renderer\Modules\Resources\Mesh.cpp" />
+    <ClCompile Include="Source\Renderer\Modules\Resources\Mesh.ixx" />
+    <ClCompile Include="Source\Renderer\Modules\Resources\OBJLoader.ixx" />
     <ClCompile Include="Source\Renderer\Modules\PSOManager.ixx" />
     <ClCompile Include="Source\Renderer\Modules\Renderer.ixx" />
     <ClCompile Include="Source\Renderer\Modules\ShaderManager.ixx" />
@@ -129,12 +132,13 @@ xcopy "$(ProjectDir)Shaders\SimpleShader.hlsl" "$(OutDir)Shaders" /d /i /y</Comm
     <ClCompile Include="Source\Renderer\Modules\PSOManager.cpp" />
     <ClCompile Include="Source\Renderer\Modules\ShaderManager.cpp" />
     <ClCompile Include="Source\Renderer\Modules\SwapChainManager.cpp" />
-    <ClCompile Include="Source\Renderer\Modules\Texture.cpp" />
-    <ClCompile Include="Source\Renderer\Modules\Texture.ixx" />
+    <ClCompile Include="Source\Renderer\Modules\Resources\Texture.cpp" />
+    <ClCompile Include="Source\Renderer\Modules\Resources\Texture.ixx" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shaders\SimpleShader.hpp" />
     <ClInclude Include="Source\Renderer\Public\Angaraka\GraphicsBase.hpp" />
+    <ClInclude Include="Source\Renderer\Public\Angaraka\MeshBase.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -8,7 +8,7 @@ namespace Angaraka::Core {
     }
 
     void AssetLoadQueue::EnqueueAsset(const AssetDefinition& asset,
-        const std::string& bundleName,
+        const String& bundleName,
         std::function<void(const LoadRequest&)> onComplete) {
         // Check status first (separate locks)
         if (IsAssetQueued(asset.id) || IsAssetLoading(asset.id)) {
@@ -56,9 +56,9 @@ namespace Angaraka::Core {
         return request;
     }
 
-    void AssetLoadQueue::MarkAssetCompleted(const std::string& assetId,
-        std::shared_ptr<Resource> resource,
-        const std::string& errorMessage) {
+    void AssetLoadQueue::MarkAssetCompleted(const String& assetId,
+        Reference<Resource> resource,
+        const String& errorMessage) {
         std::lock_guard<std::mutex> lock(m_queueMutex);
 
         auto it = m_loadingAssets.find(assetId);
@@ -81,7 +81,7 @@ namespace Angaraka::Core {
         return m_loadingAssets.size();
     }
 
-    bool AssetLoadQueue::IsAssetQueued(const std::string& assetId) const {
+    bool AssetLoadQueue::IsAssetQueued(const String& assetId) const {
         std::lock_guard<std::mutex> lock(m_queueMutex);
         auto queueCopy = m_loadQueue;
 
@@ -94,12 +94,12 @@ namespace Angaraka::Core {
         return false;
     }
 
-    bool AssetLoadQueue::IsAssetLoading(const std::string& assetId) const {
+    bool AssetLoadQueue::IsAssetLoading(const String& assetId) const {
         std::lock_guard<std::mutex> lock(m_statusMutex);
         return m_loadingAssets.find(assetId) != m_loadingAssets.end();
     }
 
-    LoadStatus AssetLoadQueue::GetAssetStatus(const std::string& assetId) const {
+    LoadStatus AssetLoadQueue::GetAssetStatus(const String& assetId) const {
         std::lock_guard<std::mutex> lock(m_statusMutex);
 
         if (m_loadingAssets.find(assetId) != m_loadingAssets.end()) {
@@ -143,9 +143,9 @@ namespace Angaraka::Core {
         AGK_INFO("AssetLoadQueue cleared");
     }
 
-    void AssetLoadQueue::MoveToCompleted(const std::string& assetId, LoadStatus status,
-        std::shared_ptr<Resource> resource,
-        const std::string& errorMessage) {
+    void AssetLoadQueue::MoveToCompleted(const String& assetId, LoadStatus status,
+        Reference<Resource> resource,
+        const String& errorMessage) {
         auto it = m_loadingAssets.find(assetId);
         if (it == m_loadingAssets.end()) return;
 

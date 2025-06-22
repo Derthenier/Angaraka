@@ -29,19 +29,19 @@ namespace Angaraka {
         ~Camera();
 
         // Initializes the camera's properties.
-        void Initialize(float fovY, float aspectRatio, float nearZ, float farZ);
+        void Initialize(F32 fovY, F32 aspectRatio, F32 nearZ, F32 farZ);
 
         // Process input (now primarily for direct mouse look, and setting movement flags)
-        void ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);
+        void ProcessMouseMovement(F32 xOffset, F32 yOffset, bool constrainPitch = true);
 
         // This method will now *set flags* rather than directly move the camera
         void SetMoveState(Camera_Movement direction, bool active);
 
         // Sets the camera's projection properties (field of view, aspect ratio, near/far planes).
-        void SetLens(float fovY, float aspectRatio, float nearZ, float farZ);
+        void SetLens(F32 fovY, F32 aspectRatio, F32 nearZ, F32 farZ);
 
         // Updates the camera's internal state (e.g., recalculates matrices, usually after input).
-        void Update(float deltaTime);
+        void Update(F32 deltaTime);
 
         // DEBUG ONLY
         void Reset();
@@ -60,19 +60,19 @@ namespace Angaraka {
         DirectX::XMVECTOR m_worldUp;    // World's up vector (e.g., (0,1,0))
 
         // Euler Angles (in degrees)
-        float m_yaw;
-        float m_pitch;
+        F32 m_yaw;
+        F32 m_pitch;
 
         // Camera options
-        float m_movementSpeed;
-        float m_mouseSensitivity;
-        float m_zoom; // FOV, acts like a zoom level
+        F32 m_movementSpeed;
+        F32 m_mouseSensitivity;
+        F32 m_zoom; // FOV, acts like a zoom level
 
         // Projection properties
-        float m_fov;
-        float m_aspectRatio;
-        float m_nearZ;
-        float m_farZ;
+        F32 m_fov;
+        F32 m_aspectRatio;
+        F32 m_nearZ;
+        F32 m_farZ;
 
         // Internal movement flags
         bool m_isMovingForward;

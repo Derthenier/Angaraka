@@ -19,7 +19,7 @@ namespace ThreadsOfKaliyuga
         bool Initialize(HWND windowHandle, Angaraka::Camera* camera, bool fullscreen);
         void Shutdown();
 
-        void Update(float deltaTime);
+        void Update(Angaraka::F32 deltaTime);
         void SetupEvents();
 
     private:

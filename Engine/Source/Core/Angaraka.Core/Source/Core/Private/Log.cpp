@@ -1,3 +1,4 @@
+#include <Angaraka/Base.hpp>
 #include <Angaraka/Log.hpp> // Include our public header
 #include <chrono>
 #include <iomanip>
@@ -8,8 +9,8 @@ import Angaraka.Core.Config;
 
 namespace Angaraka::Logger
 {
-    std::shared_ptr<spdlog::logger> Framework::s_coreLogger = nullptr;
-    std::shared_ptr<spdlog::logger> Framework::s_appLogger = nullptr;
+    Reference<spdlog::logger> Framework::s_coreLogger = nullptr;
+    Reference<spdlog::logger> Framework::s_appLogger = nullptr;
     std::once_flag Framework::s_InitFlag;
 
     namespace {
@@ -20,13 +21,13 @@ namespace Angaraka::Logger
         Angaraka::Config::EngineConfig config{ Angaraka::Config::ConfigManager::GetConfig() };
 
         std::call_once(s_InitFlag, [&] {
-            spdlog::sink_ptr engineSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(config.logging.engine, true);
+            spdlog::sink_ptr engineSink = CreateReference<spdlog::sinks::basic_file_sink_mt>(config.logging.engine, true);
             engineSink->set_pattern(std::format("[%T] [%8!l] [{}]: %v", config.engineName));
 
             s_coreLogger = spdlog::get("engine");
             if (not s_coreLogger)
             {
-                s_coreLogger = std::make_shared<spdlog::logger>("engine", engineSink);
+                s_coreLogger = CreateReference<spdlog::logger>("engine", engineSink);
                 spdlog::register_logger(s_coreLogger);
 
                 if (config.logging.level == "trace") {
@@ -59,13 +60,13 @@ namespace Angaraka::Logger
                 }
             }
 
-            spdlog::sink_ptr gameSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(config.logging.game, true);
+            spdlog::sink_ptr gameSink = CreateReference<spdlog::sinks::basic_file_sink_mt>(config.logging.game, true);
             gameSink->set_pattern(std::format("[%T] [%8!l] [{}]: %v", config.gameName));
 
             s_appLogger = spdlog::get("game");
             if (not s_appLogger)
             {
-                s_appLogger = std::make_shared<spdlog::logger>("game", gameSink);
+                s_appLogger = CreateReference<spdlog::logger>("game", gameSink);
                 spdlog::register_logger(s_appLogger);
 
                 if (config.logging.level == "trace") {

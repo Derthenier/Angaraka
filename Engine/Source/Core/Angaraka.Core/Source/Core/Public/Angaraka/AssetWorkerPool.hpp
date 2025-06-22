@@ -11,7 +11,7 @@ namespace Angaraka::Core {
 
     class CachedResourceManager;
 
-    using AssetLoaderFunction = std::function<std::shared_ptr<Resource>(const AssetDefinition&)>;
+    using AssetLoaderFunction = std::function<Reference<Resource>(const AssetDefinition&)>;
 
     class AssetWorkerPool {
     public:
@@ -27,7 +27,7 @@ namespace Angaraka::Core {
         void RegisterLoader(AssetType type, AssetLoaderFunction loader);
 
         // Set the load queue to process
-        void SetLoadQueue(std::shared_ptr<AssetLoadQueue> queue);
+        void SetLoadQueue(Reference<AssetLoadQueue> queue);
 
         // Worker thread control
         void PauseWorkers();
@@ -36,10 +36,10 @@ namespace Angaraka::Core {
     private:
         void WorkerThreadMain(size_t threadId);
         bool ProcessNextAsset();
-        std::shared_ptr<Resource> LoadAsset(const AssetDefinition& asset);
+        Reference<Resource> LoadAsset(const AssetDefinition& asset);
 
         CachedResourceManager* m_resourceManager;
-        std::shared_ptr<AssetLoadQueue> m_loadQueue;
+        Reference<AssetLoadQueue> m_loadQueue;
 
         size_t m_numThreads;
         std::vector<std::thread> m_workers;

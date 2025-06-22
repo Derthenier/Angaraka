@@ -20,12 +20,12 @@ namespace Angaraka::Core {
     };
 
     struct BundleLoadProgress {
-        std::string bundleName;
+        String bundleName;
         BundleLoadState state = BundleLoadState::NotLoaded;
-        float progress = 0.0f;  // 0.0 to 1.0
+        F32 progress = 0.0f;  // 0.0 to 1.0
         size_t assetsLoaded = 0;
         size_t totalAssets = 0;
-        std::string errorMessage;
+        String errorMessage;
     };
 
     using BundleProgressCallback = std::function<void(const BundleLoadProgress&)>;
@@ -40,8 +40,8 @@ namespace Angaraka::Core {
         void Shutdown();
 
         // Bundle operations
-        bool LoadBundle(const std::string& bundleName, BundleProgressCallback callback = nullptr);
-        bool UnloadBundle(const std::string& bundleName);
+        bool LoadBundle(const String& bundleName, BundleProgressCallback callback = nullptr);
+        bool UnloadBundle(const String& bundleName);
         void LoadAllAutoLoadBundles();
 
         // Async operations
@@ -51,16 +51,16 @@ namespace Angaraka::Core {
         void ResumeAsyncLoading();
 
         // Query methods
-        bool IsBundleLoaded(const std::string& bundleName) const;
-        BundleLoadState GetBundleState(const std::string& bundleName) const;
-        BundleLoadProgress GetBundleProgress(const std::string& bundleName) const;
-        std::vector<std::string> GetLoadedBundles() const;
-        std::vector<std::string> GetAvailableBundles() const;
+        bool IsBundleLoaded(const String& bundleName) const;
+        BundleLoadState GetBundleState(const String& bundleName) const;
+        BundleLoadProgress GetBundleProgress(const String& bundleName) const;
+        std::vector<String> GetLoadedBundles() const;
+        std::vector<String> GetAvailableBundles() const;
 
         // Asset access
         template <typename T>
-        std::shared_ptr<T> GetAsset(const std::string& assetId, void* context = nullptr);
-        bool IsAssetLoaded(const std::string& assetId) const;
+        Reference<T> GetAsset(const String& assetId, void* context = nullptr);
+        bool IsAssetLoaded(const String& assetId) const;
 
         // Memory management
         void UnloadUnusedAssets();
@@ -71,25 +71,25 @@ namespace Angaraka::Core {
 
     private:
         void RegisterAssetLoaders();
-        bool ValidateAndResolveDependencies(const std::string& bundleName,
-            std::vector<std::string>& loadOrder);
+        bool ValidateAndResolveDependencies(const String& bundleName,
+            std::vector<String>& loadOrder);
         void OnAssetLoadComplete(const LoadRequest& request);
-        void UpdateBundleProgress(const std::string& bundleName);
+        void UpdateBundleProgress(const String& bundleName);
 
-        bool LoadBundleInternal(const std::string& bundleName, BundleProgressCallback callback);
+        bool LoadBundleInternal(const String& bundleName, BundleProgressCallback callback);
 
         CachedResourceManager* m_resourceManager;
-        std::unique_ptr<BundleLoader> m_bundleLoader;
-        std::shared_ptr<AssetLoadQueue> m_loadQueue;
-        std::unique_ptr<AssetWorkerPool> m_workerPool;
+        Scope<BundleLoader> m_bundleLoader;
+        Reference<AssetLoadQueue> m_loadQueue;
+        Scope<AssetWorkerPool> m_workerPool;
 
         // Bundle tracking
-        std::unordered_map<std::string, AssetBundleConfig> m_availableBundles;
-        std::unordered_map<std::string, BundleLoadState> m_bundleStates;
-        std::unordered_map<std::string, BundleProgressCallback> m_bundleCallbacks;
+        std::unordered_map<String, AssetBundleConfig> m_availableBundles;
+        std::unordered_map<String, BundleLoadState> m_bundleStates;
+        std::unordered_map<String, BundleProgressCallback> m_bundleCallbacks;
 
         // Asset ID to bundle mapping
-        std::unordered_map<std::string, std::string> m_assetToBundleMap;
+        std::unordered_map<String, String> m_assetToBundleMap;
 
         void* m_context;
 
@@ -98,7 +98,7 @@ namespace Angaraka::Core {
     };
 
     template <typename T>
-    std::shared_ptr<T> BundleManager::GetAsset(const std::string& assetId, void* context) {
+    Reference<T> BundleManager::GetAsset(const String& assetId, void* context) {
         return m_resourceManager->GetResource(assetId, context);
     }
 }

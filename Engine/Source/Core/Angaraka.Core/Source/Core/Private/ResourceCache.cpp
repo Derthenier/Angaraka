@@ -23,7 +23,7 @@ namespace Angaraka::Core {
         Clear();
     }
 
-    std::shared_ptr<Resource> ResourceCache::Get(const std::string& resourceId) {
+    Reference<Resource> ResourceCache::Get(const String& resourceId) {
         std::lock_guard<std::mutex> lock(m_cacheMutex);
 
         auto mapIt = m_resourceMap.find(resourceId);
@@ -38,7 +38,7 @@ namespace Angaraka::Core {
         return mapIt->second->resource;
     }
 
-    void ResourceCache::Put(const std::string& resourceId, std::shared_ptr<Resource> resource, size_t memorySize) {
+    void ResourceCache::Put(const String& resourceId, Reference<Resource> resource, size_t memorySize) {
         if (!resource) {
             AGK_WARN("ResourceCache: Attempted to cache null resource '{}'", resourceId);
             return;
@@ -82,7 +82,7 @@ namespace Angaraka::Core {
         }
     }
 
-    void ResourceCache::Remove(const std::string& resourceId) {
+    void ResourceCache::Remove(const String& resourceId) {
         std::lock_guard<std::mutex> lock(m_cacheMutex);
 
         auto mapIt = m_resourceMap.find(resourceId);
@@ -165,7 +165,7 @@ namespace Angaraka::Core {
             // Check if resource is still referenced elsewhere
             if (oldestEntry.resource.use_count() <= 1) {
                 size_t entrySize = oldestEntry.memorySizeBytes;
-                std::string entryId = oldestEntry.resourceId;
+                String entryId = oldestEntry.resourceId;
 
                 // Remove from both structures
                 m_resourceMap.erase(entryId);
@@ -199,7 +199,7 @@ namespace Angaraka::Core {
 
         auto& oldestEntry = m_lruList.back();
         size_t memoryFreed = oldestEntry.memorySizeBytes;
-        std::string resourceId = oldestEntry.resourceId;
+        String resourceId = oldestEntry.resourceId;
 
         m_resourceMap.erase(resourceId);
         m_lruList.pop_back();
@@ -210,7 +210,7 @@ namespace Angaraka::Core {
             resourceId, memoryFreed / (1024 * 1024));
     }
 
-    size_t ResourceCache::EstimateResourceMemorySize(const std::shared_ptr<Resource>& resource) const {
+    size_t ResourceCache::EstimateResourceMemorySize(const Reference<Resource>& resource) const {
         // Fallback estimation if size not provided
         // This is a conservative estimate - derived classes should override for accuracy
         return 1024 * 1024; // 1MB default estimate

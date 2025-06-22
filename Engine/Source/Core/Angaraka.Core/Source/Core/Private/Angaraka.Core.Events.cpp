@@ -12,7 +12,7 @@ namespace Angaraka::Events {
 
     }
 
-    std::unique_ptr<EventManager> EventManager::s_instance = nullptr;
+    Scope<EventManager> EventManager::s_instance = nullptr;
 
     EventManager::EventManager() : m_nextSubscriptionId(1ULL) {
         AGK_INFO("EventManager: Constructor called.");
@@ -31,7 +31,7 @@ namespace Angaraka::Events {
     EventManager& EventManager::Get() {
         // Create the instance lazily if it doesn't exist
         if (!s_instance) {
-            s_instance = std::unique_ptr<EventManager>(new EventManager()); // Use new to create and manage lifetime
+            s_instance = Scope<EventManager>(new EventManager()); // Use new to create and manage lifetime
         }
         return *s_instance;
     }

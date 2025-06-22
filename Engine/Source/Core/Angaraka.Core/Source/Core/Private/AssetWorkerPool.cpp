@@ -68,7 +68,7 @@ namespace Angaraka::Core {
         AGK_INFO("Registered loader for asset type: {}", AssetDefinition::AssetTypeToString(type));
     }
 
-    void AssetWorkerPool::SetLoadQueue(std::shared_ptr<AssetLoadQueue> queue) {
+    void AssetWorkerPool::SetLoadQueue(Reference<AssetLoadQueue> queue) {
         std::lock_guard<std::mutex> lock(m_workMutex);
         m_loadQueue = queue;
         m_workCondition.notify_all();
@@ -143,7 +143,7 @@ namespace Angaraka::Core {
         return true;
     }
 
-    std::shared_ptr<Resource> AssetWorkerPool::LoadAsset(const AssetDefinition& asset) {
+    Reference<Resource> AssetWorkerPool::LoadAsset(const AssetDefinition& asset) {
         std::lock_guard<std::mutex> lock(m_loadersMutex);
 
         auto it = m_loaders.find(asset.type);

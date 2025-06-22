@@ -11,17 +11,17 @@ namespace Angaraka {
 
     namespace {
         // Helper to convert degrees to radians
-        constexpr float ToRadians(float degrees) {
+        constexpr F32 ToRadians(F32 degrees) {
             return degrees * (DirectX::XM_PI / 180.0f);
         }
 
         // Default camera values
-        const float YAW = 90.0f;    // Yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right (positive X).
+        const F32 YAW = 90.0f;    // Yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right (positive X).
                                     // We want to point towards the negative Z axis for a typical forward direction.
-        const float PITCH = 0.0f;
-        const float SPEED = 5.0f;   // Units per second
-        const float SENSITIVITY = 0.1f; // Mouse sensitivity
-        const float ZOOM = 45.0f;    // Initial FOV (zoom)
+        const F32 PITCH = 0.0f;
+        const F32 SPEED = 5.0f;   // Units per second
+        const F32 SENSITIVITY = 0.1f; // Mouse sensitivity
+        const F32 ZOOM = 45.0f;    // Initial FOV (zoom)
     }
 
     Camera::Camera()
@@ -51,14 +51,14 @@ namespace Angaraka {
         AGK_INFO("Camera: Destructor called.");
     }
 
-    void Camera::Initialize(float fov, float aspectRatio, float nearZ, float farZ) {
+    void Camera::Initialize(F32 fov, F32 aspectRatio, F32 nearZ, F32 farZ) {
         SetLens(fov, aspectRatio, nearZ, farZ);
         UpdateCameraVectors(); // Ensure vectors are updated for initial state
         AGK_INFO("Camera: Initialized with FOV: {0}, AspectRatio: {1}, NearZ: {2}, FarZ: {3}",
             fov, aspectRatio, nearZ, farZ);
     }
 
-    void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch) {
+    void Camera::ProcessMouseMovement(F32 xOffset, F32 yOffset, bool constrainPitch) {
         xOffset *= m_mouseSensitivity;
         yOffset *= m_mouseSensitivity;
 
@@ -86,8 +86,8 @@ namespace Angaraka {
     }
 
     // New Update method to apply movement based on internal flags and deltaTime
-    void Camera::Update(float deltaTime) {
-        float velocity = m_movementSpeed * deltaTime;
+    void Camera::Update(F32 deltaTime) {
+        F32 velocity = m_movementSpeed * deltaTime;
 
         if (m_isMovingForward)  {
             m_position = DirectX::XMVectorAdd(m_position, DirectX::XMVectorScale(m_front, velocity)); 
@@ -126,7 +126,7 @@ namespace Angaraka {
     }
     // DEBUG ONLY
 
-    void Camera::SetLens(float fov, float aspectRatio, float nearZ, float farZ) {
+    void Camera::SetLens(F32 fov, F32 aspectRatio, F32 nearZ, F32 farZ) {
         m_fov = fov;
         m_aspectRatio = aspectRatio;
         m_nearZ = nearZ;

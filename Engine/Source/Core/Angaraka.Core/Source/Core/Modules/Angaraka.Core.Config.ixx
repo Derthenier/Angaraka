@@ -17,21 +17,21 @@ namespace Angaraka::Config {
 
     // Plugin info for new YAML format
     export struct PluginInfo {
-        std::string name;
-        std::string type;
+        String name;
+        String type;
         std::filesystem::path path;
     };
 
     export struct LogConfig {
-        std::string level{ "info" };
-        std::string engine{ "Angaraka.log" };
-        std::string game{ "Angaraka.log" };
+        String level{ "info" };
+        String engine{ "Angaraka.log" };
+        String game{ "Angaraka.log" };
     };
 
     export struct WindowConfig {
         int width{ 1280 };
         int height{ 720 };
-        std::string title{ "Angaraka Engine" };
+        String title{ "Angaraka Engine" };
         bool fullscreen{ false };
     };
 
@@ -65,22 +65,22 @@ namespace Angaraka::Config {
         int msaa_qualityLevel{ 0 }; // Quality level for MSAA, typically 0-3
         int backbufferCount{ 2 }; // Default to double buffering
         int refreshRate{ 60 }; // in Hz
-        float clearRed{ 0.0f };
-        float clearGreen{ 0.0f };
-        float clearBlue{0.0f};
-        std::string shaderCachePath{ "shaders/cache" }; // Path to the shader cache directory
+        F32 clearRed{ 0.0f };
+        F32 clearGreen{ 0.0f };
+        F32 clearBlue{0.0f};
+        String shaderCachePath{ "shaders/cache" }; // Path to the shader cache directory
         ResourceCacheConfig resourceCache;
     };
 
     export struct EngineConfig {
-        std::string engineName;
-        std::string engineVersion;
-        std::string gameName;
-        std::string assetsBasePath{ "Assets" };
-        std::string shadersBasePath{ "Shaders" };
+        String engineName;
+        String engineVersion;
+        String gameName;
+        String assetsBasePath{ "Assets" };
+        String shadersBasePath{ "Shaders" };
 
         std::vector<PluginInfo> plugins;
-        std::vector<std::string> pluginPaths;
+        std::vector<String> pluginPaths;
 
         LogConfig logging;
         WindowConfig window;
@@ -136,10 +136,10 @@ namespace Angaraka::Config {
                 if (plugin.IsMap()) {
                     const YAML::Node& node = plugin;
                     PluginInfo info;
-                    info.name = node["name"].as<std::string>("");
-                    info.type = node["type"].as<std::string>("");
+                    info.name = node["name"].as<String>("");
+                    info.type = node["type"].as<String>("");
                     if (node["path"])
-                        info.path = node["path"].as<std::string>();
+                        info.path = node["path"].as<String>();
                     if (!info.name.empty() && !info.type.empty())
                         plugins.push_back(std::move(info));
                 }
@@ -147,7 +147,7 @@ namespace Angaraka::Config {
             return plugins;
         }
 
-        static std::optional<EngineConfig> LoadConfig(const std::string& filename)
+        static std::optional<EngineConfig> LoadConfig(const String& filename)
         {
             EngineConfig ec;
             try {
@@ -156,15 +156,15 @@ namespace Angaraka::Config {
                 // Parse engine section
                 if (auto engineNode = config["engine"]) {
                     if (engineNode["name"])
-                        ec.engineName = engineNode["name"].as<std::string>();
+                        ec.engineName = engineNode["name"].as<String>();
                     if (engineNode["version"])
-                        ec.engineVersion = engineNode["version"].as<std::string>();
+                        ec.engineVersion = engineNode["version"].as<String>();
                     if (engineNode["game"])
-                        ec.gameName = engineNode["game"].as<std::string>();
+                        ec.gameName = engineNode["game"].as<String>();
                     if (engineNode["assets"])
-                        ec.assetsBasePath = engineNode["assets"].as<std::string>();
+                        ec.assetsBasePath = engineNode["assets"].as<String>();
                     if (engineNode["shaders"])
-                        ec.shadersBasePath = engineNode["shaders"].as<std::string>();
+                        ec.shadersBasePath = engineNode["shaders"].as<String>();
                 }
 
                 // plugins list
@@ -175,7 +175,7 @@ namespace Angaraka::Config {
                 // Parse plugin_paths
                 if (auto pathsNode = config["plugin_paths"]) {
                     for (auto it = pathsNode.begin(); it != pathsNode.end(); ++it) {
-                        ec.pluginPaths.push_back(it->as<std::string>());
+                        ec.pluginPaths.push_back(it->as<String>());
                     }
                 }
 
@@ -183,11 +183,11 @@ namespace Angaraka::Config {
                 if (auto loggingNode = config["logging"]) {
                     ec.logging = {};
                     if (loggingNode["level"])
-                        ec.logging.level = loggingNode["level"].as<std::string>();
+                        ec.logging.level = loggingNode["level"].as<String>();
                     if (loggingNode["engine"])
-                        ec.logging.engine = loggingNode["engine"].as<std::string>();
+                        ec.logging.engine = loggingNode["engine"].as<String>();
                     if (loggingNode["game"])
-                        ec.logging.game = loggingNode["game"].as<std::string>();
+                        ec.logging.game = loggingNode["game"].as<String>();
                 }
 
                 // Parse window config (now at root)
@@ -198,7 +198,7 @@ namespace Angaraka::Config {
                     if (windowNode["height"])
                         ec.window.height = windowNode["height"].as<int>();
                     if (windowNode["title"])
-                        ec.window.title = windowNode["title"].as<std::string>();
+                        ec.window.title = windowNode["title"].as<String>();
                 }
 
                 // Parse renderer config (now at root)
@@ -217,11 +217,11 @@ namespace Angaraka::Config {
                         }
                         if (auto clearNode = generalNode["clear_color"]) {
                             if (clearNode["red"])
-                                ec.renderer.clearRed = clearNode["red"].as<float>(0.1f);
+                                ec.renderer.clearRed = clearNode["red"].as<F32>(0.1f);
                             if (clearNode["green"])
-                                ec.renderer.clearGreen = clearNode["green"].as<float>(0.1f);
+                                ec.renderer.clearGreen = clearNode["green"].as<F32>(0.1f);
                             if (clearNode["blue"])
-                                ec.renderer.clearBlue = clearNode["blue"].as<float>(0.1f);
+                                ec.renderer.clearBlue = clearNode["blue"].as<F32>(0.1f);
                         }
                     }
 
@@ -246,7 +246,7 @@ namespace Angaraka::Config {
                     // Parse shaders section
                     if (auto shaderNode = rendererNode["shaders"]) {
                         if (shaderNode["shader_cache_dir"])
-                            ec.renderer.shaderCachePath = shaderNode["shader_cache_dir"].as<std::string>("shaders/cache");
+                            ec.renderer.shaderCachePath = shaderNode["shader_cache_dir"].as<String>("shaders/cache");
                     }
 
                     // Parse features section

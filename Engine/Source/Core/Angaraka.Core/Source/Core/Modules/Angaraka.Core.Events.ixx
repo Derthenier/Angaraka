@@ -113,7 +113,7 @@ namespace Angaraka::Events {
         // Map to store event listeners: Event Type ID -> (SubscriptionID -> Callback)
         // Using a map for inner storage to allow easy removal by ID.
         std::map<size_t, std::map<SubscriptionID, EventCallback>> m_listeners;
-        static std::unique_ptr<EventManager> s_instance; // Singleton instance
+        static Scope<EventManager> s_instance; // Singleton instance
         std::atomic<SubscriptionID> m_nextSubscriptionId; // For generating unique IDs
     };
 
