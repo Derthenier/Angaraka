@@ -100,13 +100,13 @@ namespace Angaraka::Input {
         }
 
         if (m_firstMouse) {
-            m_lastMouseX = (float)currentMousePos.x;
-            m_lastMouseY = (float)currentMousePos.y;
+            m_lastMouseX = (F32)currentMousePos.x;
+            m_lastMouseY = (F32)currentMousePos.y;
             m_firstMouse = false;
         }
 
-        float deltaX = (float)currentMousePos.x - m_lastMouseX;
-        float deltaY = m_lastMouseY - (float)currentMousePos.y; // Invert Y-axis
+        F32 deltaX = (F32)currentMousePos.x - m_lastMouseX;
+        F32 deltaY = m_lastMouseY - (F32)currentMousePos.y; // Invert Y-axis
 
         if (deltaX != 0.0f || deltaY != 0.0f) {
             // Broadcast MouseMovedEvent with delta
@@ -114,8 +114,8 @@ namespace Angaraka::Input {
             Angaraka::Events::EventManager::Get().Broadcast(event);
         }
 
-        m_lastMouseX = (float)currentMousePos.x;
-        m_lastMouseY = (float)currentMousePos.y;
+        m_lastMouseX = (F32)currentMousePos.x;
+        m_lastMouseY = (F32)currentMousePos.y;
 
         // If mouse is confined, recenter it to prevent it hitting screen edges
         // This makes delta calculation simpler as cursor is always near center
@@ -127,8 +127,8 @@ namespace Angaraka::Input {
             center.y = (clientRect.top + clientRect.bottom) / 2;
             ClientToScreen(m_windowHandle, &center);
             SetCursorPos(center.x, center.y);
-            m_lastMouseX = (float)((clientRect.left + clientRect.right) / 2);
-            m_lastMouseY = (float)((clientRect.top + clientRect.bottom) / 2);
+            m_lastMouseX = (F32)((clientRect.left + clientRect.right) / 2);
+            m_lastMouseY = (F32)((clientRect.top + clientRect.bottom) / 2);
         }
 
         // Mouse scroll events usually come from WM_MOUSEWHEEL, not GetAsyncKeyState.

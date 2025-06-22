@@ -19,9 +19,9 @@ namespace Angaraka::Input {
 
     // Helper struct for mouse delta (already exists, but confirming placement)
     export struct MouseDelta {
-        float x = 0.0f;
-        float y = 0.0f;
-        float scroll = 0.0f;
+        F32 x = 0.0f;
+        F32 y = 0.0f;
+        F32 scroll = 0.0f;
     };
 
     // --- Input Event Definitions ---
@@ -61,32 +61,32 @@ namespace Angaraka::Input {
 
     export class MouseMovedEvent : public Angaraka::Events::Event {
     public:
-        inline MouseMovedEvent(float x, float y)
+        inline MouseMovedEvent(F32 x, F32 y)
             : m_mouseX(x), m_mouseY(y) {
         }
 
-        inline float GetX() const { return m_mouseX; }
-        inline float GetY() const { return m_mouseY; }
+        inline F32 GetX() const { return m_mouseX; }
+        inline F32 GetY() const { return m_mouseY; }
 
         EVENT_CLASS_TYPE(MouseMovedEvent)
         EVENT_CLASS_CATEGORY(Angaraka::Events::EventCategory::Input | Angaraka::Events::EventCategory::Mouse)
     private:
-        float m_mouseX, m_mouseY; // Absolute position or delta depending on implementation
+        F32 m_mouseX, m_mouseY; // Absolute position or delta depending on implementation
     };
 
     export class MouseScrolledEvent : public Angaraka::Events::Event {
     public:
-        inline MouseScrolledEvent(float xOffset, float yOffset)
+        inline MouseScrolledEvent(F32 xOffset, F32 yOffset)
             : m_xOffset(xOffset), m_yOffset(yOffset) {
         }
 
-        inline float GetXOffset() const { return m_xOffset; }
-        inline float GetYOffset() const { return m_yOffset; }
+        inline F32 GetXOffset() const { return m_xOffset; }
+        inline F32 GetYOffset() const { return m_yOffset; }
 
         EVENT_CLASS_TYPE(MouseScrolledEvent)
         EVENT_CLASS_CATEGORY(Angaraka::Events::EventCategory::Input | Angaraka::Events::EventCategory::Mouse)
     private:
-        float m_xOffset, m_yOffset; // Scroll delta
+        F32 m_xOffset, m_yOffset; // Scroll delta
     };
 
     export class MouseButtonEvent : public Angaraka::Events::Event {

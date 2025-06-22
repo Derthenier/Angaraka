@@ -11,9 +11,9 @@ namespace Angaraka::Core {
         : m_resourceManager(resourceManager)
         , m_context(context) {
 
-        m_bundleLoader = std::make_unique<BundleLoader>();
-        m_loadQueue = std::make_shared<AssetLoadQueue>();
-        m_workerPool = std::make_unique<AssetWorkerPool>(resourceManager);
+        m_bundleLoader = CreateScope<BundleLoader>();
+        m_loadQueue = CreateReference<AssetLoadQueue>();
+        m_workerPool = CreateScope<AssetWorkerPool>(resourceManager);
 
         m_workerPool->SetLoadQueue(m_loadQueue);
         RegisterAssetLoaders();
@@ -30,7 +30,7 @@ namespace Angaraka::Core {
 
         std::lock_guard<std::mutex> lock(m_bundlesMutex);
         for (const auto& bundle : bundles) {
-            std::string validationError;
+            String validationError;
             if (!m_bundleLoader->ValidateBundle(bundle, validationError)) {
                 AGK_ERROR("Invalid bundle {}: {}", bundle.name, validationError);
                 continue;
@@ -59,12 +59,12 @@ namespace Angaraka::Core {
         m_assetToBundleMap.clear();
     }
 
-    bool BundleManager::LoadBundle(const std::string& bundleName, BundleProgressCallback callback) {
+    bool BundleManager::LoadBundle(const String& bundleName, BundleProgressCallback callback) {
         std::lock_guard<std::mutex> lock(m_bundlesMutex);
         return LoadBundleInternal(bundleName, callback);
     }
 
-    bool BundleManager::LoadBundleInternal(const std::string& bundleName, BundleProgressCallback callback) {
+    bool BundleManager::LoadBundleInternal(const String& bundleName, BundleProgressCallback callback) {
         // NOTE: Assumes m_bundlesMutex is already locked by caller
 
         auto it = m_availableBundles.find(bundleName);
@@ -79,7 +79,7 @@ namespace Angaraka::Core {
         }
 
         // Resolve dependencies
-        std::vector<std::string> loadOrder;
+        std::vector<String> loadOrder;
         if (!ValidateAndResolveDependencies(bundleName, loadOrder)) {
             return false;
         }
@@ -113,7 +113,7 @@ namespace Angaraka::Core {
         return true;
     }
 
-    bool BundleManager::UnloadBundle(const std::string& bundleName) {
+    bool BundleManager::UnloadBundle(const String& bundleName) {
         std::lock_guard<std::mutex> lock(m_bundlesMutex);
 
         auto it = m_availableBundles.find(bundleName);
@@ -138,7 +138,7 @@ namespace Angaraka::Core {
     }
 
     void BundleManager::LoadAllAutoLoadBundles() {
-        std::vector<std::string> autoLoadBundles;
+        std::vector<String> autoLoadBundles;
 
         {
             std::lock_guard<std::mutex> lock(m_bundlesMutex);
@@ -175,22 +175,24 @@ namespace Angaraka::Core {
     }
 
     void BundleManager::RegisterAssetLoaders() {
+        auto loader = [this](const AssetDefinition& asset) -> Reference<Resource> {
+            return m_resourceManager->GetResource<Resource>(asset.id, asset.path, m_context);
+        };
+
         // Register texture loader
-        m_workerPool->RegisterLoader(AssetType::Texture,
-            [this](const AssetDefinition& asset) -> std::shared_ptr<Resource> {
-                return m_resourceManager->GetResource<Resource>(asset.path, m_context);
-            });
+        m_workerPool->RegisterLoader(AssetType::Texture, loader);
+        m_workerPool->RegisterLoader(AssetType::Mesh, loader);
 
         // TODO: Register mesh, material, sound loaders
         AGK_INFO("Asset loaders registered");
     }
 
-    bool BundleManager::ValidateAndResolveDependencies(const std::string& bundleName,
-        std::vector<std::string>& loadOrder) {
-        std::unordered_set<std::string> visited;
-        std::unordered_set<std::string> inProgress;
+    bool BundleManager::ValidateAndResolveDependencies(const String& bundleName,
+        std::vector<String>& loadOrder) {
+        std::unordered_set<String> visited;
+        std::unordered_set<String> inProgress;
 
-        std::function<bool(const std::string&)> resolveDeps = [&](const std::string& name) -> bool {
+        std::function<bool(const String&)> resolveDeps = [&](const String& name) -> bool {
             if (inProgress.count(name)) {
                 AGK_ERROR("Circular dependency detected: {}", name);
                 return false;
@@ -227,7 +229,7 @@ namespace Angaraka::Core {
         UpdateBundleProgress(request.bundleName);
     }
 
-    void BundleManager::UpdateBundleProgress(const std::string& bundleName) {
+    void BundleManager::UpdateBundleProgress(const String& bundleName) {
         std::lock_guard<std::mutex> lock(m_bundlesMutex);
 
         auto bundleIt = m_availableBundles.find(bundleName);
@@ -248,7 +250,7 @@ namespace Angaraka::Core {
         progress.bundleName = bundleName;
         progress.assetsLoaded = loadedAssets;
         progress.totalAssets = totalAssets;
-        progress.progress = totalAssets > 0 ? static_cast<float>(loadedAssets) / totalAssets : 1.0f;
+        progress.progress = totalAssets > 0 ? static_cast<F32>(loadedAssets) / totalAssets : 1.0f;
         progress.state = (loadedAssets == totalAssets) ? BundleLoadState::Loaded : BundleLoadState::Loading;
 
         if (progress.state == BundleLoadState::Loaded) {
@@ -266,19 +268,19 @@ namespace Angaraka::Core {
         }
     }
 
-    bool BundleManager::IsBundleLoaded(const std::string& bundleName) const {
+    bool BundleManager::IsBundleLoaded(const String& bundleName) const {
         std::lock_guard<std::mutex> lock(m_bundlesMutex);
         auto it = m_bundleStates.find(bundleName);
         return it != m_bundleStates.end() && it->second == BundleLoadState::Loaded;
     }
 
-    BundleLoadState BundleManager::GetBundleState(const std::string& bundleName) const {
+    BundleLoadState BundleManager::GetBundleState(const String& bundleName) const {
         std::lock_guard<std::mutex> lock(m_bundlesMutex);
         auto it = m_bundleStates.find(bundleName);
         return it != m_bundleStates.end() ? it->second : BundleLoadState::NotLoaded;
     }
 
-    BundleLoadProgress BundleManager::GetBundleProgress(const std::string& bundleName) const {
+    BundleLoadProgress BundleManager::GetBundleProgress(const String& bundleName) const {
         std::lock_guard<std::mutex> lock(m_bundlesMutex);
 
         BundleLoadProgress progress;
@@ -303,15 +305,15 @@ namespace Angaraka::Core {
         }
 
         progress.progress = progress.totalAssets > 0 ?
-            static_cast<float>(progress.assetsLoaded) / progress.totalAssets : 1.0f;
+            static_cast<F32>(progress.assetsLoaded) / progress.totalAssets : 1.0f;
 
         return progress;
     }
 
-    std::vector<std::string> BundleManager::GetLoadedBundles() const {
+    std::vector<String> BundleManager::GetLoadedBundles() const {
         std::lock_guard<std::mutex> lock(m_bundlesMutex);
 
-        std::vector<std::string> loaded;
+        std::vector<String> loaded;
         for (const auto& [name, state] : m_bundleStates) {
             if (state == BundleLoadState::Loaded) {
                 loaded.push_back(name);
@@ -320,10 +322,10 @@ namespace Angaraka::Core {
         return loaded;
     }
 
-    std::vector<std::string> BundleManager::GetAvailableBundles() const {
+    std::vector<String> BundleManager::GetAvailableBundles() const {
         std::lock_guard<std::mutex> lock(m_bundlesMutex);
 
-        std::vector<std::string> available;
+        std::vector<String> available;
         available.reserve(m_availableBundles.size());
         for (const auto& [name, bundle] : m_availableBundles) {
             available.push_back(name);
@@ -331,7 +333,7 @@ namespace Angaraka::Core {
         return available;
     }
 
-    bool BundleManager::IsAssetLoaded(const std::string& assetId) const {
+    bool BundleManager::IsAssetLoaded(const String& assetId) const {
         auto status = m_loadQueue->GetAssetStatus(assetId);
         return status == LoadStatus::Completed;
     }

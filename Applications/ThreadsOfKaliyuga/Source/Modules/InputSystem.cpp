@@ -124,7 +124,7 @@ namespace ThreadsOfKaliyuga
 
     }
 
-    void InputSystem::Update(float deltaTime)
+    void InputSystem::Update(Angaraka::F32 deltaTime)
     {
         if (m_inputManager) {
             m_inputManager->Update();

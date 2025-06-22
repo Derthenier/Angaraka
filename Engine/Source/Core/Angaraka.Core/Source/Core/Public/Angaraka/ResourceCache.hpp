@@ -15,13 +15,13 @@ namespace Angaraka::Core {
      * @brief Cache entry for LRU tracking with memory accounting
      */
     struct CacheEntry {
-        std::string resourceId;
-        std::shared_ptr<Resource> resource;
+        String resourceId;
+        Reference<Resource> resource;
         size_t memorySizeBytes;
         std::chrono::steady_clock::time_point lastAccessTime;
         std::chrono::steady_clock::time_point loadTime;
 
-        CacheEntry(const std::string& id, std::shared_ptr<Resource> res, size_t size)
+        CacheEntry(const String& id, Reference<Resource> res, size_t size)
             : resourceId(id)
             , resource(std::move(res))
             , memorySizeBytes(size)
@@ -82,9 +82,9 @@ namespace Angaraka::Core {
         ~ResourceCache();
 
         // Cache operations
-        std::shared_ptr<Resource> Get(const std::string& resourceId);
-        void Put(const std::string& resourceId, std::shared_ptr<Resource> resource, size_t memorySize);
-        void Remove(const std::string& resourceId);
+        Reference<Resource> Get(const String& resourceId);
+        void Put(const String& resourceId, Reference<Resource> resource, size_t memorySize);
+        void Remove(const String& resourceId);
         void Clear();
 
         // Memory management
@@ -95,8 +95,8 @@ namespace Angaraka::Core {
         size_t GetCurrentMemoryUsage() const { return m_currentMemoryUsage; }
         size_t GetResourceCount() const { return m_resourceMap.size(); }
         const EvictionStats& GetEvictionStats() const { return m_stats; }
-        float GetMemoryUtilization() const {
-            return static_cast<float>(m_currentMemoryUsage) / static_cast<float>(m_budget.maxTotalMemory);
+        F32 GetMemoryUtilization() const {
+            return static_cast<F32>(m_currentMemoryUsage) / static_cast<F32>(m_budget.maxTotalMemory);
         }
 
         // Cache health check
@@ -107,7 +107,7 @@ namespace Angaraka::Core {
     private:
         // Core data structures
         std::list<CacheEntry> m_lruList;
-        std::unordered_map<std::string, LRUIterator> m_resourceMap;
+        std::unordered_map<String, LRUIterator> m_resourceMap;
 
         // Memory tracking
         MemoryBudget m_budget;
@@ -122,7 +122,7 @@ namespace Angaraka::Core {
         void TouchResource(std::list<CacheEntry>::iterator it);
         void EvictIfNecessary(size_t incomingResourceSize);
         void EvictOldestResource();
-        size_t EstimateResourceMemorySize(const std::shared_ptr<Resource>& resource) const;
+        size_t EstimateResourceMemorySize(const Reference<Resource>& resource) const;
 
         // Validation
         bool ValidateResourceSize(size_t resourceSize) const;

@@ -63,10 +63,19 @@
     <ClCompile Include="Source\Renderer\Modules\SwapChainManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Renderer\Modules\Texture.ixx">
+    <ClCompile Include="Source\Renderer\Modules\Resources\Texture.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Renderer\Modules\Texture.cpp">
+    <ClCompile Include="Source\Renderer\Modules\Resources\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Renderer\Modules\Resources\OBJLoader.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Renderer\Modules\Resources\Mesh.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Renderer\Modules\Resources\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -75,6 +84,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Shaders\SimpleShader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Renderer\Public\Angaraka\MeshBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

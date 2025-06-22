@@ -37,7 +37,7 @@ namespace ThreadsOfKaliyuga
         // --- Timing ---
         LARGE_INTEGER m_perfFreq;     // Performance Counter Frequency
         LARGE_INTEGER m_lastTime;     // Time at the end of the last frame
-        float         m_deltaTime{ 0.0f };    // Time elapsed since last frame (in seconds)
+        Angaraka::F32 m_deltaTime{ 0.0f };    // Time elapsed since last frame (in seconds)
 
     };
 }

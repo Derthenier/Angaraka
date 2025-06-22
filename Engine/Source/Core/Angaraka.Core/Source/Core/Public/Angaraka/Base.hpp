@@ -46,6 +46,9 @@
 
 #define DISABLE_COPY_AND_MOVE(T) DISABLE_COPY(T) DISABLE_MOVE(T)
 
+#undef min
+#undef max
+
 namespace Angaraka {
     using U8 = uint8_t;
     using U16 = uint16_t;

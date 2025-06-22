@@ -53,7 +53,7 @@ namespace Angaraka::Core {
         return bundles;
     }
 
-    std::optional<AssetBundleConfig> BundleLoader::ParseBundleFromYaml(const std::string& yamlContent,
+    std::optional<AssetBundleConfig> BundleLoader::ParseBundleFromYaml(const String& yamlContent,
         const std::filesystem::path& filePath) {
         try {
             YAML::Node config = YAML::Load(yamlContent);
@@ -67,18 +67,18 @@ namespace Angaraka::Core {
             bundle.bundleFilePath = filePath.string();
 
             auto bundleNode = config["bundle"];
-            bundle.name = bundleNode["name"].as<std::string>();
+            bundle.name = bundleNode["name"].as<String>();
             bundle.priority = bundleNode["priority"].as<AssetPriority>(PRIORITY_MEDIUM);
             bundle.autoLoad = bundleNode["auto_load"].as<bool>(true);
 
             if (bundleNode["unload_strategy"]) {
-                bundle.unloadStrategy = ParseUnloadStrategy(bundleNode["unload_strategy"].as<std::string>());
+                bundle.unloadStrategy = ParseUnloadStrategy(bundleNode["unload_strategy"].as<String>());
             }
 
             // Parse dependencies
             if (bundleNode["dependencies"]) {
                 for (const auto& dep : bundleNode["dependencies"]) {
-                    bundle.dependencies.push_back(dep.as<std::string>());
+                    bundle.dependencies.push_back(dep.as<String>());
                 }
             }
 
@@ -88,13 +88,13 @@ namespace Angaraka::Core {
                     auto assetNode = config["assets"][i];
 
                     AssetDefinition asset;
-                    asset.type = AssetDefinition::StringToAssetType(assetNode["type"].as<std::string>());
-                    asset.id = assetNode["id"].as<std::string>();
-                    asset.path = assetNode["path"].as<std::string>();
+                    asset.type = AssetDefinition::StringToAssetType(assetNode["type"].as<String>());
+                    asset.id = assetNode["id"].as<String>();
+                    asset.path = assetNode["path"].as<String>();
                     asset.priority = assetNode["priority"].as<AssetPriority>(bundle.priority);
 
                     if (assetNode["unload_strategy"]) {
-                        asset.unloadStrategy = ParseUnloadStrategy(assetNode["unload_strategy"].as<std::string>());
+                        asset.unloadStrategy = ParseUnloadStrategy(assetNode["unload_strategy"].as<String>());
                     }
                     else {
                         asset.unloadStrategy = bundle.unloadStrategy;
@@ -113,14 +113,14 @@ namespace Angaraka::Core {
         }
     }
 
-    UnloadStrategy BundleLoader::ParseUnloadStrategy(const std::string& strategyStr) {
+    UnloadStrategy BundleLoader::ParseUnloadStrategy(const String& strategyStr) {
         if (strategyStr == "manual") {
             return UnloadStrategy::Manual;
         }
         return UnloadStrategy::Automatic;
     }
 
-    bool BundleLoader::ValidateBundle(const AssetBundleConfig& bundle, std::string& errorMessage) {
+    bool BundleLoader::ValidateBundle(const AssetBundleConfig& bundle, String& errorMessage) {
         if (bundle.name.empty()) {
             errorMessage = "Bundle name cannot be empty";
             return false;
@@ -132,7 +132,7 @@ namespace Angaraka::Core {
         }
 
         // Check for duplicate asset IDs
-        std::unordered_set<std::string> assetIds;
+        std::unordered_set<String> assetIds;
         for (const auto& asset : bundle.assets) {
             if (asset.id.empty()) {
                 errorMessage = "Asset ID cannot be empty";

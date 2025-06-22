@@ -29,20 +29,18 @@ namespace ThreadsOfKaliyuga
         Angaraka::Window window;
         Angaraka::Config::EngineConfig config;
 
-        Angaraka::Graphics::DirectX12::TextureResource* uvGridTexture;
-
-        std::string WStringToUTF8(const std::wstring& wstr) {
+        Angaraka::String WStringToUTF8(const std::wstring& wstr) {
             if (wstr.empty()) return {};
 
             int size = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
             if (size <= 0) return {};
 
-            std::string result(size - 1, 0); // omit null terminator
+            Angaraka::String result(size - 1, 0); // omit null terminator
             WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, result.data(), size, nullptr, nullptr);
             return result;
         }
 
-        std::wstring UTF8ToWString(const std::string& str) {
+        std::wstring UTF8ToWString(const Angaraka::String& str) {
             if (str.empty()) return {};
 
             int size = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
@@ -91,7 +89,7 @@ namespace ThreadsOfKaliyuga
         }
 
         m_graphicsSystem = new Angaraka::DirectX12GraphicsSystem();
-        if (!m_graphicsSystem->Initialize(window.GetHandle(), windowInfo.Width, windowInfo.Height, config.renderer.debugLayerEnabled)) {
+        if (!m_graphicsSystem->Initialize(window.GetHandle(), config)) {
             AGK_APP_FATAL("Failed to initialize graphics system. Stopping engine...");
             return false;
         }
@@ -148,16 +146,6 @@ namespace ThreadsOfKaliyuga
 
         AGK_APP_INFO("BundleManager initialized and loading started.");
 
-        uvGridTexture = new Angaraka::Graphics::DirectX12::TextureResource("uv-grid-texture");
-        if (uvGridTexture->Load("Assets/uv-grid-texture.png", m_graphicsSystem))
-        {
-            AGK_INFO("Dummy texture loaded and uploaded to GPU!");
-        }
-        else
-        {
-            AGK_WARN("Could not load dummy texture from path: Assets/uv-grid-texture.png");
-        }
-
         m_resourceManager->LogCacheStatus();
 
         return true;
@@ -177,18 +165,24 @@ namespace ThreadsOfKaliyuga
             LARGE_INTEGER currentTime;
             QueryPerformanceCounter(&currentTime);
 
-            m_deltaTime = static_cast<float>(currentTime.QuadPart - m_lastTime.QuadPart) / static_cast<float>(m_perfFreq.QuadPart);
+            m_deltaTime = static_cast<Angaraka::F32>(currentTime.QuadPart - m_lastTime.QuadPart) / static_cast<Angaraka::F32>(m_perfFreq.QuadPart);
             m_lastTime = currentTime; // Update for the next frame
 
             m_inputSystem->Update(m_deltaTime); // Update input system
 
-            m_graphicsSystem->BeginFrame(m_deltaTime, uvGridTexture, config.renderer.clearRed, config.renderer.clearGreen, config.renderer.clearBlue, 0.7f);
+            m_graphicsSystem->BeginFrame(m_deltaTime);
+
+            Angaraka::Graphics::DirectX12::TextureResource* uvGridTexture = dynamic_cast<Angaraka::Graphics::DirectX12::TextureResource*>(m_resourceManager->GetResource<Angaraka::Core::Resource>("character/player_diffuse").get());
+            m_graphicsSystem->RenderTexture(uvGridTexture);
+            Angaraka::Graphics::DirectX12::MeshResource* player = dynamic_cast<Angaraka::Graphics::DirectX12::MeshResource*>(m_resourceManager->GetResource<Angaraka::Core::Resource>("character/player_mesh").get());
+            m_graphicsSystem->RenderMesh(player);
 
             m_graphicsSystem->EndFrame();
+            m_graphicsSystem->Present();
 
 
             // Periodic cache monitoring (every 5 seconds)
-            static float cacheMonitorTimer = 0.0f;
+            static Angaraka::F32 cacheMonitorTimer = 0.0f;
             cacheMonitorTimer += m_deltaTime;
             if (cacheMonitorTimer >= 5.0f) {
                 if (!m_resourceManager->IsCacheHealthy()) {
@@ -211,6 +205,8 @@ namespace ThreadsOfKaliyuga
             delete m_inputSystem;
             m_inputSystem = nullptr;
         }
+
+        m_graphicsSystem->DisplayStats();
 
         // Shutdown bundle manager first (stops async loading)
         if (m_bundleManager) {

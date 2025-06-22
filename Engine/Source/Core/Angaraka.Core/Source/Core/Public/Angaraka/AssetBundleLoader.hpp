@@ -20,18 +20,18 @@ namespace Angaraka::Core {
         std::vector<AssetBundleConfig> LoadAllBundles(const std::filesystem::path& bundlesDirectory);
 
         // Validate bundle configuration
-        bool ValidateBundle(const AssetBundleConfig& bundle, std::string& errorMessage);
+        bool ValidateBundle(const AssetBundleConfig& bundle, String& errorMessage);
 
     private:
         // Parse bundle from YAML node
-        std::optional<AssetBundleConfig> ParseBundleFromYaml(const std::string& yamlContent,
+        std::optional<AssetBundleConfig> ParseBundleFromYaml(const String& yamlContent,
             const std::filesystem::path& filePath);
 
         // Parse individual asset definition
-        std::optional<AssetDefinition> ParseAssetDefinition(const std::string& yamlContent, size_t assetIndex);
+        std::optional<AssetDefinition> ParseAssetDefinition(const String& yamlContent, size_t assetIndex);
 
         // Helper to parse unload strategy from string
-        UnloadStrategy ParseUnloadStrategy(const std::string& strategyStr);
+        UnloadStrategy ParseUnloadStrategy(const String& strategyStr);
     };
 
 }

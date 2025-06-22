@@ -1,3 +1,4 @@
+// Engine/Source/Systems/Angaraka.Renderer/Source/Renderer/Modules/Texture.ixx
 module;
 
 #include "Angaraka/GraphicsBase.hpp"
@@ -35,11 +36,11 @@ namespace Angaraka::Graphics::DirectX12 {
         // Creates a GPU texture from CPU ImageData
         // This is a temporary setup, later we'll use an upload heap/queue
         // For now, it will return a shared_ptr to allow multiple systems to refer to it.
-        std::shared_ptr<Texture> LoadTexture(const std::string& filePath);
-        std::shared_ptr<Texture> CreateTextureFromImageData(const Angaraka::Core::ImageData& imageData);
+        Reference<Texture> LoadTexture(const String& filePath);
+        Reference<Texture> CreateTextureFromImageData(const Angaraka::Core::ImageData& imageData);
 
         // Placeholder for getting already loaded textures (caching)
-        // std::shared_ptr<Texture> GetTexture(const std::wstring& name);
+        // Reference<Texture> GetTexture(const std::wstring& name);
 
         // Call this after GPU has finished processing initialization commands
         void ClearUploadHeaps();
@@ -68,7 +69,7 @@ namespace Angaraka::Graphics::DirectX12 {
         UINT m_NextSrvDescriptorIndex = 0; // Simple counter for descriptor allocation
 
         // A map to store loaded textures (simple cache for now)
-        std::map<std::string, std::shared_ptr<Texture>> m_LoadedTextures;
+        std::map<String, Reference<Texture>> m_LoadedTextures;
 
         // Internal helper to create a descriptor heap
         bool CreateSrvDescriptorHeap(UINT numDescriptors);
@@ -85,13 +86,13 @@ namespace Angaraka::Graphics::DirectX12 {
     export class TextureResource : public Angaraka::Core::Resource {
     public:
         // Constructor that takes the resource ID (file path)
-        explicit TextureResource(const std::string& id);
+        explicit TextureResource(const String& id);
         ~TextureResource();
 
         AGK_RESOURCE_TYPE_ID(TextureResource); // Define static TypeId
 
         // Implement pure virtual methods from base Resource class
-        bool Load(const std::string& filePath, void* context = nullptr) override;
+        bool Load(const String& filePath, void* context = nullptr) override;
         void Unload() override;
 
         inline size_t GetSizeInBytes() const override {
@@ -107,7 +108,7 @@ namespace Angaraka::Graphics::DirectX12 {
         // Hold the actual texture data managed by TextureManager
         // You might define a simple struct in Texture.hpp that contains these,
         // or get direct access. Let's assume TextureManager gives us a simple ID or struct.
-        std::shared_ptr<Texture> m_textureData; // Assuming TextureManager::LoadTexture returns this
+        Reference<Texture> m_textureData; // Assuming TextureManager::LoadTexture returns this
 
         // Important: You need access to the D3D12Device and CommandList for TextureManager::LoadTexture.
         // These would typically be provided to ResourceManager, and then to specific resource loaders.

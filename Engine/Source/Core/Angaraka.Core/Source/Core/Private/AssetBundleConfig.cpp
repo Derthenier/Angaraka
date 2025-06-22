@@ -4,8 +4,8 @@
 
 namespace Angaraka::Core {
 
-    AssetType AssetDefinition::StringToAssetType(const std::string& typeStr) {
-        static const std::unordered_map<std::string, AssetType> typeMap = {
+    AssetType AssetDefinition::StringToAssetType(const String& typeStr) {
+        static const std::unordered_map<String, AssetType> typeMap = {
             {"texture", AssetType::Texture},
             {"mesh", AssetType::Mesh},
             {"material", AssetType::Material},
@@ -16,7 +16,7 @@ namespace Angaraka::Core {
         return (it != typeMap.end()) ? it->second : AssetType::Unknown;
     }
 
-    std::string AssetDefinition::AssetTypeToString(AssetType type) {
+    String AssetDefinition::AssetTypeToString(AssetType type) {
         switch (type) {
         case AssetType::Texture: return "texture";
         case AssetType::Mesh: return "mesh";
@@ -29,7 +29,7 @@ namespace Angaraka::Core {
         }
     }
 
-    bool AssetBundleConfig::HasDependency(const std::string& bundleName) const {
+    bool AssetBundleConfig::HasDependency(const String& bundleName) const {
         return std::find(dependencies.begin(), dependencies.end(), bundleName) != dependencies.end();
     }
 
@@ -45,9 +45,9 @@ namespace Angaraka::Core {
         return sortedAssets;
     }
 
-    float AssetBundleConfig::GetLoadProgress() const {
+    F32 AssetBundleConfig::GetLoadProgress() const {
         if (totalAssets == 0) return 1.0f;
-        return static_cast<float>(loadedAssets) / static_cast<float>(totalAssets);
+        return static_cast<F32>(loadedAssets) / static_cast<F32>(totalAssets);
     }
 
 }

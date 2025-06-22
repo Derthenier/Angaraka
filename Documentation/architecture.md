@@ -78,10 +78,10 @@ This system provides a centralized, type-safe, and cache-driven approach to mana
 
 * **`ResourceManager` (`Angaraka.Core.Resources.ResourceManager`)**:
     * The central cache and coordinator for `Resource` objects.
-    * **Constructor Dependency Injection**: Receives a `std::shared_ptr<Angaraka::Graphics::GraphicsContext>` during its construction. This `GraphicsContext` contains all necessary graphics-related dependencies (`ID3D12Device`, `ID3D12GraphicsCommandList`, `TextureManager`, etc.).
-    * **`template<typename T> std::shared_ptr<T> GetResource(const std::string& id)`**: The primary method for retrieving resources.
+    * **Constructor Dependency Injection**: Receives a `Reference<Angaraka::Graphics::GraphicsContext>` during its construction. This `GraphicsContext` contains all necessary graphics-related dependencies (`ID3D12Device`, `ID3D12GraphicsCommandList`, `TextureManager`, etc.).
+    * **`template<typename T> Reference<T> GetResource(const String& id)`**: The primary method for retrieving resources.
         * Checks its internal cache (`m_loadedResources`). If found and type matches, returns the cached instance.
-        * If not found, creates a new `std::make_shared<T>(id)` instance.
+        * If not found, creates a new `CreateReference<T>(id)` instance.
         * **Delegated Loading**: Calls `newResource->Load(id, *m_graphicsContext)` to trigger the actual loading process, passing down the necessary `GraphicsContext`.
         * Caches the newly loaded resource.
     * **Lifetime Management**: Uses `std::shared_ptr` within its `m_loadedResources` map. Resources are kept alive as long as the `ResourceManager` or any other part of the engine holds a `std::shared_ptr` to them. Explicit `UnloadResource` and `UnloadAllResources` methods are also available.
@@ -94,8 +94,8 @@ This system provides a centralized, type-safe, and cache-driven approach to mana
 * **Concrete `Resource` Implementations**:
     * **`TextureResource` (`Angaraka.Graphics.DirectX12.TextureResource`)**:
         * Derives from `Angaraka::Core::Resources::Resource`.
-        * Its `Load(const std::string& filePath, const Angaraka::Graphics::GraphicsContext& graphicsContext)` method utilizes `graphicsContext.pTextureManager` to delegate the actual GPU-side texture creation to the `TextureManager`, effectively removing any global dependency.
-        * Stores the `std::shared_ptr<Texture>` returned by `TextureManager` internally.
+        * Its `Load(const String& filePath, const Angaraka::Graphics::GraphicsContext& graphicsContext)` method utilizes `graphicsContext.pTextureManager` to delegate the actual GPU-side texture creation to the `TextureManager`, effectively removing any global dependency.
+        * Stores the `Reference<Texture>` returned by `TextureManager` internally.
     * **Future Resources**: This pattern will extend to `MeshResource`, `MaterialResource`, `ShaderResource`, etc., each taking the `GraphicsContext` to interact with their respective managers.
 
 ## 7. C++23 Modules Strategy

@@ -27,6 +27,10 @@ import Angaraka.Camera;
 // Global/Static Data (specific to this implementation unit)
 // This will remain here for now, as it's geometry data.
 namespace {
+    ID3D12GraphicsCommandList* commandList = nullptr;
+
+
+
     Angaraka::Graphics::DirectX12::ModelViewProjectionConstantBuffer mvpCPUData{};
 
     // Define the input layout for our vertex structure
@@ -46,15 +50,16 @@ namespace Angaraka { // Use the Angaraka namespace here
     DirectX12GraphicsSystem::DirectX12GraphicsSystem() {
         AGK_INFO("DirectX12GraphicsSystem: Constructor called.");
         // Initialize the unique_ptr for the DeviceManager
-        m_deviceManager = std::make_unique<Graphics::DirectX12::DeviceManager>();
-        m_swapChainManager = std::make_unique<Graphics::DirectX12::SwapChainManager>();
-        m_commandManager = std::make_unique<Graphics::DirectX12::CommandQueueAndListManager>();
-        m_shaderManager = std::make_unique<Graphics::DirectX12::ShaderManager>();
-        m_pipelineManager = std::make_unique<Graphics::DirectX12::PipelineManager>();
-        m_bufferManager = std::make_unique<Graphics::DirectX12::BufferManager>();
+        m_deviceManager = CreateScope<Graphics::DirectX12::DeviceManager>();
+        m_swapChainManager = CreateScope<Graphics::DirectX12::SwapChainManager>();
+        m_commandManager = CreateScope<Graphics::DirectX12::CommandQueueAndListManager>();
+        m_shaderManager = CreateScope<Graphics::DirectX12::ShaderManager>();
+        m_pipelineManager = CreateScope<Graphics::DirectX12::PipelineManager>();
+        m_bufferManager = CreateScope<Graphics::DirectX12::BufferManager>();
 
-        m_textureManager = std::make_shared<Graphics::DirectX12::TextureManager>();
-        m_camera = std::make_shared<Angaraka::Camera>();
+        m_textureManager = CreateReference<Graphics::DirectX12::TextureManager>();
+        m_meshManager = CreateReference<Graphics::DirectX12::MeshManager>();
+        m_camera = CreateReference<Angaraka::Camera>();
     }
 
     DirectX12GraphicsSystem::~DirectX12GraphicsSystem() {
@@ -65,16 +70,23 @@ namespace Angaraka { // Use the Angaraka namespace here
 
     // --- Main Initialize method of DirectX12GraphicsSystem ---
 #ifdef _WIN32
-    bool DirectX12GraphicsSystem::Initialize(HWND windowHandle, unsigned int width, unsigned int height, bool debugEnabled) {
+    bool DirectX12GraphicsSystem::Initialize(HWND windowHandle, const Config::EngineConfig& config) {
         m_windowHandle = windowHandle;
-        m_width = width;
-        m_height = height;
+        m_width = config.window.width;
+        m_height = config.window.height;
+
+        m_clearColor = DirectX::SimpleMath::Color(
+            config.renderer.clearRed,
+            config.renderer.clearGreen,
+            config.renderer.clearBlue,
+            1.0f // Alpha channel set to 1.0 (opaque)
+        );
 
         AGK_INFO("DirectX12GraphicsSystem: Initializing for window {0} ({1}x{2})...",
             (void*)m_windowHandle, m_width, m_height);
 
 
-        if (!m_deviceManager->Initialize(debugEnabled)) {
+        if (!m_deviceManager->Initialize(config.renderer.debugLayerEnabled)) {
             return false;
         }
         AGK_INFO("DirectX12GraphicsSystem: DeviceManager initialized.");
@@ -125,14 +137,19 @@ namespace Angaraka { // Use the Angaraka namespace here
             AGK_ERROR("Failed to initialize Texture Manager.");
             return false;
         }
-
-        // --- IMPORTANT: Now that GPU is finished, safely release the temporary upload heaps ---
         m_textureManager->ClearUploadHeaps();
+
+        // Initialize the MeshManager
+        if (!m_meshManager->Initialize(m_deviceManager->GetDevice(), m_deviceManager->GetCommandQueue())) {
+            AGK_ERROR("Failed to initialize Mesh Manager.");
+            return false;
+        }
+        m_meshManager->ClearUploadHeaps(); // Clear any temporary upload heaps
 
         // Aspect ratio calculated based on window size
         m_camera->Initialize(
             DirectX::XM_PIDIV4, // 45 degrees FOV
-            static_cast<float>(m_width) / static_cast<float>(m_height), // Aspect ratio
+            static_cast<F32>(m_width) / static_cast<F32>(m_height), // Aspect ratio
             0.1f, // Near plane
             100.0f // Far plane
         );
@@ -167,6 +184,9 @@ namespace Angaraka { // Use the Angaraka namespace here
         // they are released in a defined order (if that specific order is critical, e.g., releasing
         // objects that depend on others).
 
+        for (long i{ 0 }; i < m_meshManager.use_count(); ++i) {
+            m_meshManager.reset();
+        }
         for (long i{ 0 }; i < m_textureManager.use_count(); ++i) {
             m_textureManager.reset();
         }
@@ -182,7 +202,46 @@ namespace Angaraka { // Use the Angaraka namespace here
         }
     }
 
-    void DirectX12GraphicsSystem::BeginFrameStartInternal(ID3D12GraphicsCommandList* commandList, float deltaTime) {
+    void DirectX12GraphicsSystem::RenderTexture(Graphics::DirectX12::TextureResource* texture)
+    {
+        if (texture && texture->GetSrvIndex() >= 0)
+        {
+            // Bind the texture SRV (Root Parameter 1)
+            // You stored the texture's SRV descriptor CPU handle in m_DummyTexture->SrvDescriptor
+            // Now you need its GPU handle.
+            UINT srvIndex = texture->GetSrvIndex(); // Assuming you store the index where it was allocated
+            CD3DX12_GPU_DESCRIPTOR_HANDLE gpuSrvHandle(m_textureManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart());
+            gpuSrvHandle.Offset(srvIndex, m_textureManager->GetSrvDescriptorSize());
+
+            commandList->SetGraphicsRootDescriptorTable(1, gpuSrvHandle); // Root Parameter 1 binds the descriptor table
+        }
+    }
+
+    void DirectX12GraphicsSystem::RenderMesh(Graphics::DirectX12::MeshResource* mesh)
+    {
+        if (mesh && mesh->IsLoaded())
+        {
+            DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationY(m_elapsedTime * 0.5f); // Rotate around Y-axis
+            DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(2.0f, 0.0f, 5.0f); // Move away from camera
+
+            mvpCPUData.model = DirectX::XMMatrixTranspose(rotation * translation); // Combine transformations
+            mvpCPUData.view = DirectX::XMMatrixTranspose(m_camera->GetViewMatrix());
+            mvpCPUData.projection = DirectX::XMMatrixTranspose(m_camera->GetProjectionMatrix());
+
+            m_bufferManager->UpdateConstantBuffer(mvpCPUData);
+
+            // Bind mesh vertex and index buffers
+            commandList->IASetVertexBuffers(0, 1, mesh->GetVertexBufferView());
+            commandList->IASetIndexBuffer(mesh->GetIndexBufferView());
+
+            // Draw the mesh
+            commandList->DrawIndexedInstanced(mesh->GetIndexCount(), 1, 0, 0, 0);
+
+            AGK_TRACE("DirectX12GraphicsSystem: Rendered test mesh with {} indices", mesh->GetIndexCount());
+        }
+    }
+
+    void DirectX12GraphicsSystem::BeginFrame(F32 deltaTime) {
 
         // --- Update InputManager state and broadcast events ---
         // Mouse movement is now event-driven and handled in the subscription callback.
@@ -191,14 +250,11 @@ namespace Angaraka { // Use the Angaraka namespace here
 
         m_elapsedTime += deltaTime;
 
-        DirectX::XMMATRIX scale = DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f);
-        DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationY(m_elapsedTime * 0.5f); // Rotate around Y-axis
-        DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(0.0f, 0.0f, 5.0f); // Move away from camera
-        mvpCPUData.model = DirectX::XMMatrixTranspose(scale * rotation * translation); // Combine transformations
+        // Wait for previous frame to finish before resetting command list
+        m_commandManager->WaitForGPU(m_deviceManager->GetCommandQueue());
 
-        mvpCPUData.view = DirectX::XMMatrixTranspose(m_camera->GetViewMatrix());
-        mvpCPUData.projection = DirectX::XMMatrixTranspose(m_camera->GetProjectionMatrix());
-
+        // Reset command allocator and command list
+        commandList = m_commandManager->Reset(m_pipelineManager->GetPipelineState());
         commandList->SetGraphicsRootSignature(m_pipelineManager->GetRootSignature());
 
         // Set the descriptor heaps (important for SRVs)
@@ -207,11 +263,7 @@ namespace Angaraka { // Use the Angaraka namespace here
         commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 
         m_bufferManager->UpdateConstantBuffer(mvpCPUData);
-
         commandList->SetGraphicsRootConstantBufferView(0, m_bufferManager->GetConstantBufferGPUAddress());
-    }
-
-    void DirectX12GraphicsSystem::BeginFrameEndInternal(ID3D12GraphicsCommandList* commandList, float r, float g, float b, float a) {
 
         unsigned int currentBackBufferIndex = m_swapChainManager->GetCurrentBackBufferIndex();
 
@@ -219,7 +271,7 @@ namespace Angaraka { // Use the Angaraka namespace here
         commandList->IASetVertexBuffers(0, 1, &m_bufferManager->GetVertexBufferView());
         commandList->IASetIndexBuffer(&m_bufferManager->GetIndexBufferView());
 
-        D3D12_VIEWPORT viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(m_width), static_cast<float>(m_height));
+        D3D12_VIEWPORT viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<F32>(m_width), static_cast<F32>(m_height));
         D3D12_RECT scissorRect = CD3DX12_RECT(0, 0, static_cast<LONG>(m_width), static_cast<LONG>(m_height));
         commandList->RSSetViewports(1, &viewport);
         commandList->RSSetScissorRects(1, &scissorRect);
@@ -235,47 +287,8 @@ namespace Angaraka { // Use the Angaraka namespace here
         D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_swapChainManager->GetCurrentRTVHandle();
         commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 
-        const float clearColor[] = { r,g,b,a };
+        const F32 clearColor[] = { m_clearColor.x, m_clearColor.y, m_clearColor.z, m_clearColor.w };
         commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-
-        commandList->DrawIndexedInstanced(
-            m_bufferManager->GetNumIndices(),
-            1,
-            0,
-            0,
-            0
-        );
-    }
-
-    void DirectX12GraphicsSystem::BeginFrame(float deltaTime, Graphics::DirectX12::TextureResource* texture, float r, float g, float b, float a) {
-        // Wait for previous frame to finish before resetting command list
-        m_commandManager->WaitForGPU(m_deviceManager->GetCommandQueue());
-
-        // Reset command allocator and command list
-        ID3D12GraphicsCommandList* commandList = m_commandManager->Reset(m_pipelineManager->GetPipelineState());
-        BeginFrameStartInternal(commandList, deltaTime);
-        if (texture && texture->GetSrvIndex() >= 0)
-        {
-            // Bind the texture SRV (Root Parameter 1)
-            // You stored the texture's SRV descriptor CPU handle in m_DummyTexture->SrvDescriptor
-            // Now you need its GPU handle.
-            UINT srvIndex = texture->GetSrvIndex(); // Assuming you store the index where it was allocated
-            CD3DX12_GPU_DESCRIPTOR_HANDLE gpuSrvHandle(m_textureManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart());
-            gpuSrvHandle.Offset(srvIndex, m_textureManager->GetSrvDescriptorSize());
-
-            commandList->SetGraphicsRootDescriptorTable(1, gpuSrvHandle); // Root Parameter 1 binds the descriptor table
-        }
-        BeginFrameEndInternal(commandList, r, g, b, a);
-    }
-
-    void DirectX12GraphicsSystem::BeginFrame(float deltaTime, float r, float g, float b, float a) {
-        // Wait for previous frame to finish before resetting command list
-        m_commandManager->WaitForGPU(m_deviceManager->GetCommandQueue());
-
-        // Reset command allocator and command list
-        ID3D12GraphicsCommandList* commandList = m_commandManager->Reset(m_pipelineManager->GetPipelineState());
-        BeginFrameStartInternal(commandList, deltaTime);
-        BeginFrameEndInternal(commandList, r, g, b, a);
     }
 
     void DirectX12GraphicsSystem::EndFrame() {
@@ -289,6 +302,9 @@ namespace Angaraka { // Use the Angaraka namespace here
         m_commandManager->Close();
         m_commandManager->Execute(m_deviceManager->GetCommandQueue());
 
+    }
+
+    void DirectX12GraphicsSystem::Present() {
         m_swapChainManager->Present();
     }
 
@@ -307,7 +323,7 @@ namespace Angaraka { // Use the Angaraka namespace here
         if (m_camera) {
             m_camera->SetLens(
                 DirectX::XM_PIDIV4,
-                static_cast<float>(m_width) / static_cast<float>(m_height),
+                static_cast<F32>(m_width) / static_cast<F32>(m_height),
                 0.1f,
                 100.0f
             );
@@ -316,7 +332,7 @@ namespace Angaraka { // Use the Angaraka namespace here
         }
     }
 
-    std::shared_ptr<Core::GraphicsResourceFactory> DirectX12GraphicsSystem::GetGraphicsFactory() {
-        return std::make_shared<Core::GraphicsResourceFactory>(DirectX12ResourceFactory(this));
+    Reference<Core::GraphicsResourceFactory> DirectX12GraphicsSystem::GetGraphicsFactory() {
+        return CreateReference<Core::GraphicsResourceFactory>(DirectX12ResourceFactory(this));
     }
 } // namespace Angaraka

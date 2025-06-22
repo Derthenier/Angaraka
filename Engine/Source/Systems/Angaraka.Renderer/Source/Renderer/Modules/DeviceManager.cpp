@@ -15,9 +15,9 @@ module Angaraka.Graphics.DirectX12.DeviceManager; // Specifies this file belongs
 namespace Angaraka::Graphics::DirectX12 {
 
     namespace {
-        std::string wstring_to_string(const std::wstring& wstr) {
+        String wstring_to_string(const std::wstring& wstr) {
             int count = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), NULL, 0, NULL, NULL);
-            std::string str(count, 0);
+            String str(count, 0);
             WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), &str[0], count, NULL, NULL);
             return str;
         }

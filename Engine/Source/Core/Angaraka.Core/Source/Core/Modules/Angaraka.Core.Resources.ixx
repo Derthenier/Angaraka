@@ -14,7 +14,7 @@ namespace Angaraka::Core {
     // before it's uploaded to the GPU.
     export struct ImageData
     {
-        std::unique_ptr<uint8_t[]> Pixels; // Raw pixel data
+        Scope<U8[]> Pixels; // Raw pixel data
         size_t Width = 0;
         size_t Height = 0;
         size_t RowPitch = 0;    // Bytes per row
@@ -40,7 +40,7 @@ namespace Angaraka::Core {
          * @brief Get the unique identifier (e.g., file path) of the resource.
          * @return A const reference to the resource's identifier string.
          */
-        const std::string& GetId() const { return m_id; }
+        const String& GetId() const { return m_id; }
 
         /**
          * @brief Get the type ID of the resource.
@@ -57,7 +57,7 @@ namespace Angaraka::Core {
          * @param context Optional context pointer for additional data (e.g., for async loading).
          * @return True if loading was successful, false otherwise.
          */
-        virtual bool Load(const std::string& filePath, void* context = nullptr) = 0;
+        virtual bool Load(const String& filePath, void* context = nullptr) = 0;
 
         /**
          * @brief Pure virtual method for unloading/releasing the resource data.
@@ -80,10 +80,10 @@ namespace Angaraka::Core {
 
     protected:
         // Protected constructor to ensure Resource is only created by derived classes.
-        explicit Resource(const std::string& id) : m_id(id) {}
+        explicit Resource(const String& id) : m_id(id) {}
 
     private:
-        std::string m_id; // Unique identifier for this resource (e.g., its file path)
+        String m_id; // Unique identifier for this resource (e.g., its file path)
 
     };
 }

@@ -41,8 +41,8 @@ namespace Angaraka::Input {
 
         // Mouse state for delta calculation (still needed internally by InputManager to *produce* events)
         bool m_firstMouse = true;
-        float m_lastMouseX = 0.0f;
-        float m_lastMouseY = 0.0f;
+        F32 m_lastMouseX = 0.0f;
+        F32 m_lastMouseY = 0.0f;
 
         // Key states for tracking presses/releases (needed to fire events only on state change)
         bool m_keyStates[256]; // Using 256 for VK_ keys
