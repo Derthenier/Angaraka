@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -16,6 +16,12 @@
     <ProjectGuid>{669bde97-b08d-4c55-b35a-2afdc4f6250b}</ProjectGuid>
     <RootNamespace>AngarakaAI</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <PropertyGroup Label="Globals" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Microsoft_AI_DirectML_SkipIncludeDir>false</Microsoft_AI_DirectML_SkipIncludeDir>
+  </PropertyGroup>
+  <PropertyGroup Label="Globals" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Microsoft_AI_DirectML_SkipIncludeDir>false</Microsoft_AI_DirectML_SkipIncludeDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -47,11 +53,15 @@
     <IntDir>$(SolutionDir)Build\$(Platform)\int\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
     <PublicIncludeDirectories>$(ProjectDir)Source\AI\Public</PublicIncludeDirectories>
+    <ExternalIncludePath>S:\Onnx\gpu-1.22.0\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>S:\Onnx\gpu-1.22.0\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IntDir>$(SolutionDir)Build\$(Platform)\int\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
     <PublicIncludeDirectories>$(ProjectDir)Source\AI\Public</PublicIncludeDirectories>
+    <ExternalIncludePath>S:\Onnx\gpu-1.22.0\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>S:\Onnx\gpu-1.22.0\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -59,8 +69,10 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp23</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdclatest</LanguageStandard_C>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source\AI\Public;$(SolutionDir)Engine\Source\Core\Angaraka.Core\Source\Core\Public;$(SolutionDir)Engine\Source\Core\Angaraka.Math\Source\Math\Public</AdditionalIncludeDirectories>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -75,8 +87,10 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp23</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdclatest</LanguageStandard_C>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source\AI\Public;$(SolutionDir)Engine\Source\Core\Angaraka.Core\Source\Core\Public;$(SolutionDir)Engine\Source\Core\Angaraka.Math\Source\Math\Public</AdditionalIncludeDirectories>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -84,8 +98,32 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\AI\Private\Angaraka\AIManager.cpp" />
+    <ClCompile Include="Source\AI\Private\Angaraka\AIModelResource.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\AI\Public\Angaraka\AIManager.hpp" />
+    <ClInclude Include="Source\AI\Public\Angaraka\AIModelResource.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Angaraka.Core\Angaraka.Core.vcxproj">
+      <Project>{4e87a4e8-238c-4cda-840e-2da0ea59955a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\Angaraka.Math\Angaraka.Math.vcxproj">
+      <Project>{55d8173b-e8a6-45b0-bab8-dda3ba0eb5ff}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\..\..\..\packages\nlohmann.json.3.12.0\build\native\nlohmann.json.targets" Condition="Exists('..\..\..\..\packages\nlohmann.json.3.12.0\build\native\nlohmann.json.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\..\..\packages\nlohmann.json.3.12.0\build\native\nlohmann.json.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\nlohmann.json.3.12.0\build\native\nlohmann.json.targets'))" />
+  </Target>
 </Project>

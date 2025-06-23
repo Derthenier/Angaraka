@@ -40,4 +40,9 @@ namespace Angaraka::Math
     constexpr float EpsilonF = Epsilon<float>;
     constexpr float DegToRadF = DegToRad<float>;
     constexpr float RadToDegF = RadToDeg<float>;
+
+    constexpr float MBToBytes = 1024.0f * 1024.0f;
+    constexpr float GBToBytes = MBToBytes * 1024.0f;
+    constexpr float BytesToMB = 0.0000009536743166f;
+    constexpr float BytesToGB = 0.0000000000931323f;
 }

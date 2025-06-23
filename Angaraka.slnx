@@ -1,7 +1,5 @@
 <Solution>
   <Configurations>
-    <BuildType Name="Debug" />
-    <BuildType Name="Release" />
     <Platform Name="x64" />
   </Configurations>
   <Folder Name="/Applications/">
@@ -14,6 +12,7 @@
   </Folder>
   <Folder Name="/Engine Core/">
     <Project Path="Engine/Source/Core/Angaraka.Core/Angaraka.Core.vcxproj" Id="4e87a4e8-238c-4cda-840e-2da0ea59955a" />
+    <Project Path="Engine/Source/Core/Angaraka.Math/Angaraka.Math.vcxproj" Id="55d8173b-e8a6-45b0-bab8-dda3ba0eb5ff" />
   </Folder>
   <Folder Name="/Engine Systems/">
     <Project Path="Engine/Source/Systems/Angaraka.AI/Angaraka.AI.vcxproj" Id="669bde97-b08d-4c55-b35a-2afdc4f6250b" />

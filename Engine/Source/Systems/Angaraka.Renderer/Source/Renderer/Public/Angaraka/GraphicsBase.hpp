@@ -15,6 +15,7 @@
 #include <DirectXMath.h>
 
 #include <Angaraka/Base.hpp>
+#include <Angaraka/MathCore.hpp>
 
 namespace Angaraka::Graphics::DirectX12 {
 

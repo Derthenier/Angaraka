@@ -5,7 +5,7 @@ module;
 #include "Angaraka/MeshBase.hpp"
 #include <algorithm>
 #include <mutex>
-#include <algorithm>
+
 
 module Angaraka.Graphics.DirectX12.Mesh;
 
@@ -510,16 +510,14 @@ namespace Angaraka::Graphics::DirectX12 {
     void MeshManager::LogMemoryUsage() const {
         Statistics stats = GetStatistics();
 
-        constexpr F64 MB = 0.0000009536743166;
-
         AGK_INFO("MeshManager Memory Usage:");
         AGK_INFO("  - Total Meshes: {}", stats.totalMeshes);
         AGK_INFO("  - Total Vertices: {}", stats.totalVertices);
         AGK_INFO("  - Total Indices: {}", stats.totalIndices);
-        AGK_INFO("  - Vertex Memory: {:.2f} MB", static_cast<F64>(stats.totalVertexMemory) * MB);
-        AGK_INFO("  - Index Memory: {:.2f} MB", static_cast<F64>(stats.totalIndexMemory) * MB);
-        AGK_INFO("  - Upload Memory: {:.2f} MB", static_cast<F64>(stats.totalUploadMemory) * MB);
-        AGK_INFO("  - Total GPU Memory: {:.2f} MB", static_cast<F64>(stats.totalVertexMemory + stats.totalIndexMemory) * MB);
+        AGK_INFO("  - Vertex Memory: {:.2f} MB", static_cast<F64>(stats.totalVertexMemory) * Angaraka::Math::BytesToMB);
+        AGK_INFO("  - Index Memory: {:.2f} MB", static_cast<F64>(stats.totalIndexMemory) * Angaraka::Math::BytesToMB);
+        AGK_INFO("  - Upload Memory: {:.2f} MB", static_cast<F64>(stats.totalUploadMemory) * Angaraka::Math::BytesToMB);
+        AGK_INFO("  - Total GPU Memory: {:.2f} MB", static_cast<F64>(stats.totalVertexMemory + stats.totalIndexMemory) * Angaraka::Math::BytesToMB);
     }
 
 } // namespace Angaraka::Graphics::DirectX12

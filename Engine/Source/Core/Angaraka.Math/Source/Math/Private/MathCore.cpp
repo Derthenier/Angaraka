@@ -277,7 +277,7 @@ namespace Angaraka::Math
         const Vector3& v0, const Vector3& v1, const Vector3& v2,
         float& t, Vector3& barycentrics)
     {
-        // Möller-Trumbore intersection algorithm
+        // Moller-Trumbore intersection algorithm
         Vector3 edge1 = v1 - v0;
         Vector3 edge2 = v2 - v0;
         Vector3 h = rayDirection.Cross(edge2);
