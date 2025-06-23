@@ -2,7 +2,13 @@
 
 ## 1. Introduction
 
-The Angaraka Engine is a modern C++ game engine designed for 3D graphics, leveraging the latest C++23 features and DirectX12. Our core philosophy emphasizes modularity, performance, clear separation of concerns, and maintainable, production-ready code. The engine has evolved to include a complete mesh loading system with bundle management.
+The Angaraka Engine is a modern C++ game engine designed for 3D graphics, leveraging the latest C++23 features and DirectX12. Our core philosophy emphasizes modularity, performance, clear separation of concerns, and maintainable, production-ready code.
+
+**Target Game**: First-person RPG inspired by ancient hindu stories and mythology - set in 6400 AD.
+
+**Architecture Strategy**: Immediate pivot capability for third-person perspective when team scales
+
+**Development Approach**: Build engine MVP alongside RPG game systems for rapid iteration
 
 ## 2. Core Principles
 
@@ -12,261 +18,214 @@ The Angaraka Engine is a modern C++ game engine designed for 3D graphics, levera
 * **Performance:** Designing with efficiency in mind, especially for graphics and resource management.
 * **Clarity & Maintainability:** Prioritizing readability, consistent naming conventions, and comprehensive logging.
 * **Resource Ownership:** Strict use of smart pointers (`std::unique_ptr`, `std::shared_ptr`) for clear ownership semantics and automatic memory management.
+* **Game-Engine Co-development:** Building engine features driven by immediate game requirements for rapid iteration and practical validation.
+* **Scalability Architecture:** Designed to support team growth and pivot from first-person to third-person perspective without major rewrites.
 
-## 3. Top-Level Structure
+## 3. Top-Level Structure & Game Integration
 
-The engine is primarily composed of an `Application` layer that orchestrates various managers and subsystems.
+The engine is primarily composed of an `Application` layer that orchestrates various managers and subsystems, designed to support the target RPG game requirements.
 
 * **`Angaraka::Application`**:
     * The main entry point and orchestrator of the engine lifecycle (Initialization, Update loop, Render loop, Shutdown).
     * Responsible for creating and managing the lifetime of top-level managers like `EventManager`, `InputManager`, `DirectX12GraphicsSystem`, and `ResourceManager`.
+    * Integrates with RPG-specific systems for immediate game development capability.
 
-## 4. Core Subsystems
+## 4. Target Game Requirements
 
-### 4.1. Event System (`Angaraka.Core.Events`)
+### Game Vision: "Bioshock Infinite meets Skyrim" (6400 AD Setting)
+* **Core Perspective**: First-person with third-person pivot capability
+* **World Structure**: Multiple connected interior zones (Bioshock-style interiors)
+* **Combat System**: Hybrid ranged/magic combat with simple projectile mechanics
+* **Progression**: Skyrim-style skill trees, world scaling to player level
+* **Narrative**: Live NPCs with dialogue trees, linear story progression
+* **Interaction**: Device activation puzzles, NPC conversations, visual inventory with item icons
+* **Asset Strategy**: Marketplace assets (no custom art team)
+* **Audio**: Text-only dialogue with environmental audio for immersion
+
+### Immediate Pivot Strategy (Team Scaling)
+When team grows, engine supports transition to:
+* **Third-person perspective** (Skyrim/Witcher style)
+* **Character animation systems** for visible player character
+* **Larger outdoor zones** with streaming capability
+* **Advanced lighting and weather** for open-world feel
+
+## 5. Core Subsystems
+
+### 5.1. Event System (`Angaraka.Core.Events`)
 
 * **`EventManager`**: A central pub-sub (publisher-subscriber) system.
     * Decouples components by allowing them to communicate asynchronously through events.
     * Used for system-wide notifications (e.g., window resize, input events, resource loaded events).
-    * Thread-safe with atomic subscription ID generation and mutex-protected listener maps.
 
-### 4.2. Input System (`Angaraka.Input.Windows`)
+### 5.2. Input System (`Angaraka.Core.Input`)
 
-* **`Win64InputSystem`**: Handles raw input from keyboard and mouse.
+* **`InputManager`**: Handles raw input from keyboard and mouse.
     * Translates platform-specific input events into engine-agnostic events published on the `EventManager`.
-    * Event-driven architecture with state tracking for press/release detection.
-    * Supports mouse capture and visibility control for game-style input.
 
-### 4.3. Camera System (`Angaraka.Camera`)
+### 5.3. Camera System (`Angaraka.Camera`)
 
-* **`Camera`**: Manages the view and projection matrices.
-    * Handles camera movement (position, pitch, yaw) with FPS-style controls.
-    * Provides projection properties (FOV, aspect ratio, near/far planes).
-    * Integrates with input system via events for smooth camera movement.
-    * Returns `XMMATRIX` for view and projection transformations.
+* **`Camera`**: Manages view and projection matrices with dual-mode support.
+    * **First-Person Mode**: Direct view matrix for immersive RPG experience.
+    * **Third-Person Mode**: Orbiting camera for character visibility (pivot capability).
+    * **Runtime Switching**: Seamless transition between camera modes for development flexibility.
+    * Handles camera movement (position, pitch, yaw) and projection properties (FOV, aspect ratio, near/far planes).
+    * Provides methods to retrieve `XMMATRIX` for view and projection transformations.
+    * **RPG Integration**: Supports interaction raycasting and UI overlay positioning.
 
-## 5. Graphics Subsystem (`Angaraka.Graphics.DirectX12`)
+## 6. Graphics Subsystem (`Angaraka.Graphics.DirectX12`)
 
 The graphics subsystem is built around DirectX12 and is highly modular, with specialized managers for different aspects of the rendering pipeline.
 
-### 5.1. Core Graphics Manager
 * **`DirectX12GraphicsSystem` (Renderer)**:
     * The primary interface for rendering operations.
     * Orchestrates the DirectX12 device, command management, swap chain, and scene rendering.
     * Manages the lifetime and initialization of core DirectX12 managers.
-    * **Dependency Injection for Internal Managers**: Creates and provides necessary components to the `ResourceManager`.
+    * **Dependency Injection for Internal Managers**: Creates and provides necessary components (like `TextureManager`) to the `ResourceManager` through the `GraphicsContext`.
     * Handles window resize events by coordinating with relevant managers.
-    * Supports multiple object rendering with independent transformations.
 
-### 5.2. Device and Command Management
-* **`DeviceManager`**: Manages the `ID3D12Device` and associated debug layers.
-    * Handles adapter enumeration and device creation.
-    * Configures debug layers for development builds.
-    * Provides device access to other managers.
+* **Sub-Managers (Injected Dependencies)**:
+    * **`DeviceManager`**: Manages the `ID3D12Device` and associated debug layers.
+    * **`CommandManager`**: Manages `ID3D12CommandAllocator`, `ID3D12GraphicsCommandList`, and `ID3D12CommandQueue` for issuing GPU commands. Includes synchronization mechanisms (fences).
+    * **`SwapChainManager`**: Manages the `IDXGISwapChain3` and its associated render target views (RTVs). Handles presentation and resizing.
+    * **`PSOManager`**: Manages `ID3D12PipelineState` objects and `ID3D12RootSignature` for rendering pipelines. Compiles shaders and defines input layouts.
+    * **`BufferManager`**: Handles creation and management of GPU buffers:
+        * **Vertex Buffers**: Stores per-vertex data (position, color, UV).
+        * **Index Buffers**: Stores indices for indexed drawing.
+        * **Constant Buffers**: Stores uniform data (e.g., MVP matrix) for shaders, mapped to CPU memory for efficient updates.
+    * **`TextureManager`**: Manages GPU-side texture resources.
+        * Responsible for creating `ID3D12Resource` objects for textures and their corresponding Shader Resource Views (SRVs).
+        * Utilizes external libraries (e.g., DirectXTex) to process raw image data.
+        * Crucially, it **does not** handle file I/O directly; it receives `ImageData` from the `TextureResource` (which loads from disk).
+    * **MeshManager**: Handles creation and management of GPU mesh resources.
+        * Loads OBJ files with flexible vertex layouts (P, PN, PNT, PNTC, PNTCB, PNTTB).
+        * Creates vertex and index buffers for GPU rendering.
+        * Supports static mesh rendering for environments and characters.
+        * **RPG Integration**: Optimized for interior scene rendering with moderate polygon counts.
+    * **Scene Management**: Multi-object rendering system for game worlds.
+        * **SceneManager**: Container for multiple renderable objects with individual transforms.
+        * **Transform Hierarchy**: Parent-child relationships for complex scene organization.
+        * **Culling System**: Frustum culling for performance in larger scenes.
+        * **Zone Loading**: Supports multiple connected areas for RPG world structure.
 
-* **`CommandQueueAndListManager`**: Manages `ID3D12CommandAllocator`, `ID3D12GraphicsCommandList`, and `ID3D12CommandQueue`.
-    * Issues GPU commands with proper synchronization.
-    * Includes fence-based GPU/CPU synchronization mechanisms.
-    * Handles command list reset/execute cycles.
+## 7. Resource Management System (`Angaraka.Core.Resources`)
 
-### 5.3. Rendering Pipeline Management
-* **`SwapChainManager`**: Manages the `IDXGISwapChain3` and associated render target views (RTVs).
-    * Handles presentation and window resizing.
-    * Manages double/triple buffering with proper resource state transitions.
+This system provides a centralized, type-safe, and cache-driven approach to managing all engine assets. It is designed to be highly extensible and avoid problematic global state.
 
-* **`PSOManager`**: Manages `ID3D12PipelineState` objects and `ID3D12RootSignature`.
-    * Compiles HLSL shaders and defines input layouts.
-    * Creates root signatures for texture and constant buffer binding.
-    * Supports multiple vertex layout configurations.
+* **Core Principle**: Resources are loaded once, cached, and their lifetime is managed via `std::shared_ptr`. Dependencies required for loading (e.g., DirectX12 context) are injected.
 
-### 5.4. Resource Management
-* **`BufferManager`**: Handles creation and management of GPU buffers.
-    * **Vertex Buffers**: Stores per-vertex data with flexible layouts.
-    * **Index Buffers**: Stores indices for indexed drawing.
-    * **Constant Buffers**: Stores uniform data (e.g., MVP matrix) mapped to CPU memory for efficient updates.
-
-* **`TextureManager`**: Manages GPU-side texture resources.
-    * Creates `ID3D12Resource` objects for textures and their corresponding Shader Resource Views (SRVs).
-    * Utilizes DirectXTex for processing various image formats (WIC, TGA, HDR, DDS).
-    * Handles upload heap management for efficient GPU texture creation.
-
-* **`MeshManager`**: **NEW** - Manages GPU-side mesh resources and buffers.
-    * Creates vertex and index buffers from CPU mesh data.
-    * Handles upload heap management with proper D3D12 state transitions.
-    * Provides statistics tracking and memory usage monitoring.
-    * Thread-safe mesh tracking with automatic cleanup.
-
-### 5.5. Shader Management
-* **`ShaderManager`**: Manages shader compilation from HLSL source files.
-    * Compiles vertex and pixel shaders with debug support.
-    * Handles shader caching and recompilation during development.
-
-## 6. Resource Management System (`Angaraka.Core.Resources`)
-
-This system provides a centralized, type-safe, and cache-driven approach to managing all engine assets, now including comprehensive mesh support.
-
-### 6.1. Core Architecture
-* **Core Principle**: Resources are loaded once, cached, and their lifetime is managed via `std::shared_ptr`. Dependencies required for loading are injected through dependency injection.
-
-* **`Resource` Base Class**:
-    * Abstract interface (`virtual bool Load(...)`, `virtual void Unload()`) for all managed assets.
+* **`Resource` Base Class (`Angaraka/Core/Resources/Resource.hpp`)**:
+    * An abstract interface (`virtual bool Load(...)`, `virtual void Unload()`) for all managed assets (textures, meshes, materials, etc.).
     * Each resource has a unique `id` (typically its file path).
-    * Utilizes `AGK_RESOURCE_TYPE_ID` macro for runtime type identification.
+    * Utilizes `AGK_RESOURCE_TYPE_ID` macro for runtime type identification, enabling generic resource handling while maintaining type safety.
 
-* **`ResourceManager`**:
-    * Central cache and coordinator for `Resource` objects.
-    * **Constructor Dependency Injection**: Receives graphics dependencies during construction.
-    * **`template<typename T> std::shared_ptr<T> GetResource(const std::string& id)`**: Primary resource retrieval method.
-    * **Lifetime Management**: Uses `std::shared_ptr` with explicit unload methods available.
+* **`ResourceManager` (`Angaraka.Core.Resources.ResourceManager`)**:
+    * The central cache and coordinator for `Resource` objects.
+    * **Constructor Dependency Injection**: Receives a `std::shared_ptr<Angaraka::Graphics::GraphicsContext>` during its construction. This `GraphicsContext` contains all necessary graphics-related dependencies (`ID3D12Device`, `ID3D12GraphicsCommandList`, `TextureManager`, etc.).
+    * **`template<typename T> std::shared_ptr<T> GetResource(const std::string& id)`**: The primary method for retrieving resources.
+        * Checks its internal cache (`m_loadedResources`). If found and type matches, returns the cached instance.
+        * If not found, creates a new `std::make_shared<T>(id)` instance.
+        * **Delegated Loading**: Calls `newResource->Load(id, *m_graphicsContext)` to trigger the actual loading process, passing down the necessary `GraphicsContext`.
+        * Caches the newly loaded resource.
+    * **Lifetime Management**: Uses `std::shared_ptr` within its `m_loadedResources` map. Resources are kept alive as long as the `ResourceManager` or any other part of the engine holds a `std::shared_ptr` to them. Explicit `UnloadResource` and `UnloadAllResources` methods are also available.
 
-### 6.2. Concrete Resource Implementations
+* **`GraphicsContext` (`Angaraka/Graphics/GraphicsContext.hpp`)**:
+    * A lightweight `struct` that acts as a container for pointers to core graphics system components (`ID3D12Device*`, `ID3D12GraphicsCommandList*`, `TextureManager*`, etc.).
+    * This struct is created and populated by `DirectX12GraphicsSystem` during its initialization.
+    * It is then passed to the `ResourceManager` constructor and subsequently to the `Load()` methods of individual `Resource` objects, eliminating the need for global accessors.
 
-#### 6.2.1. Texture Resources
-* **`TextureResource`**: Manages loaded textures.
-    * Integrates with `TextureManager` for GPU resource creation.
-    * Supports multiple image formats through DirectXTex integration.
-    * Handles CPU-to-GPU data transfer with upload heap management.
+* **Concrete `Resource` Implementations**:
+    * **`TextureResource` (`Angaraka.Graphics.DirectX12.TextureResource`)**:
+        * Derives from `Angaraka::Core::Resources::Resource`.
+        * Its `Load(const std::string& filePath, const Angaraka::Graphics::GraphicsContext& graphicsContext)` method utilizes `graphicsContext.pTextureManager` to delegate the actual GPU-side texture creation to the `TextureManager`, effectively removing any global dependency.
+        * Stores the `std::shared_ptr<Texture>` returned by `TextureManager` internally.
+    * **`MeshResource`**: Complete mesh resource support for OBJ file loading and GPU buffer creation.
+    * **Future Resources**: This pattern will extend to `MaterialResource`, `ShaderResource`, `AudioResource`, etc., each taking the `GraphicsContext` to interact with their respective managers.
 
-#### 6.2.2. Mesh Resources (**NEW**)
-* **`MeshResource`**: **NEW** - Manages loaded 3D meshes.
-    * Integrates with `MeshManager` for GPU buffer creation.
-    * Supports OBJ file format with extensible loader architecture.
-    * Flexible vertex layout system (P, PN, PNT, PNTC, PNTCB, PNTTB).
-    * Optional CPU data caching for collision detection and physics.
-    * Future-ready for FBX support via ufbx library.
+* **RPG Asset Integration**:
+    * **Bundle System**: YAML-defined asset collections for zone loading.
+    * **Priority Loading**: Critical assets (player character, UI) vs. background assets.
+    * **Marketplace Asset Pipeline**: Optimized for loading external assets without custom toolchain.
 
-### 6.3. Mesh Loading Pipeline (**NEW**)
+## 8. Game Systems Integration
 
-#### 6.3.1. Vertex Layout System
-* **Flexible Vertex Attributes**: Support for Position, Normal, TexCoord, Color, Bone data.
-* **Predefined Layouts**: Common combinations (PNT, PNTC, etc.) with extensibility.
-* **Type-Safe Attributes**: DXGI format mapping and D3D12 input layout generation.
-* **Memory Optimization**: Interleaved vertex data for optimal GPU cache performance.
+### RPG-Specific Systems (Built on Engine Foundation)
+* **Character System**:
+    * **PlayerCharacter**: Mesh rendering, transform management, controller integration
+    * **NPCs**: Static mesh placement with interaction triggers
+    * **Dual Perspective Support**: Character visibility management for first/third-person modes
 
-#### 6.3.2. OBJ Loader
-* **Complete OBJ Support**: Vertices, normals, texture coordinates, faces, materials.
-* **Robust Parsing**: Handles triangles, quads (auto-triangulated), and n-gons.
-* **MTL Material Support**: Diffuse, normal, and specular texture loading.
-* **Vertex Deduplication**: Eliminates duplicate vertices for optimal GPU usage.
-* **Error Handling**: Detailed error messages with line number reporting.
+* **Interaction System**:
+    * **Device Activation**: Raycast-based interaction with world objects
+    * **NPC Dialogue**: Trigger volumes and UI integration
+    * **Inventory Items**: Visual item representation and collection mechanics
 
-#### 6.3.3. CPU Mesh Data (`MeshData`)
-* **Flexible Storage**: Raw interleaved vertex buffer with attribute descriptors.
-* **Validation**: Comprehensive mesh data validation methods.
-* **Bounding Information**: Automatic AABB and bounding sphere calculation.
-* **Material Support**: Embedded material definitions for future expansion.
+* **Zone Management**:
+    * **Scene Loading**: Multiple connected interior areas
+    * **Transition System**: Seamless zone changes with asset streaming
+    * **Environmental Audio**: Spatial audio for immersion
 
-#### 6.3.4. GPU Mesh Management (`GPUMesh`)
-* **D3D12 Integration**: Proper buffer creation with state transitions.
-* **Resource Views**: Pre-configured vertex and index buffer views.
-* **Memory Tracking**: Statistics and validation for debugging.
-* **Upload Heap Management**: Temporary heap cleanup after GPU completion.
+* **UI Framework** (Planned):
+    * **Dialogue Trees**: Text-based conversation system
+    * **Inventory Interface**: Visual item icons and equipment slots
+    * **HUD Elements**: Health, skill progress, interaction prompts
 
-## 7. Asset Bundle System
+### Scalability for Team Growth
+* **Character Animation**: Skeletal animation system for visible characters
+* **Advanced Lighting**: Dynamic lighting for open-world environments  
+* **Audio Systems**: 3D spatial audio and music management
+* **AI Framework**: Behavior trees and pathfinding for NPCs
+* **Editor Integration**: Real-time scene editing and asset preview
 
-### 7.1. Bundle Definition (YAML)
-The engine uses YAML-based bundle definitions for asset management:
-
-```yaml
-bundle:
-  name: "Core_Assets"
-  priority: 0
-  auto_load: true
-  unload_strategy: "manual"
-
-assets:
-  - type: "texture"
-    id: "ui/button_normal"
-    path: "textures/ui/button_normal.png"
-    priority: 0
-    
-  - type: "mesh"
-    id: "props/barrel"
-    path: "meshes/barrel.obj"
-    vertex_layout: "PNT"
-    priority: 5
-```
-
-### 7.2. Bundle Integration
-* **Unified Loading**: Both textures and meshes use the same bundle system.
-* **Priority Management**: Asset loading priority for memory management.
-* **Automatic Loading**: Engine-level assets loaded automatically.
-* **Extensible Format**: Easy to add new asset types (audio, materials, etc.).
-
-## 8. C++23 Modules Strategy
+## 9. C++23 Modules Strategy
 
 The engine leverages C++23 Modules for improved build times and better encapsulation:
 
-### 8.1. Module Usage Patterns
-* **`.ixx` Module Interface Units**: Used for module declarations and exports.
-* **`.cpp` Module Implementation Units**: Used for implementation details.
-* **`.hpp` Headers**: Used for public interfaces, shared data structures, and interop.
+* **`.hpp` Headers**: Used for public interfaces, declarations, and data structures that need to be shared across module boundaries or with traditional compilation units. These typically contain `export` directives for module interfaces, or are included in global module fragments.
+* **`.cpp` Files (Module Implementation Units)**: Used for the actual implementation of classes and functions belonging to a module. These files typically `import` other modules or `#include` local `.hpp` files, but do not necessarily `export` anything themselves, unless they are the primary unit for a named module. This allows for faster, independent compilation of implementation details.
 
-### 8.2. Module Organization
-* **Core Modules**: `Angaraka.Core.Events`, `Angaraka.Core.Resources`, `Angaraka.Core.Config`
-* **Graphics Modules**: Individual managers as separate modules for better isolation.
-* **System Modules**: Input, Camera, and other subsystems as focused modules.
+This hybrid approach balances the benefits of modules (encapsulation, faster compilation) with the practicality of existing C++ tooling and the need for public header-only definitions.
 
-## 9. Current System Capabilities
+## 10. Development Roadmap & Milestones
 
-### 9.1. Rendering Features
-* **Multi-Object Rendering**: Support for multiple meshes with independent transforms.
-* **Flexible Vertex Layouts**: Runtime vertex format selection based on asset needs.
-* **Texture Mapping**: Complete texture loading and binding pipeline.
-* **Camera Control**: FPS-style camera with smooth movement and mouse look.
+### Current Status: Engine MVP Complete ✅
+- Core rendering pipeline with mesh and texture loading
+- Resource management with caching
+- Input system with event integration  
+- Basic camera and window management
 
-### 9.2. Asset Pipeline
-* **OBJ Mesh Loading**: Complete OBJ file support with material parsing.
-* **Image Format Support**: WIC, TGA, HDR, DDS texture formats.
-* **Bundle Management**: YAML-based asset organization and loading.
-* **Resource Caching**: Automatic deduplication and lifetime management.
+### Phase 1: Scene Management (Week 1) 🚧
+- Multi-object rendering for populated game zones
+- Transform management for object placement
+- Basic interaction system for NPCs and devices
 
-### 9.3. Development Features
-* **D3D12 Debugging**: Comprehensive object naming and validation.
-* **Memory Tracking**: Resource usage statistics and leak detection.
-* **Error Handling**: Detailed logging with proper error recovery.
-* **Hot Reloading Ready**: Architecture supports runtime asset reloading.
+### Phase 2: Character Integration (Week 2) 📅
+- Player character rendering (third-person pivot capability)
+- Dual camera system (first-person + third-person)
+- Character controller for both perspectives
 
-## 10. Future Expansion Points
+### Phase 3: Game Systems (Week 3-4) 📅
+- UI framework for dialogue and inventory
+- Visual inventory with item icons
+- Zone transition and loading system
+- Basic audio integration
 
-### 10.1. Advanced Graphics (Next Priority)
-* **Scene Management**: Multiple mesh instances, transform hierarchy, frustum culling.
-* **Material System**: PBR materials, shader permutations, texture atlasing.
-* **Lighting**: Point, directional, and spot lights with shadow mapping.
-* **Post-Processing**: Tone mapping, bloom, anti-aliasing.
+### Phase 4: RPG Foundation (Month 2) 📅
+- Dialogue system with branching conversations
+- Skill progression mechanics
+- Equipment and upgrade systems
+- Save/load functionality
 
-### 10.2. Animation and Physics
-* **Skeletal Animation**: Bone hierarchies, animation clips, blending.
-* **Physics Integration**: Collision detection, rigid body dynamics.
-* **Particle Systems**: GPU-based particle simulation and rendering.
-
-### 10.3. Audio and AI
-* **3D Audio**: Spatial audio with HRTF and environmental effects.
-* **AI Framework**: Behavior trees, pathfinding, decision making.
-* **Scripting**: Lua or C# integration for gameplay logic.
-
-### 10.4. Tools and Editor
-* **In-Engine Editor**: Scene editing, asset browser, property inspector.
-* **Asset Pipeline**: Automated asset processing and optimization.
-* **Profiling Tools**: Performance analysis and bottleneck identification.
+### Future Expansion (Team Scaling) 📅
+- Character animation pipeline
+- Advanced lighting and weather
+- AI systems and pathfinding
+- Full editor integration
 
 ## 11. Best Practices & Utilities
 
-### 11.1. Error Handling & Logging
-* **Structured Logging**: `AGK_INFO`, `AGK_WARN`, `AGK_ERROR`, `AGK_CRITICAL` macros.
-* **DirectX Error Handling**: `DXCall` macro for `HRESULT` validation.
-* **D3D12 Object Naming**: `NAME_D3D12_OBJECT` macro for debugging support.
-
-### 11.2. Memory Management
-* **Smart Pointers**: Consistent use of `std::unique_ptr` and `std::shared_ptr`.
-* **RAII Principles**: Automatic resource cleanup through destructors.
-* **Upload Heap Management**: Temporary resource cleanup after GPU completion.
-
-### 11.3. Threading and Synchronization
-* **Thread-Safe Design**: Mutex protection for shared data structures.
-* **GPU Synchronization**: Fence-based CPU/GPU coordination.
-* **Event System**: Asynchronous communication between subsystems.
+* **Error Handling & Logging**: Extensive use of `AGK_INFO`, `AGK_WARN`, `AGK_ERROR`, `AGK_CRITICAL` macros for structured logging.
+* **DirectX Error Handling**: `DXCall` macro is used to check `HRESULT` return values and report errors.
+* **D3D12 Object Naming**: `NAME_D3D12_OBJECT` macro for debugging purposes, allowing easy identification of DirectX12 resources in tools like PIX.
+* **Smart Pointers**: Consistent use of `std::unique_ptr` for exclusive ownership and `std::shared_ptr` for shared ownership, preventing memory leaks and simplifying resource management.
 
 ---
-
-**Current Status**: The engine has a complete mesh loading and rendering pipeline with bundle management, flexible vertex layouts, and production-ready resource management. The foundation is solid for expanding into advanced graphics features, scene management, and tool development.
