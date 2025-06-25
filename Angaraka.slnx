@@ -15,6 +15,7 @@
     <Project Path="Engine/Source/Core/Angaraka.Math/Angaraka.Math.vcxproj" Id="55d8173b-e8a6-45b0-bab8-dda3ba0eb5ff" />
   </Folder>
   <Folder Name="/Engine Systems/">
+    <Project Path="Engine/Source/Systems/Angaraka.AI.Integration/Angaraka.AI.Integration.vcxproj" Id="fd4eb694-906b-4d94-8812-a1577e54e6c1" />
     <Project Path="Engine/Source/Systems/Angaraka.AI/Angaraka.AI.vcxproj" Id="669bde97-b08d-4c55-b35a-2afdc4f6250b" />
     <Project Path="Engine/Source/Systems/Angaraka.Audio/Angaraka.Audio.vcxproj" Id="90ae5093-627a-43c2-9ec6-d8d3bcb2cf84" />
     <Project Path="Engine/Source/Systems/Angaraka.Input/Angaraka.Input.vcxproj" Id="c2c30e95-37bc-4825-bb9e-801cf87a9aee" />

@@ -17,16 +17,16 @@ namespace Angaraka::Math
         m.fill(0.0f);
     }
 
-    Matrix4x4::Matrix4x4(float diagonal)
+    Matrix4x4::Matrix4x4(F32 diagonal)
     {
         m.fill(0.0f);
         m[0] = m[5] = m[10] = m[15] = diagonal;
     }
 
-    Matrix4x4::Matrix4x4(float m00, float m01, float m02, float m03,
-        float m10, float m11, float m12, float m13,
-        float m20, float m21, float m22, float m23,
-        float m30, float m31, float m32, float m33)
+    Matrix4x4::Matrix4x4(F32 m00, F32 m01, F32 m02, F32 m03,
+        F32 m10, F32 m11, F32 m12, F32 m13,
+        F32 m20, F32 m21, F32 m22, F32 m23,
+        F32 m30, F32 m31, F32 m32, F32 m33)
     {
         // Store in column-major order for OpenGL compatibility
         m[0] = m00; m[4] = m01; m[8] = m02; m[12] = m03;
@@ -107,7 +107,7 @@ namespace Angaraka::Math
         return result;
     }
 
-    Matrix4x4 Matrix4x4::operator*(float scalar) const
+    Matrix4x4 Matrix4x4::operator*(F32 scalar) const
     {
         Matrix4x4 result;
         for (int i = 0; i < 16; ++i)
@@ -141,7 +141,7 @@ namespace Angaraka::Math
         return *this;
     }
 
-    Matrix4x4& Matrix4x4::operator*=(float scalar)
+    Matrix4x4& Matrix4x4::operator*=(F32 scalar)
     {
         for (int i = 0; i < 16; ++i)
         {
@@ -214,9 +214,9 @@ namespace Angaraka::Math
         *this = Transposed();
     }
 
-    float Matrix4x4::Determinant() const
+    F32 Matrix4x4::Determinant() const
     {
-        float det =
+        F32 det =
             m[12] * m[9] * m[6] * m[3] - m[8] * m[13] * m[6] * m[3] - m[12] * m[5] * m[10] * m[3] + m[4] * m[13] * m[10] * m[3] +
             m[8] * m[5] * m[14] * m[3] - m[4] * m[9] * m[14] * m[3] - m[12] * m[9] * m[2] * m[7] + m[8] * m[13] * m[2] * m[7] +
             m[12] * m[1] * m[10] * m[7] - m[0] * m[13] * m[10] * m[7] - m[8] * m[1] * m[14] * m[7] + m[0] * m[9] * m[14] * m[7] +
@@ -279,7 +279,7 @@ namespace Angaraka::Math
         inv.m[15] = m[0] * m[5] * m[10] - m[0] * m[6] * m[9] - m[4] * m[1] * m[10] +
             m[4] * m[2] * m[9] + m[8] * m[1] * m[6] - m[8] * m[2] * m[5];
 
-        float det = Determinant();
+        F32 det = Determinant();
 
         if (IsNearlyZero(det))
         {
@@ -287,7 +287,7 @@ namespace Angaraka::Math
             return Identity();
         }
 
-        float invDet = 1.0f / det;
+        F32 invDet = 1.0f / det;
         for (int i = 0; i < 16; ++i)
         {
             inv.m[i] *= invDet;
@@ -337,42 +337,42 @@ namespace Angaraka::Math
         rotMatrix(2, 0) /= scale.x; rotMatrix(2, 1) /= scale.y; rotMatrix(2, 2) /= scale.z;
 
         // Convert rotation matrix to quaternion
-        float trace = rotMatrix(0, 0) + rotMatrix(1, 1) + rotMatrix(2, 2);
+        F32 trace = rotMatrix(0, 0) + rotMatrix(1, 1) + rotMatrix(2, 2);
 
         if (trace > 0.0f)
         {
-            float s = Sqrt(trace + 1.0f) * 2.0f; // s = 4 * qw
-            float w = 0.25f * s;
-            float x = (rotMatrix(2, 1) - rotMatrix(1, 2)) / s;
-            float y = (rotMatrix(0, 2) - rotMatrix(2, 0)) / s;
-            float z = (rotMatrix(1, 0) - rotMatrix(0, 1)) / s;
+            F32 s = Sqrt(trace + 1.0f) * 2.0f; // s = 4 * qw
+            F32 w = 0.25f * s;
+            F32 x = (rotMatrix(2, 1) - rotMatrix(1, 2)) / s;
+            F32 y = (rotMatrix(0, 2) - rotMatrix(2, 0)) / s;
+            F32 z = (rotMatrix(1, 0) - rotMatrix(0, 1)) / s;
             return { x, y, z, w };
         }
         else if (rotMatrix(0, 0) > rotMatrix(1, 1) && rotMatrix(0, 0) > rotMatrix(2, 2))
         {
-            float s = Sqrt(1.0f + rotMatrix(0, 0) - rotMatrix(1, 1) - rotMatrix(2, 2)) * 2.0f; // s = 4 * qx
-            float w = (rotMatrix(2, 1) - rotMatrix(1, 2)) / s;
-            float x = 0.25f * s;
-            float y = (rotMatrix(0, 1) + rotMatrix(1, 0)) / s;
-            float z = (rotMatrix(0, 2) + rotMatrix(2, 0)) / s;
+            F32 s = Sqrt(1.0f + rotMatrix(0, 0) - rotMatrix(1, 1) - rotMatrix(2, 2)) * 2.0f; // s = 4 * qx
+            F32 w = (rotMatrix(2, 1) - rotMatrix(1, 2)) / s;
+            F32 x = 0.25f * s;
+            F32 y = (rotMatrix(0, 1) + rotMatrix(1, 0)) / s;
+            F32 z = (rotMatrix(0, 2) + rotMatrix(2, 0)) / s;
             return { x, y, z, w };
         }
         else if (rotMatrix(1, 1) > rotMatrix(2, 2))
         {
-            float s = Sqrt(1.0f + rotMatrix(1, 1) - rotMatrix(0, 0) - rotMatrix(2, 2)) * 2.0f; // s = 4 * qy
-            float w = (rotMatrix(0, 2) - rotMatrix(2, 0)) / s;
-            float x = (rotMatrix(0, 1) + rotMatrix(1, 0)) / s;
-            float y = 0.25f * s;
-            float z = (rotMatrix(1, 2) + rotMatrix(2, 1)) / s;
+            F32 s = Sqrt(1.0f + rotMatrix(1, 1) - rotMatrix(0, 0) - rotMatrix(2, 2)) * 2.0f; // s = 4 * qy
+            F32 w = (rotMatrix(0, 2) - rotMatrix(2, 0)) / s;
+            F32 x = (rotMatrix(0, 1) + rotMatrix(1, 0)) / s;
+            F32 y = 0.25f * s;
+            F32 z = (rotMatrix(1, 2) + rotMatrix(2, 1)) / s;
             return { x, y, z, w };
         }
         else
         {
-            float s = Sqrt(1.0f + rotMatrix(2, 2) - rotMatrix(0, 0) - rotMatrix(1, 1)) * 2.0f; // s = 4 * qz
-            float w = (rotMatrix(1, 0) - rotMatrix(0, 1)) / s;
-            float x = (rotMatrix(0, 2) + rotMatrix(2, 0)) / s;
-            float y = (rotMatrix(1, 2) + rotMatrix(2, 1)) / s;
-            float z = 0.25f * s;
+            F32 s = Sqrt(1.0f + rotMatrix(2, 2) - rotMatrix(0, 0) - rotMatrix(1, 1)) * 2.0f; // s = 4 * qz
+            F32 w = (rotMatrix(1, 0) - rotMatrix(0, 1)) / s;
+            F32 x = (rotMatrix(0, 2) + rotMatrix(2, 0)) / s;
+            F32 y = (rotMatrix(1, 2) + rotMatrix(2, 1)) / s;
+            F32 z = 0.25f * s;
             return { x, y, z, w };
         }
     }
@@ -407,21 +407,21 @@ namespace Angaraka::Math
         return result;
     }
 
-    Matrix4x4 Matrix4x4::Translation(float x, float y, float z)
+    Matrix4x4 Matrix4x4::Translation(F32 x, F32 y, F32 z)
     {
         return Translation(Vector3(x, y, z));
     }
 
-    Matrix4x4 Matrix4x4::Rotation(const Vector3& axis, float angle)
+    Matrix4x4 Matrix4x4::Rotation(const Vector3& axis, F32 angle)
     {
         Vector3 normalizedAxis = axis.Normalized();
-        float c = std::cos(angle);
-        float s = std::sin(angle);
-        float oneMinusC = 1.0f - c;
+        F32 c = std::cos(angle);
+        F32 s = std::sin(angle);
+        F32 oneMinusC = 1.0f - c;
 
-        float x = normalizedAxis.x;
-        float y = normalizedAxis.y;
-        float z = normalizedAxis.z;
+        F32 x = normalizedAxis.x;
+        F32 y = normalizedAxis.y;
+        F32 z = normalizedAxis.z;
 
         return Matrix4x4(
             c + x * x * oneMinusC, x * y * oneMinusC - z * s, x * z * oneMinusC + y * s, 0.0f,
@@ -431,10 +431,10 @@ namespace Angaraka::Math
         );
     }
 
-    Matrix4x4 Matrix4x4::RotationX(float angle)
+    Matrix4x4 Matrix4x4::RotationX(F32 angle)
     {
-        float c = std::cos(angle);
-        float s = std::sin(angle);
+        F32 c = std::cos(angle);
+        F32 s = std::sin(angle);
 
         return Matrix4x4(
             1.0f, 0.0f, 0.0f, 0.0f,
@@ -444,10 +444,10 @@ namespace Angaraka::Math
         );
     }
 
-    Matrix4x4 Matrix4x4::RotationY(float angle)
+    Matrix4x4 Matrix4x4::RotationY(F32 angle)
     {
-        float c = std::cos(angle);
-        float s = std::sin(angle);
+        F32 c = std::cos(angle);
+        F32 s = std::sin(angle);
 
         return Matrix4x4(
             c, 0.0f, s, 0.0f,
@@ -457,10 +457,10 @@ namespace Angaraka::Math
         );
     }
 
-    Matrix4x4 Matrix4x4::RotationZ(float angle)
+    Matrix4x4 Matrix4x4::RotationZ(F32 angle)
     {
-        float c = std::cos(angle);
-        float s = std::sin(angle);
+        F32 c = std::cos(angle);
+        F32 s = std::sin(angle);
 
         return Matrix4x4(
             c, -s, 0.0f, 0.0f,
@@ -470,7 +470,7 @@ namespace Angaraka::Math
         );
     }
 
-    Matrix4x4 Matrix4x4::RotationEuler(float pitch, float yaw, float roll)
+    Matrix4x4 Matrix4x4::RotationEuler(F32 pitch, F32 yaw, F32 roll)
     {
         return RotationZ(roll) * RotationY(yaw) * RotationX(pitch);
     }
@@ -495,12 +495,12 @@ namespace Angaraka::Math
         return result;
     }
 
-    Matrix4x4 Matrix4x4::Scale(float x, float y, float z)
+    Matrix4x4 Matrix4x4::Scale(F32 x, F32 y, F32 z)
     {
         return Scale(Vector3(x, y, z));
     }
 
-    Matrix4x4 Matrix4x4::Scale(float uniformScale)
+    Matrix4x4 Matrix4x4::Scale(F32 uniformScale)
     {
         return Scale(Vector3(uniformScale));
     }
@@ -543,9 +543,9 @@ namespace Angaraka::Math
         return result;
     }
 
-    Matrix4x4 Matrix4x4::Perspective(float fovY, float aspect, float nearPlane, float farPlane)
+    Matrix4x4 Matrix4x4::Perspective(F32 fovY, F32 aspect, F32 nearPlane, F32 farPlane)
     {
-        float tanHalfFovy = std::tan(fovY * 0.5f);
+        F32 tanHalfFovy = std::tan(fovY * 0.5f);
 
         Matrix4x4 result;
         result(0, 0) = 1.0f / (aspect * tanHalfFovy);
@@ -557,9 +557,9 @@ namespace Angaraka::Math
         return result;
     }
 
-    Matrix4x4 Matrix4x4::PerspectiveReversedZ(float fovY, float aspect, float nearPlane, float farPlane)
+    Matrix4x4 Matrix4x4::PerspectiveReversedZ(F32 fovY, F32 aspect, F32 nearPlane, F32 farPlane)
     {
-        float tanHalfFovy = std::tan(fovY * 0.5f);
+        F32 tanHalfFovy = std::tan(fovY * 0.5f);
 
         Matrix4x4 result;
         result(0, 0) = 1.0f / (aspect * tanHalfFovy);
@@ -571,14 +571,14 @@ namespace Angaraka::Math
         return result;
     }
 
-    Matrix4x4 Matrix4x4::Orthographic(float left, float right, float bottom, float top, float nearPlane, float farPlane)
+    Matrix4x4 Matrix4x4::Orthographic(F32 left, F32 right, F32 bottom, F32 top, F32 nearPlane, F32 farPlane)
     {
         Matrix4x4 result;
 
         // Calculate scaling factors
-        float width = right - left;
-        float height = top - bottom;
-        float depth = farPlane - nearPlane;
+        F32 width = right - left;
+        F32 height = top - bottom;
+        F32 depth = farPlane - nearPlane;
 
         // Validate input parameters
         if (IsNearlyZero(width) || IsNearlyZero(height) || IsNearlyZero(depth))
@@ -603,11 +603,11 @@ namespace Angaraka::Math
         return result;
     }
 
-    Matrix4x4 Matrix4x4::OrthographicCentered(float width, float height, float nearPlane, float farPlane)
+    Matrix4x4 Matrix4x4::OrthographicCentered(F32 width, F32 height, F32 nearPlane, F32 farPlane)
     {
         // Calculate symmetric bounds around origin
-        float halfWidth = width * 0.5f;
-        float halfHeight = height * 0.5f;
+        F32 halfWidth = width * 0.5f;
+        F32 halfHeight = height * 0.5f;
 
         // Use the general orthographic function with symmetric bounds
         return Orthographic(-halfWidth, halfWidth, -halfHeight, halfHeight, nearPlane, farPlane);
@@ -616,10 +616,10 @@ namespace Angaraka::Math
     // Additional orthographic utility functions
 
     // Create orthographic matrix from center point and dimensions
-    Matrix4x4 Matrix4x4::OrthographicOffCenter(const Vector3& center, float width, float height, float nearPlane, float farPlane)
+    Matrix4x4 Matrix4x4::OrthographicOffCenter(const Vector3& center, F32 width, F32 height, F32 nearPlane, F32 farPlane)
     {
-        float halfWidth = width * 0.5f;
-        float halfHeight = height * 0.5f;
+        F32 halfWidth = width * 0.5f;
+        F32 halfHeight = height * 0.5f;
 
         return Orthographic(
             center.x - halfWidth,  // left
@@ -632,22 +632,22 @@ namespace Angaraka::Math
     }
 
     // Create orthographic matrix for 2D rendering (Z from -1 to 1)
-    Matrix4x4 Matrix4x4::Orthographic2D(float left, float right, float bottom, float top)
+    Matrix4x4 Matrix4x4::Orthographic2D(F32 left, F32 right, F32 bottom, F32 top)
     {
         return Orthographic(left, right, bottom, top, -1.0f, 1.0f);
     }
 
     // Create orthographic matrix for screen/pixel coordinates
-    Matrix4x4 Matrix4x4::OrthographicScreen(float screenWidth, float screenHeight)
+    Matrix4x4 Matrix4x4::OrthographicScreen(F32 screenWidth, F32 screenHeight)
     {
         // Maps screen coordinates (0,0) at top-left to (-1,-1) at bottom-left in NDC
         return Orthographic(0.0f, screenWidth, screenHeight, 0.0f, -1.0f, 1.0f);
     }
 
     // Create orthographic matrix with aspect ratio preservation
-    Matrix4x4 Matrix4x4::OrthographicAspect(float size, float aspectRatio, float nearPlane, float farPlane)
+    Matrix4x4 Matrix4x4::OrthographicAspect(F32 size, F32 aspectRatio, F32 nearPlane, F32 farPlane)
     {
-        float width, height;
+        F32 width, height;
 
         if (aspectRatio >= 1.0f)
         {

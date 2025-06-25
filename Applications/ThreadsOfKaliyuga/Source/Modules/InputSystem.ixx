@@ -14,7 +14,7 @@ namespace ThreadsOfKaliyuga
     {
     public:
         InputSystem() = default;
-        ~InputSystem() = default;
+        ~InputSystem() { Shutdown(); }
 
         bool Initialize(HWND windowHandle, Angaraka::Camera* camera, bool fullscreen);
         void Shutdown();

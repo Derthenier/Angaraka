@@ -72,6 +72,17 @@ namespace Angaraka::Config {
         ResourceCacheConfig resourceCache;
     };
 
+    // AI system initialization configuration
+    export struct AISystemConfig {
+        bool enableGPUAcceleration{ true };
+        size_t maxVRAMUsageMB{ 16384 };        // 16GB default for RTX 4080/4090
+        F32 dialogueTimeoutMs{ 100.0f };     // Max time for dialogue inference
+        F32 terrainTimeoutMs{ 5000.0f };     // Max time for terrain generation
+        size_t backgroundThreadCount{ 4 };     // Threads for async operations
+        String defaultFaction{ "neutral" };
+        bool enablePerformanceMonitoring{ true };
+    };
+
     export struct EngineConfig {
         String engineName;
         String engineVersion;
@@ -85,6 +96,7 @@ namespace Angaraka::Config {
         LogConfig logging;
         WindowConfig window;
         RendererConfig renderer;
+        AISystemConfig ai;
 
         bool loaded = false;
     };
@@ -199,6 +211,24 @@ namespace Angaraka::Config {
                         ec.window.height = windowNode["height"].as<int>();
                     if (windowNode["title"])
                         ec.window.title = windowNode["title"].as<String>();
+                }
+
+                // Parse ai config (now at root)
+                if (auto aiNode = config["ai"]) {
+                    if (auto gpuAccelNode = aiNode["enable_gpu_acceleration"])
+                        ec.ai.enableGPUAcceleration = gpuAccelNode.as<bool>(true);
+                    if (auto maxVramNode = aiNode["max_vram_usage_mb"])
+                        ec.ai.maxVRAMUsageMB = maxVramNode.as<size_t>(16384); // Default to 16GB
+                    if (auto dialogueTimeoutNode = aiNode["dialogue_timeout_ms"])
+                        ec.ai.dialogueTimeoutMs = dialogueTimeoutNode.as<F32>(100.0f);
+                    if (auto terrainTimeoutNode = aiNode["terrain_timeout_ms"])
+                        ec.ai.terrainTimeoutMs = terrainTimeoutNode.as<F32>(5000.0f);
+                    if (auto backgroundThreadCountNode = aiNode["background_thread_count"])
+                        ec.ai.backgroundThreadCount = backgroundThreadCountNode.as<size_t>(4);
+                    if (auto defaultFactionNode = aiNode["default_faction"])
+                        ec.ai.defaultFaction = defaultFactionNode.as<String>("neutral");
+                    if (auto enablePerformanceMonitoringNode = aiNode["enable_performance_monitoring"])
+                        ec.ai.enablePerformanceMonitoring = enablePerformanceMonitoringNode.as<bool>(true);
                 }
 
                 // Parse renderer config (now at root)

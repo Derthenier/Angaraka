@@ -12,12 +12,12 @@ namespace Angaraka::Math
 
     struct Vector2
     {
-        float x, y;
+        F32 x, y;
 
         // Constructors
         constexpr Vector2() : x(0.0f), y(0.0f) {}
-        constexpr Vector2(float x, float y) : x(x), y(y) {}
-        constexpr explicit Vector2(float value) : x(value), y(value) {}
+        constexpr Vector2(F32 x, F32 y) : x(x), y(y) {}
+        constexpr explicit Vector2(F32 value) : x(value), y(value) {}
 
         // Array access
         float& operator[](size_t index) { return (&x)[index]; }
@@ -26,8 +26,8 @@ namespace Angaraka::Math
         // Arithmetic operators
         Vector2 operator+(const Vector2& rhs) const { return { x + rhs.x, y + rhs.y }; }
         Vector2 operator-(const Vector2& rhs) const { return { x - rhs.x, y - rhs.y }; }
-        Vector2 operator*(float scalar) const { return { x * scalar, y * scalar }; }
-        Vector2 operator/(float scalar) const { return { x / scalar, y / scalar }; }
+        Vector2 operator*(F32 scalar) const { return { x * scalar, y * scalar }; }
+        Vector2 operator/(F32 scalar) const { return { x / scalar, y / scalar }; }
         Vector2 operator-() const { return { -x, -y }; }
 
         // Component-wise multiplication
@@ -37,8 +37,8 @@ namespace Angaraka::Math
         // Assignment operators
         Vector2& operator+=(const Vector2& rhs) { x += rhs.x; y += rhs.y; return *this; }
         Vector2& operator-=(const Vector2& rhs) { x -= rhs.x; y -= rhs.y; return *this; }
-        Vector2& operator*=(float scalar) { x *= scalar; y *= scalar; return *this; }
-        Vector2& operator/=(float scalar) { x /= scalar; y /= scalar; return *this; }
+        Vector2& operator*=(F32 scalar) { x *= scalar; y *= scalar; return *this; }
+        Vector2& operator/=(F32 scalar) { x /= scalar; y /= scalar; return *this; }
         Vector2& operator*=(const Vector2& rhs) { x *= rhs.x; y *= rhs.y; return *this; }
         Vector2& operator/=(const Vector2& rhs) { x /= rhs.x; y /= rhs.y; return *this; }
 
@@ -47,18 +47,18 @@ namespace Angaraka::Math
         bool operator!=(const Vector2& rhs) const { return !(*this == rhs); }
 
         // Vector operations
-        float Length() const;
-        float LengthSquared() const { return x * x + y * y; }
+        F32 Length() const;
+        F32 LengthSquared() const { return x * x + y * y; }
         Vector2 Normalized() const;
         void Normalize();
-        float Dot(const Vector2& rhs) const { return x * rhs.x + y * rhs.y; }
-        float Cross(const Vector2& rhs) const { return x * rhs.y - y * rhs.x; } // 2D cross product (scalar)
+        F32 Dot(const Vector2& rhs) const { return x * rhs.x + y * rhs.y; }
+        F32 Cross(const Vector2& rhs) const { return x * rhs.y - y * rhs.x; } // 2D cross product (scalar)
 
         // Utility functions
         Vector2 Perpendicular() const { return { -y, x }; }
-        float DistanceTo(const Vector2& other) const;
-        float DistanceSquaredTo(const Vector2& other) const;
-        Vector2 Lerp(const Vector2& target, float t) const;
+        F32 DistanceTo(const Vector2& other) const;
+        F32 DistanceSquaredTo(const Vector2& other) const;
+        Vector2 Lerp(const Vector2& target, F32 t) const;
         Vector2 Reflect(const Vector2& normal) const;
 
         // Static constants
@@ -73,5 +73,5 @@ namespace Angaraka::Math
     };
 
     // Non-member operators
-    Vector2 operator*(float scalar, const Vector2& vec);
+    Vector2 operator*(F32 scalar, const Vector2& vec);
 }

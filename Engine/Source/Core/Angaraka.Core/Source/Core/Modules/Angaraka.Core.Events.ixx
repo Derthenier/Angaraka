@@ -5,7 +5,7 @@ module;
 export module Angaraka.Core.Events;
 
 namespace Angaraka::Events {
-    export enum class EventCategory : U8 {
+    export enum class EventCategory : U32 {
         None = 0,
         Application = (1 << 0),
         Input = (1 << 1),
@@ -14,8 +14,11 @@ namespace Angaraka::Events {
         Gamepad = (1 << 4),
         Physics = (1 << 5),
         Rendering = (1 << 6),
-        Scripting = (1 << 7)
+        Scripting = (1 << 7),
         // Add more categories as needed
+        Dialogue = (1 << 8),
+        Spawning = (1 << 9),
+        NPCInteraction = (1 << 10),
     };
 
     export class Event {

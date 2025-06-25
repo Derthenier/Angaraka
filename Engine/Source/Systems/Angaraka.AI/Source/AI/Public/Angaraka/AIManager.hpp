@@ -1,8 +1,7 @@
 // Engine/Source/Systems/Angaraka.AI/Source/AI/Public/Angaraka/AIManager.hpp
 #pragma once
 
-#include <Angaraka/Base.hpp>
-#include <Angaraka/MathCore.hpp>
+#include <Angaraka/AIBase.hpp>
 #include <Angaraka/AIModelResource.hpp>
 #include <filesystem>
 #include <future>
@@ -12,6 +11,7 @@
 #include <unordered_map>
 
 import Angaraka.Core.ResourceCache;
+import Angaraka.Core.Config;
 
 using namespace Angaraka::Math;
 
@@ -24,17 +24,6 @@ namespace Angaraka::AI {
     struct TerrainResponse;
     struct BehaviorRequest;
     struct BehaviorResponse;
-
-    // AI system initialization configuration
-    struct AISystemConfig {
-        bool enableGPUAcceleration{ true };
-        size_t maxVRAMUsageMB{ 16384 };        // 16GB default for RTX 4080/4090
-        F32 dialogueTimeoutMs{ 100.0f };     // Max time for dialogue inference
-        F32 terrainTimeoutMs{ 5000.0f };     // Max time for terrain generation
-        size_t backgroundThreadCount{ 4 };     // Threads for async operations
-        String defaultFaction{ "neutral" };
-        bool enablePerformanceMonitoring{ true };
-    };
 
     // Performance monitoring data
     struct AIPerformanceMetrics {
@@ -49,11 +38,11 @@ namespace Angaraka::AI {
     // Central AI system manager
     class AIManager {
     public:
-        explicit AIManager(const AISystemConfig& config = AISystemConfig{});
+        explicit AIManager(const Angaraka::Config::AISystemConfig& config = Angaraka::Config::AISystemConfig{});
         ~AIManager();
 
         // System lifecycle
-        bool Initialize(Reference<Angaraka::Core::CachedResourceManager>& cachedManager);
+        bool Initialize(Reference<Angaraka::Core::CachedResourceManager> cachedManager);
         void Shutdown();
         void Update(F32 deltaTime);
 
@@ -86,15 +75,15 @@ namespace Angaraka::AI {
         void EnableProfiling(bool enable) { m_profilingEnabled = enable; }
 
         // Configuration
-        void UpdateConfig(const AISystemConfig& config) { m_config = config; }
-        const AISystemConfig& GetConfig() const { return m_config; }
+        void UpdateConfig(const Angaraka::Config::AISystemConfig& config) { m_config = config; }
+        const Angaraka::Config::AISystemConfig& GetConfig() const { return m_config; }
 
         // Hot-swapping for development
         bool HotSwapModel(const String& modelId, const String& newModelPath);
         void EnableHotSwapping(bool enable) { m_hotSwappingEnabled = enable; }
 
     private:
-        AISystemConfig m_config;
+        Angaraka::Config::AISystemConfig m_config;
         AIPerformanceMetrics m_performanceMetrics;
 
         // Model storage and management

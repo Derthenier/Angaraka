@@ -15,14 +15,14 @@ namespace Angaraka::Math
 
     struct Vector4
     {
-        float x, y, z, w;
+        F32 x, y, z, w;
 
         // Constructors
         constexpr Vector4() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
-        constexpr Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
-        constexpr explicit Vector4(float value) : x(value), y(value), z(value), w(value) {}
-        constexpr Vector4(const Vector3& xyz, float w) : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
-        constexpr Vector4(const Vector2& xy, float z, float w) : x(xy.x), y(xy.y), z(z), w(w) {}
+        constexpr Vector4(F32 x, F32 y, F32 z, F32 w) : x(x), y(y), z(z), w(w) {}
+        constexpr explicit Vector4(F32 value) : x(value), y(value), z(value), w(value) {}
+        constexpr Vector4(const Vector3& xyz, F32 w) : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
+        constexpr Vector4(const Vector2& xy, F32 z, F32 w) : x(xy.x), y(xy.y), z(z), w(w) {}
         constexpr Vector4(const Vector2& xy, const Vector2& zw) : x(xy.x), y(xy.y), z(zw.x), w(zw.y) {}
 
         // Array access
@@ -32,8 +32,8 @@ namespace Angaraka::Math
         // Arithmetic operators
         Vector4 operator+(const Vector4& rhs) const { return { x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w }; }
         Vector4 operator-(const Vector4& rhs) const { return { x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w }; }
-        Vector4 operator*(float scalar) const { return { x * scalar, y * scalar, z * scalar, w * scalar }; }
-        Vector4 operator/(float scalar) const { return { x / scalar, y / scalar, z / scalar, w / scalar }; }
+        Vector4 operator*(F32 scalar) const { return { x * scalar, y * scalar, z * scalar, w * scalar }; }
+        Vector4 operator/(F32 scalar) const { return { x / scalar, y / scalar, z / scalar, w / scalar }; }
         Vector4 operator-() const { return { -x, -y, -z, -w }; }
 
         // Component-wise multiplication
@@ -43,8 +43,8 @@ namespace Angaraka::Math
         // Assignment operators
         Vector4& operator+=(const Vector4& rhs) { x += rhs.x; y += rhs.y; z += rhs.z; w += rhs.w; return *this; }
         Vector4& operator-=(const Vector4& rhs) { x -= rhs.x; y -= rhs.y; z -= rhs.z; w -= rhs.w; return *this; }
-        Vector4& operator*=(float scalar) { x *= scalar; y *= scalar; z *= scalar; w *= scalar; return *this; }
-        Vector4& operator/=(float scalar) { x /= scalar; y /= scalar; z /= scalar; w /= scalar; return *this; }
+        Vector4& operator*=(F32 scalar) { x *= scalar; y *= scalar; z *= scalar; w *= scalar; return *this; }
+        Vector4& operator/=(F32 scalar) { x /= scalar; y /= scalar; z /= scalar; w /= scalar; return *this; }
         Vector4& operator*=(const Vector4& rhs) { x *= rhs.x; y *= rhs.y; z *= rhs.z; w *= rhs.w; return *this; }
         Vector4& operator/=(const Vector4& rhs) { x /= rhs.x; y /= rhs.y; z /= rhs.z; w /= rhs.w; return *this; }
 
@@ -53,14 +53,14 @@ namespace Angaraka::Math
         bool operator!=(const Vector4& rhs) const { return !(*this == rhs); }
 
         // Vector operations
-        float Length() const;
-        float LengthSquared() const { return x * x + y * y + z * z + w * w; }
+        F32 Length() const;
+        F32 LengthSquared() const { return x * x + y * y + z * z + w * w; }
         Vector4 Normalized() const;
         void Normalize();
-        float Dot(const Vector4& rhs) const { return x * rhs.x + y * rhs.y + z * rhs.z + w * rhs.w; }
+        F32 Dot(const Vector4& rhs) const { return x * rhs.x + y * rhs.y + z * rhs.z + w * rhs.w; }
 
         // Utility functions
-        Vector4 Lerp(const Vector4& target, float t) const;
+        Vector4 Lerp(const Vector4& target, F32 t) const;
 
         // Swizzling
         Vector2 xy() const { return { x, y }; }
@@ -77,5 +77,5 @@ namespace Angaraka::Math
     };
 
     // Non-member operators
-    Vector4 operator*(float scalar, const Vector4& vec);
+    Vector4 operator*(F32 scalar, const Vector4& vec);
 }

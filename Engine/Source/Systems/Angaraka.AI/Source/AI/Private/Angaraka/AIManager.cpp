@@ -5,10 +5,11 @@
 #include <filesystem>
 
 import Angaraka.Core.Resources;
+import Angaraka.Core.Config;
 
 namespace Angaraka::AI {
 
-    AIManager::AIManager(const AISystemConfig& config)
+    AIManager::AIManager(const Angaraka::Config::AISystemConfig& config)
         : m_config(config)
         , m_activeFaction(config.defaultFaction)
         , m_lastMetricsUpdate(std::chrono::steady_clock::now())
@@ -22,7 +23,7 @@ namespace Angaraka::AI {
         Shutdown();
     }
 
-    bool AIManager::Initialize(Reference<Angaraka::Core::CachedResourceManager>& cachedManager) {
+    bool AIManager::Initialize(Reference<Angaraka::Core::CachedResourceManager> cachedManager) {
         AGK_INFO("AIManager: Starting initialization...");
 
         try {

@@ -25,14 +25,14 @@ namespace Angaraka::Math
         return IsNearlyEqual(x, rhs.x) && IsNearlyEqual(y, rhs.y);
     }
 
-    float Vector2::Length() const
+    F32 Vector2::Length() const
     {
         return Sqrt(x * x + y * y);
     }
 
     Vector2 Vector2::Normalized() const
     {
-        float len = Length();
+        F32 len = Length();
         if (IsNearlyZero(len))
             return Vector2::Zero;
         return *this / len;
@@ -43,17 +43,17 @@ namespace Angaraka::Math
         *this = Normalized();
     }
 
-    float Vector2::DistanceTo(const Vector2& other) const
+    F32 Vector2::DistanceTo(const Vector2& other) const
     {
         return (*this - other).Length();
     }
 
-    float Vector2::DistanceSquaredTo(const Vector2& other) const
+    F32 Vector2::DistanceSquaredTo(const Vector2& other) const
     {
         return (*this - other).LengthSquared();
     }
 
-    Vector2 Vector2::Lerp(const Vector2& target, float t) const
+    Vector2 Vector2::Lerp(const Vector2& target, F32 t) const
     {
         return *this + (target - *this) * t;
     }
@@ -63,7 +63,7 @@ namespace Angaraka::Math
         return *this - 2.0f * Dot(normal) * normal;
     }
 
-    Vector2 operator*(float scalar, const Vector2& vec)
+    Vector2 operator*(F32 scalar, const Vector2& vec)
     {
         return vec * scalar;
     }

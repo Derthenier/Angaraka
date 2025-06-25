@@ -14,10 +14,10 @@ namespace Angaraka::Math
     // Quaternion Implementation
     // ==================================================================================
 
-    Quaternion::Quaternion(const Vector3& axis, float angle)
+    Quaternion::Quaternion(const Vector3& axis, F32 angle)
     {
-        float halfAngle = angle * 0.5f;
-        float s = std::sin(halfAngle);
+        F32 halfAngle = angle * 0.5f;
+        F32 s = std::sin(halfAngle);
         Vector3 normalizedAxis = axis.Normalized();
 
         x = normalizedAxis.x * s;
@@ -53,14 +53,14 @@ namespace Angaraka::Math
             IsNearlyEqual(z, rhs.z) && IsNearlyEqual(w, rhs.w);
     }
 
-    float Quaternion::Length() const
+    F32 Quaternion::Length() const
     {
         return Sqrt(x * x + y * y + z * z + w * w);
     }
 
     Quaternion Quaternion::Normalized() const
     {
-        float len = Length();
+        F32 len = Length();
         if (IsNearlyZero(len))
             return Identity();
         return *this * (1.0f / len);
@@ -73,7 +73,7 @@ namespace Angaraka::Math
 
     Quaternion Quaternion::Inverted() const
     {
-        float lengthSq = LengthSquared();
+        F32 lengthSq = LengthSquared();
         if (IsNearlyZero(lengthSq))
             return Identity();
 
@@ -93,15 +93,15 @@ namespace Angaraka::Math
 
     Matrix4x4 Quaternion::ToMatrix() const
     {
-        float xx = x * x;
-        float yy = y * y;
-        float zz = z * z;
-        float xy = x * y;
-        float xz = x * z;
-        float yz = y * z;
-        float wx = w * x;
-        float wy = w * y;
-        float wz = w * z;
+        F32 xx = x * x;
+        F32 yy = y * y;
+        F32 zz = z * z;
+        F32 xy = x * y;
+        F32 xz = x * z;
+        F32 yz = y * z;
+        F32 wx = w * x;
+        F32 wy = w * y;
+        F32 wz = w * z;
 
         return Matrix4x4(
             1.0f - 2.0f * (yy + zz), 2.0f * (xy - wz), 2.0f * (xz + wy), 0.0f,
@@ -116,20 +116,20 @@ namespace Angaraka::Math
         Vector3 angles;
 
         // Roll (x-axis rotation)
-        float sinr_cosp = 2.0f * (w * x + y * z);
-        float cosr_cosp = 1.0f - 2.0f * (x * x + y * y);
+        F32 sinr_cosp = 2.0f * (w * x + y * z);
+        F32 cosr_cosp = 1.0f - 2.0f * (x * x + y * y);
         angles.x = std::atan2(sinr_cosp, cosr_cosp);
 
         // Pitch (y-axis rotation)
-        float sinp = 2.0f * (w * y - z * x);
+        F32 sinp = 2.0f * (w * y - z * x);
         if (Abs(sinp) >= 1.0f)
             angles.y = std::copysign(HalfPiF, sinp); // Use 90 degrees if out of range
         else
             angles.y = std::asin(sinp);
 
         // Yaw (z-axis rotation)
-        float siny_cosp = 2.0f * (w * z + x * y);
-        float cosy_cosp = 1.0f - 2.0f * (y * y + z * z);
+        F32 siny_cosp = 2.0f * (w * z + x * y);
+        F32 cosy_cosp = 1.0f - 2.0f * (y * y + z * z);
         angles.z = std::atan2(siny_cosp, cosy_cosp);
 
         return angles;
@@ -140,23 +140,23 @@ namespace Angaraka::Math
         return { 0.0f, 0.0f, 0.0f, 1.0f };
     }
 
-    Quaternion Quaternion::AngleAxis(const Vector3& axis, float angle)
+    Quaternion Quaternion::AngleAxis(const Vector3& axis, F32 angle)
     {
         return Quaternion(axis, angle);
     }
 
-    Quaternion Quaternion::FromEuler(float pitch, float yaw, float roll)
+    Quaternion Quaternion::FromEuler(F32 pitch, F32 yaw, F32 roll)
     {
-        float halfPitch = pitch * 0.5f;
-        float halfYaw = yaw * 0.5f;
-        float halfRoll = roll * 0.5f;
+        F32 halfPitch = pitch * 0.5f;
+        F32 halfYaw = yaw * 0.5f;
+        F32 halfRoll = roll * 0.5f;
 
-        float cp = std::cos(halfPitch);
-        float sp = std::sin(halfPitch);
-        float cy = std::cos(halfYaw);
-        float sy = std::sin(halfYaw);
-        float cr = std::cos(halfRoll);
-        float sr = std::sin(halfRoll);
+        F32 cp = std::cos(halfPitch);
+        F32 sp = std::sin(halfPitch);
+        F32 cy = std::cos(halfYaw);
+        F32 sy = std::sin(halfYaw);
+        F32 cr = std::cos(halfRoll);
+        F32 sr = std::sin(halfRoll);
 
         return {
             sr * cp * cy - cr * sp * sy,
@@ -171,12 +171,12 @@ namespace Angaraka::Math
         return FromEuler(eulerAngles.x, eulerAngles.y, eulerAngles.z);
     }
 
-    Quaternion Quaternion::Slerp(const Quaternion& a, const Quaternion& b, float t)
+    Quaternion Quaternion::Slerp(const Quaternion& a, const Quaternion& b, F32 t)
     {
         Quaternion q1 = a.Normalized();
         Quaternion q2 = b.Normalized();
 
-        float dot = q1.Dot(q2);
+        F32 dot = q1.Dot(q2);
 
         // If the dot product is negative, slerp won't take the shorter path.
         // Note that v1 and -v1 are equivalent when the represent rotations.
@@ -192,13 +192,13 @@ namespace Angaraka::Math
             return (q1 + (q2 - q1) * t).Normalized();
         }
 
-        float theta_0 = std::acos(dot);
-        float theta = theta_0 * t;
-        float sin_theta = std::sin(theta);
-        float sin_theta_0 = std::sin(theta_0);
+        F32 theta_0 = std::acos(dot);
+        F32 theta = theta_0 * t;
+        F32 sin_theta = std::sin(theta);
+        F32 sin_theta_0 = std::sin(theta_0);
 
-        float s0 = std::cos(theta) - dot * sin_theta / sin_theta_0;
-        float s1 = sin_theta / sin_theta_0;
+        F32 s0 = std::cos(theta) - dot * sin_theta / sin_theta_0;
+        F32 s1 = sin_theta / sin_theta_0;
 
         return (q1 * s0) + (q2 * s1);
     }

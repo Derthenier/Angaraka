@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Angaraka/Base.hpp>
+#include <Angaraka/AIBase.hpp>
 #include <onnxruntime_cxx_api.h>
 
 import Angaraka.Core.Resources;

@@ -79,7 +79,7 @@ namespace Angaraka::Math
         return *this;
     }
 
-    Transform Transform::Lerp(const Transform& target, float t) const
+    Transform Transform::Lerp(const Transform& target, F32 t) const
     {
         Vector3 lerpPosition = position.Lerp(target.position, t);
         Quaternion slerpRotation = Quaternion::Slerp(rotation, target.rotation, t);

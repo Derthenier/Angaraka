@@ -33,16 +33,16 @@ namespace Angaraka::Math
     template<std::floating_point T>
     constexpr T RadToDeg = T(180) / Pi<T>;
 
-    // Common float constants
-    constexpr float PiF = Pi<float>;
-    constexpr float TwoPiF = TwoPi<float>;
-    constexpr float HalfPiF = HalfPi<float>;
-    constexpr float EpsilonF = Epsilon<float>;
-    constexpr float DegToRadF = DegToRad<float>;
-    constexpr float RadToDegF = RadToDeg<float>;
+    // Common F32 constants
+    constexpr F32 PiF = Pi<float>;
+    constexpr F32 TwoPiF = TwoPi<float>;
+    constexpr F32 HalfPiF = HalfPi<float>;
+    constexpr F32 EpsilonF = Epsilon<float>;
+    constexpr F32 DegToRadF = DegToRad<float>;
+    constexpr F32 RadToDegF = RadToDeg<float>;
 
-    constexpr float MBToBytes = 1024.0f * 1024.0f;
-    constexpr float GBToBytes = MBToBytes * 1024.0f;
-    constexpr float BytesToMB = 0.0000009536743166f;
-    constexpr float BytesToGB = 0.0000000000931323f;
+    constexpr F32 MBToBytes = 1024.0f * 1024.0f;
+    constexpr F32 GBToBytes = MBToBytes * 1024.0f;
+    constexpr F32 BytesToMB = 0.0000009536743166f;
+    constexpr F32 BytesToGB = 0.0000000000931323f;
 }

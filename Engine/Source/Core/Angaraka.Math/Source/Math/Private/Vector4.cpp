@@ -25,14 +25,14 @@ namespace Angaraka::Math
             IsNearlyEqual(z, rhs.z) && IsNearlyEqual(w, rhs.w);
     }
 
-    float Vector4::Length() const
+    F32 Vector4::Length() const
     {
         return Sqrt(x * x + y * y + z * z + w * w);
     }
 
     Vector4 Vector4::Normalized() const
     {
-        float len = Length();
+        F32 len = Length();
         if (IsNearlyZero(len))
             return Vector4::Zero;
         return *this / len;
@@ -43,12 +43,12 @@ namespace Angaraka::Math
         *this = Normalized();
     }
 
-    Vector4 Vector4::Lerp(const Vector4& target, float t) const
+    Vector4 Vector4::Lerp(const Vector4& target, F32 t) const
     {
         return *this + (target - *this) * t;
     }
 
-    Vector4 operator*(float scalar, const Vector4& vec)
+    Vector4 operator*(F32 scalar, const Vector4& vec)
     {
         return vec * scalar;
     }

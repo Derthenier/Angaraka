@@ -26,7 +26,6 @@ namespace Angaraka::Core {
     public:
         explicit CachedResourceManager(
             const String& basePath,
-            Angaraka::Events::EventManager& eventBus,
             const MemoryBudget& cacheConfig = MemoryBudget{}
         );
         ~CachedResourceManager();
@@ -56,6 +55,8 @@ namespace Angaraka::Core {
 
             // For cache miss, use factory instead of direct construction:
             Reference<Resource> newResource;
+
+            // Try loading it as a graphics resource
             if (m_graphicsFactory) {
                 // Determine asset type and use appropriate factory method
                 AssetDefinition tempAsset{};
@@ -69,8 +70,11 @@ namespace Angaraka::Core {
                     m_cache.Put(id, newResource, EstimateResourceSize(newResource));
                 }
 
+
                 return newResource;
             }
+
+            // Try loading as a ai resource
 
             AGK_ERROR("CachedResourceManager: Failed to load resource '{}'", id);
             return nullptr;
@@ -94,7 +98,6 @@ namespace Angaraka::Core {
     private:
         String m_basePath;
         ResourceCache m_cache;
-        Angaraka::Events::EventManager& m_eventBus;
         mutable std::mutex m_managerMutex;
 
         Reference<Core::GraphicsResourceFactory> m_graphicsFactory;

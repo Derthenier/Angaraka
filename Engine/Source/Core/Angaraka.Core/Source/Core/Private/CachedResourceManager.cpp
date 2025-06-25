@@ -8,11 +8,9 @@ namespace Angaraka::Core {
 
     CachedResourceManager::CachedResourceManager(
         const String& basePath,
-        Angaraka::Events::EventManager& eventBus,
         const MemoryBudget& cacheConfig)
         : m_basePath(basePath)
         , m_cache(cacheConfig)
-        , m_eventBus(eventBus)
     {
         AGK_INFO("CachedResourceManager: Initialized with {}MB cache budget",
             cacheConfig.maxTotalMemory / (1024 * 1024));

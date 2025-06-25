@@ -12,27 +12,27 @@ namespace Angaraka::Math
     // Utility Functions Implementation
     // ==================================================================================
 
-    float SinDegrees(float degrees)
+    F32 SinDegrees(F32 degrees)
     {
         return std::sin(degrees * DegToRadF);
     }
 
-    float CosDegrees(float degrees)
+    F32 CosDegrees(F32 degrees)
     {
         return std::cos(degrees * DegToRadF);
     }
 
-    float TanDegrees(float degrees)
+    F32 TanDegrees(F32 degrees)
     {
         return std::tan(degrees * DegToRadF);
     }
 
-    float Sqrt(float value)
+    F32 Sqrt(F32 value)
     {
         return std::sqrt(value);
     }
 
-    float InverseSqrt(float value)
+    F32 InverseSqrt(F32 value)
     {
         // Fast inverse square root approximation
         if (IsNearlyZero(value))
@@ -40,161 +40,161 @@ namespace Angaraka::Math
         return 1.0f / std::sqrt(value);
     }
 
-    float Pow(float base, float exponent)
+    F32 Pow(F32 base, F32 exponent)
     {
         return std::pow(base, exponent);
     }
 
-    float Log(float value)
+    F32 Log(F32 value)
     {
         return std::log(value);
     }
 
-    float Log2(float value)
+    F32 Log2(F32 value)
     {
         return std::log2(value);
     }
 
-    float Log10(float value)
+    F32 Log10(F32 value)
     {
         return std::log10(value);
     }
 
-    float Exp(float value)
+    F32 Exp(F32 value)
     {
         return std::exp(value);
     }
 
-    float Floor(float value)
+    F32 Floor(F32 value)
     {
         return std::floor(value);
     }
 
-    float Ceil(float value)
+    F32 Ceil(F32 value)
     {
         return std::ceil(value);
     }
 
-    float Round(float value)
+    F32 Round(F32 value)
     {
         return std::round(value);
     }
 
-    float Frac(float value)
+    F32 Frac(F32 value)
     {
         return value - Floor(value);
     }
 
-    float Mod(float x, float y)
+    F32 Mod(F32 x, F32 y)
     {
         return std::fmod(x, y);
     }
 
-    float NormalizeAngle(float angle)
+    F32 NormalizeAngle(F32 angle)
     {
         while (angle > 180.0f) angle -= 360.0f;
         while (angle < -180.0f) angle += 360.0f;
         return angle;
     }
 
-    float NormalizeAngle360(float angle)
+    F32 NormalizeAngle360(F32 angle)
     {
         while (angle >= 360.0f) angle -= 360.0f;
         while (angle < 0.0f) angle += 360.0f;
         return angle;
     }
 
-    float NormalizeAngleRadians(float angle)
+    F32 NormalizeAngleRadians(F32 angle)
     {
         while (angle > PiF) angle -= TwoPiF;
         while (angle < -PiF) angle += TwoPiF;
         return angle;
     }
 
-    float AngleDifference(float a, float b)
+    F32 AngleDifference(F32 a, F32 b)
     {
-        float diff = NormalizeAngle(b - a);
+        F32 diff = NormalizeAngle(b - a);
         return diff;
     }
 
-    bool IsNearlyEqual(float a, float b, float epsilon)
+    bool IsNearlyEqual(F32 a, F32 b, F32 epsilon)
     {
         return Abs(a - b) <= epsilon;
     }
 
-    bool IsNearlyZero(float value, float epsilon)
+    bool IsNearlyZero(F32 value, F32 epsilon)
     {
         return Abs(value) <= epsilon;
     }
 
-    bool IsNearlyEqual(const Vector2& a, const Vector2& b, float epsilon)
+    bool IsNearlyEqual(const Vector2& a, const Vector2& b, F32 epsilon)
     {
         return IsNearlyEqual(a.x, b.x, epsilon) && IsNearlyEqual(a.y, b.y, epsilon);
     }
 
-    bool IsNearlyEqual(const Vector3& a, const Vector3& b, float epsilon)
+    bool IsNearlyEqual(const Vector3& a, const Vector3& b, F32 epsilon)
     {
         return IsNearlyEqual(a.x, b.x, epsilon) && IsNearlyEqual(a.y, b.y, epsilon) && IsNearlyEqual(a.z, b.z, epsilon);
     }
 
-    bool IsNearlyEqual(const Vector4& a, const Vector4& b, float epsilon)
+    bool IsNearlyEqual(const Vector4& a, const Vector4& b, F32 epsilon)
     {
         return IsNearlyEqual(a.x, b.x, epsilon) && IsNearlyEqual(a.y, b.y, epsilon) &&
             IsNearlyEqual(a.z, b.z, epsilon) && IsNearlyEqual(a.w, b.w, epsilon);
     }
 
-    float SmoothStep(float edge0, float edge1, float x)
+    F32 SmoothStep(F32 edge0, F32 edge1, F32 x)
     {
-        float t = Clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
+        F32 t = Clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
         return t * t * (3.0f - 2.0f * t);
     }
 
-    float SmootherStep(float edge0, float edge1, float x)
+    F32 SmootherStep(F32 edge0, F32 edge1, F32 x)
     {
-        float t = Clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
+        F32 t = Clamp((x - edge0) / (edge1 - edge0), 0.0f, 1.0f);
         return t * t * t * (t * (t * 6.0f - 15.0f) + 10.0f);
     }
 
     // Easing functions
-    float EaseInQuad(float t) { return t * t; }
-    float EaseOutQuad(float t) { return 1.0f - (1.0f - t) * (1.0f - t); }
-    float EaseInOutQuad(float t) { return t < 0.5f ? 2.0f * t * t : 1.0f - Pow(-2.0f * t + 2.0f, 2.0f) / 2.0f; }
-    float EaseInCubic(float t) { return t * t * t; }
-    float EaseOutCubic(float t) { return 1.0f - Pow(1.0f - t, 3.0f); }
-    float EaseInOutCubic(float t) { return t < 0.5f ? 4.0f * t * t * t : 1.0f - Pow(-2.0f * t + 2.0f, 3.0f) / 2.0f; }
+    F32 EaseInQuad(F32 t) { return t * t; }
+    F32 EaseOutQuad(F32 t) { return 1.0f - (1.0f - t) * (1.0f - t); }
+    F32 EaseInOutQuad(F32 t) { return t < 0.5f ? 2.0f * t * t : 1.0f - Pow(-2.0f * t + 2.0f, 2.0f) / 2.0f; }
+    F32 EaseInCubic(F32 t) { return t * t * t; }
+    F32 EaseOutCubic(F32 t) { return 1.0f - Pow(1.0f - t, 3.0f); }
+    F32 EaseInOutCubic(F32 t) { return t < 0.5f ? 4.0f * t * t * t : 1.0f - Pow(-2.0f * t + 2.0f, 3.0f) / 2.0f; }
 
 
     // ==================================================================================
     // Distance Functions
     // ==================================================================================
 
-    float PointToLineDistance(const Vector3& point, const Vector3& lineStart, const Vector3& lineEnd)
+    F32 PointToLineDistance(const Vector3& point, const Vector3& lineStart, const Vector3& lineEnd)
     {
         Vector3 lineDir = lineEnd - lineStart;
         Vector3 pointToStart = point - lineStart;
 
         // Handle degenerate case (line has zero length)
-        float lineLengthSq = lineDir.LengthSquared();
+        F32 lineLengthSq = lineDir.LengthSquared();
         if (IsNearlyZero(lineLengthSq))
         {
             return pointToStart.Length();
         }
 
         // Project point onto line and find closest point
-        float t = pointToStart.Dot(lineDir) / lineLengthSq;
+        F32 t = pointToStart.Dot(lineDir) / lineLengthSq;
         t = Clamp(t, 0.0f, 1.0f); // Clamp to line segment
 
         Vector3 closestPoint = lineStart + lineDir * t;
         return (point - closestPoint).Length();
     }
 
-    float PointToPlaneDistance(const Vector3& point, const Vector3& planePoint, const Vector3& planeNormal)
+    F32 PointToPlaneDistance(const Vector3& point, const Vector3& planePoint, const Vector3& planeNormal)
     {
         Vector3 normalizedNormal = planeNormal.Normalized();
         return (point - planePoint).Dot(normalizedNormal);
     }
 
-    float PointToPlaneDistanceAbs(const Vector3& point, const Vector3& planePoint, const Vector3& planeNormal)
+    F32 PointToPlaneDistanceAbs(const Vector3& point, const Vector3& planePoint, const Vector3& planeNormal)
     {
         return Abs(PointToPlaneDistance(point, planePoint, planeNormal));
     }
@@ -204,13 +204,13 @@ namespace Angaraka::Math
         Vector3 lineDir = lineEnd - lineStart;
         Vector3 pointToStart = point - lineStart;
 
-        float lineLengthSq = lineDir.LengthSquared();
+        F32 lineLengthSq = lineDir.LengthSquared();
         if (IsNearlyZero(lineLengthSq))
         {
             return lineStart; // Degenerate line
         }
 
-        float t = pointToStart.Dot(lineDir) / lineLengthSq;
+        F32 t = pointToStart.Dot(lineDir) / lineLengthSq;
         t = Clamp(t, 0.0f, 1.0f);
 
         return lineStart + lineDir * t;
@@ -219,7 +219,7 @@ namespace Angaraka::Math
     Vector3 ClosestPointOnPlane(const Vector3& point, const Vector3& planePoint, const Vector3& planeNormal)
     {
         Vector3 normalizedNormal = planeNormal.Normalized();
-        float distance = PointToPlaneDistance(point, planePoint, normalizedNormal);
+        F32 distance = PointToPlaneDistance(point, planePoint, normalizedNormal);
         return point - normalizedNormal * distance;
     }
 
@@ -228,24 +228,24 @@ namespace Angaraka::Math
     // ==================================================================================
 
     bool RayIntersectsSphere(const Vector3& rayOrigin, const Vector3& rayDirection,
-        const Vector3& sphereCenter, float sphereRadius,
+        const Vector3& sphereCenter, F32 sphereRadius,
         float& t1, float& t2)
     {
         Vector3 normalizedDir = rayDirection.Normalized();
         Vector3 oc = rayOrigin - sphereCenter;
 
-        float a = normalizedDir.Dot(normalizedDir); // Should be 1.0 for normalized direction
-        float b = 2.0f * oc.Dot(normalizedDir);
-        float c = oc.Dot(oc) - sphereRadius * sphereRadius;
+        F32 a = normalizedDir.Dot(normalizedDir); // Should be 1.0 for normalized direction
+        F32 b = 2.0f * oc.Dot(normalizedDir);
+        F32 c = oc.Dot(oc) - sphereRadius * sphereRadius;
 
-        float discriminant = b * b - 4.0f * a * c;
+        F32 discriminant = b * b - 4.0f * a * c;
 
         if (discriminant < 0.0f)
         {
             return false; // No intersection
         }
 
-        float sqrtDiscriminant = Sqrt(discriminant);
+        F32 sqrtDiscriminant = Sqrt(discriminant);
         t1 = (-b - sqrtDiscriminant) / (2.0f * a);
         t2 = (-b + sqrtDiscriminant) / (2.0f * a);
 
@@ -259,7 +259,7 @@ namespace Angaraka::Math
         Vector3 normalizedNormal = planeNormal.Normalized();
         Vector3 normalizedDir = rayDirection.Normalized();
 
-        float denominator = normalizedDir.Dot(normalizedNormal);
+        F32 denominator = normalizedDir.Dot(normalizedNormal);
 
         // Check if ray is parallel to plane
         if (IsNearlyZero(denominator))
@@ -281,7 +281,7 @@ namespace Angaraka::Math
         Vector3 edge1 = v1 - v0;
         Vector3 edge2 = v2 - v0;
         Vector3 h = rayDirection.Cross(edge2);
-        float a = edge1.Dot(h);
+        F32 a = edge1.Dot(h);
 
         // Check if ray is parallel to triangle
         if (IsNearlyZero(a))
@@ -289,9 +289,9 @@ namespace Angaraka::Math
             return false;
         }
 
-        float f = 1.0f / a;
+        F32 f = 1.0f / a;
         Vector3 s = rayOrigin - v0;
-        float u = f * s.Dot(h);
+        F32 u = f * s.Dot(h);
 
         if (u < 0.0f || u > 1.0f)
         {
@@ -299,7 +299,7 @@ namespace Angaraka::Math
         }
 
         Vector3 q = s.Cross(edge1);
-        float v = f * rayDirection.Dot(q);
+        F32 v = f * rayDirection.Dot(q);
 
         if (v < 0.0f || u + v > 1.0f)
         {
@@ -324,7 +324,7 @@ namespace Angaraka::Math
         Vector2 s1 = a2 - a1;
         Vector2 s2 = b2 - b1;
 
-        float denominator = (-s2.x * s1.y + s1.x * s2.y);
+        F32 denominator = (-s2.x * s1.y + s1.x * s2.y);
 
         // Check if lines are parallel
         if (IsNearlyZero(denominator))
@@ -332,8 +332,8 @@ namespace Angaraka::Math
             return false;
         }
 
-        float s = (-s1.y * (a1.x - b1.x) + s1.x * (a1.y - b1.y)) / denominator;
-        float t = (s2.x * (a1.y - b1.y) - s2.y * (a1.x - b1.x)) / denominator;
+        F32 s = (-s1.y * (a1.x - b1.x) + s1.x * (a1.y - b1.y)) / denominator;
+        F32 t = (s2.x * (a1.y - b1.y) - s2.y * (a1.x - b1.x)) / denominator;
 
         if (s >= 0.0f && s <= 1.0f && t >= 0.0f && t <= 1.0f)
         {
@@ -345,15 +345,15 @@ namespace Angaraka::Math
         return false; // No collision
     }
 
-    bool SphereSphereIntersect(const Vector3& center1, float radius1,
-        const Vector3& center2, float radius2)
+    bool SphereSphereIntersect(const Vector3& center1, F32 radius1,
+        const Vector3& center2, F32 radius2)
     {
-        float distanceSquared = (center1 - center2).LengthSquared();
-        float radiusSum = radius1 + radius2;
+        F32 distanceSquared = (center1 - center2).LengthSquared();
+        F32 radiusSum = radius1 + radius2;
         return distanceSquared <= (radiusSum * radiusSum);
     }
 
-    bool SphereAABBIntersect(const Vector3& sphereCenter, float sphereRadius,
+    bool SphereAABBIntersect(const Vector3& sphereCenter, F32 sphereRadius,
         const Vector3& aabbMin, const Vector3& aabbMax)
     {
         // Find closest point on AABB to sphere center
@@ -363,7 +363,7 @@ namespace Angaraka::Math
             Clamp(sphereCenter.z, aabbMin.z, aabbMax.z)
         );
 
-        float distanceSquared = (sphereCenter - closestPoint).LengthSquared();
+        F32 distanceSquared = (sphereCenter - closestPoint).LengthSquared();
         return distanceSquared <= (sphereRadius * sphereRadius);
     }
 
@@ -379,14 +379,14 @@ namespace Angaraka::Math
     // Area and Volume Calculations
     // ==================================================================================
 
-    float TriangleArea(const Vector3& a, const Vector3& b, const Vector3& c)
+    F32 TriangleArea(const Vector3& a, const Vector3& b, const Vector3& c)
     {
         Vector3 ab = b - a;
         Vector3 ac = c - a;
         return ab.Cross(ac).Length() * 0.5f;
     }
 
-    float TriangleArea2D(const Vector2& a, const Vector2& b, const Vector2& c)
+    F32 TriangleArea2D(const Vector2& a, const Vector2& b, const Vector2& c)
     {
         return Abs((b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y)) * 0.5f;
     }
@@ -403,7 +403,7 @@ namespace Angaraka::Math
         return (a + b + c) / 3.0f;
     }
 
-    float TetrahedronVolume(const Vector3& a, const Vector3& b, const Vector3& c, const Vector3& d)
+    F32 TetrahedronVolume(const Vector3& a, const Vector3& b, const Vector3& c, const Vector3& d)
     {
         Vector3 ab = b - a;
         Vector3 ac = c - a;
@@ -411,22 +411,22 @@ namespace Angaraka::Math
         return Abs(ab.Dot(ac.Cross(ad))) / 6.0f;
     }
 
-    float SphereVolume(float radius)
+    F32 SphereVolume(F32 radius)
     {
         return (4.0f / 3.0f) * PiF * radius * radius * radius;
     }
 
-    float SphereSurfaceArea(float radius)
+    F32 SphereSurfaceArea(F32 radius)
     {
         return 4.0f * PiF * radius * radius;
     }
 
-    float CylinderVolume(float radius, float height)
+    F32 CylinderVolume(F32 radius, F32 height)
     {
         return PiF * radius * radius * height;
     }
 
-    float CylinderSurfaceArea(float radius, float height)
+    F32 CylinderSurfaceArea(F32 radius, F32 height)
     {
         return 2.0f * PiF * radius * (radius + height);
     }
@@ -441,13 +441,13 @@ namespace Angaraka::Math
         Vector3 ac = c - a;
         Vector3 ap = point - a;
 
-        float d00 = ab.Dot(ab);
-        float d01 = ab.Dot(ac);
-        float d11 = ac.Dot(ac);
-        float d20 = ap.Dot(ab);
-        float d21 = ap.Dot(ac);
+        F32 d00 = ab.Dot(ab);
+        F32 d01 = ab.Dot(ac);
+        F32 d11 = ac.Dot(ac);
+        F32 d20 = ap.Dot(ab);
+        F32 d21 = ap.Dot(ac);
 
-        float denominator = d00 * d11 - d01 * d01;
+        F32 denominator = d00 * d11 - d01 * d01;
 
         if (IsNearlyZero(denominator))
         {
@@ -455,9 +455,9 @@ namespace Angaraka::Math
             return Vector3(1.0f, 0.0f, 0.0f);
         }
 
-        float v = (d11 * d20 - d01 * d21) / denominator;
-        float w = (d00 * d21 - d01 * d20) / denominator;
-        float u = 1.0f - v - w;
+        F32 v = (d11 * d20 - d01 * d21) / denominator;
+        F32 w = (d00 * d21 - d01 * d20) / denominator;
+        F32 u = 1.0f - v - w;
 
         return Vector3(u, v, w);
     }
@@ -468,21 +468,21 @@ namespace Angaraka::Math
         Vector2 ac = c - a;
         Vector2 ap = point - a;
 
-        float d00 = ab.Dot(ab);
-        float d01 = ab.Dot(ac);
-        float d11 = ac.Dot(ac);
-        float d20 = ap.Dot(ab);
-        float d21 = ap.Dot(ac);
+        F32 d00 = ab.Dot(ab);
+        F32 d01 = ab.Dot(ac);
+        F32 d11 = ac.Dot(ac);
+        F32 d20 = ap.Dot(ab);
+        F32 d21 = ap.Dot(ac);
 
-        float denominator = d00 * d11 - d01 * d01;
+        F32 denominator = d00 * d11 - d01 * d01;
 
         if (IsNearlyZero(denominator))
         {
             return Vector2(0.0f, 0.0f);
         }
 
-        float v = (d11 * d20 - d01 * d21) / denominator;
-        float w = (d00 * d21 - d01 * d20) / denominator;
+        F32 v = (d11 * d20 - d01 * d21) / denominator;
+        F32 w = (d00 * d21 - d01 * d20) / denominator;
 
         return Vector2(v, w); // u = 1 - v - w
     }
@@ -494,7 +494,7 @@ namespace Angaraka::Math
 
     bool IsInsideTriangle2D(const Vector2& barycentrics)
     {
-        float u = 1.0f - barycentrics.x - barycentrics.y;
+        F32 u = 1.0f - barycentrics.x - barycentrics.y;
         return u >= 0.0f && barycentrics.x >= 0.0f && barycentrics.y >= 0.0f;
     }
 
@@ -507,7 +507,7 @@ namespace Angaraka::Math
     // Point-in-Shape Tests
     // ==================================================================================
 
-    bool PointInSphere(const Vector3& point, const Vector3& sphereCenter, float sphereRadius)
+    bool PointInSphere(const Vector3& point, const Vector3& sphereCenter, F32 sphereRadius)
     {
         return (point - sphereCenter).LengthSquared() <= (sphereRadius * sphereRadius);
     }
@@ -525,18 +525,18 @@ namespace Angaraka::Math
         return IsInsideTriangle2D(bary);
     }
 
-    bool PointInCircle(const Vector2& point, const Vector2& circleCenter, float circleRadius)
+    bool PointInCircle(const Vector2& point, const Vector2& circleCenter, F32 circleRadius)
     {
         return (point - circleCenter).LengthSquared() <= (circleRadius * circleRadius);
     }
 
-    bool PointInCylinder(const Vector3& point, const Vector3& cylinderBase, const Vector3& cylinderTop, float cylinderRadius)
+    bool PointInCylinder(const Vector3& point, const Vector3& cylinderBase, const Vector3& cylinderTop, F32 cylinderRadius)
     {
         Vector3 axis = cylinderTop - cylinderBase;
         Vector3 pointToBase = point - cylinderBase;
 
         // Project point onto cylinder axis
-        float t = pointToBase.Dot(axis) / axis.LengthSquared();
+        F32 t = pointToBase.Dot(axis) / axis.LengthSquared();
 
         // Check if point is within cylinder height
         if (t < 0.0f || t > 1.0f)
@@ -563,7 +563,7 @@ namespace Angaraka::Math
         return (aabbMax - aabbMin) * 0.5f;
     }
 
-    Vector3 ExpandAABB(const Vector3& aabbMin, const Vector3& aabbMax, float expansion)
+    Vector3 ExpandAABB(const Vector3& aabbMin, const Vector3& aabbMax, F32 expansion)
     {
         Vector3 expansionVec(expansion, expansion, expansion);
         return aabbMax + expansionVec; // Returns new max, min would be aabbMin - expansionVec
@@ -594,7 +594,7 @@ namespace Angaraka::Math
     // HSV to RGB Conversion
     // ==================================================================================
 
-    Vector3 HSVToRGB(float h, float s, float v)
+    Vector3 HSVToRGB(F32 h, F32 s, F32 v)
     {
         // Clamp input values to valid ranges
         h = Mod(h, 360.0f); // Hue wraps around at 360
@@ -602,11 +602,11 @@ namespace Angaraka::Math
         s = Clamp01(s);     // Saturation [0, 1]
         v = Clamp01(v);     // Value [0, 1]
 
-        float c = v * s;    // Chroma
-        float x = c * (1.0f - Abs(Mod(h / 60.0f, 2.0f) - 1.0f));
-        float m = v - c;    // Match value
+        F32 c = v * s;    // Chroma
+        F32 x = c * (1.0f - Abs(Mod(h / 60.0f, 2.0f) - 1.0f));
+        F32 m = v - c;    // Match value
 
-        float r, g, b;
+        F32 r, g, b;
 
         if (h >= 0.0f && h < 60.0f)
         {
@@ -645,20 +645,20 @@ namespace Angaraka::Math
     // RGB to HSV Conversion
     // ==================================================================================
 
-    Vector3 RGBToHSV(float r, float g, float b)
+    Vector3 RGBToHSV(F32 r, F32 g, F32 b)
     {
         // Clamp input values to valid range [0, 1]
         r = Clamp01(r);
         g = Clamp01(g);
         b = Clamp01(b);
 
-        float maxVal = Max(r, Max(g, b));
-        float minVal = Min(r, Min(g, b));
-        float delta = maxVal - minVal;
+        F32 maxVal = Max(r, Max(g, b));
+        F32 minVal = Min(r, Min(g, b));
+        F32 delta = maxVal - minVal;
 
-        float h = 0.0f; // Hue
-        float s = 0.0f; // Saturation
-        float v = maxVal; // Value
+        F32 h = 0.0f; // Hue
+        F32 s = 0.0f; // Saturation
+        F32 v = maxVal; // Value
 
         // Calculate saturation
         if (maxVal > EpsilonF)
@@ -702,18 +702,18 @@ namespace Angaraka::Math
     // ==================================================================================
 
     // HSL (Hue, Saturation, Lightness) to RGB
-    Vector3 HSLToRGB(float h, float s, float l)
+    Vector3 HSLToRGB(F32 h, F32 s, F32 l)
     {
         h = Mod(h, 360.0f);
         if (h < 0.0f) h += 360.0f;
         s = Clamp01(s);
         l = Clamp01(l);
 
-        float c = (1.0f - Abs(2.0f * l - 1.0f)) * s; // Chroma
-        float x = c * (1.0f - Abs(Mod(h / 60.0f, 2.0f) - 1.0f));
-        float m = l - c / 2.0f;
+        F32 c = (1.0f - Abs(2.0f * l - 1.0f)) * s; // Chroma
+        F32 x = c * (1.0f - Abs(Mod(h / 60.0f, 2.0f) - 1.0f));
+        F32 m = l - c / 2.0f;
 
-        float r, g, b;
+        F32 r, g, b;
 
         if (h >= 0.0f && h < 60.0f)
         {
@@ -749,19 +749,19 @@ namespace Angaraka::Math
     }
 
     // RGB to HSL conversion
-    Vector3 RGBToHSL(float r, float g, float b)
+    Vector3 RGBToHSL(F32 r, F32 g, F32 b)
     {
         r = Clamp01(r);
         g = Clamp01(g);
         b = Clamp01(b);
 
-        float maxVal = Max(r, Max(g, b));
-        float minVal = Min(r, Min(g, b));
-        float delta = maxVal - minVal;
+        F32 maxVal = Max(r, Max(g, b));
+        F32 minVal = Min(r, Min(g, b));
+        F32 delta = maxVal - minVal;
 
-        float h = 0.0f; // Hue
-        float s = 0.0f; // Saturation
-        float l = (maxVal + minVal) / 2.0f; // Lightness
+        F32 h = 0.0f; // Hue
+        F32 s = 0.0f; // Saturation
+        F32 l = (maxVal + minVal) / 2.0f; // Lightness
 
         // Calculate saturation
         if (delta > EpsilonF)
@@ -804,7 +804,7 @@ namespace Angaraka::Math
     // ==================================================================================
 
     // Convert RGB from [0-255] to [0-1] range
-    Vector3 RGBFromBytes(uint8_t r, uint8_t g, uint8_t b)
+    Vector3 RGBFromBytes(U8 r, U8 g, U8 b)
     {
         return Vector3(r / 255.0f, g / 255.0f, b / 255.0f);
     }
@@ -820,32 +820,32 @@ namespace Angaraka::Math
     }
 
     // Pack RGB to 32-bit integer (ARGB format)
-    uint32_t PackRGBA(const Vector3& rgb, float alpha)
+    U32 PackRGBA(const Vector3& rgb, F32 alpha)
     {
-        uint8_t r = static_cast<uint8_t>(Round(Clamp01(rgb.x) * 255.0f));
-        uint8_t g = static_cast<uint8_t>(Round(Clamp01(rgb.y) * 255.0f));
-        uint8_t b = static_cast<uint8_t>(Round(Clamp01(rgb.z) * 255.0f));
-        uint8_t a = static_cast<uint8_t>(Round(Clamp01(alpha) * 255.0f));
+        U8 r = static_cast<U8>(Round(Clamp01(rgb.x) * 255.0f));
+        U8 g = static_cast<U8>(Round(Clamp01(rgb.y) * 255.0f));
+        U8 b = static_cast<U8>(Round(Clamp01(rgb.z) * 255.0f));
+        U8 a = static_cast<U8>(Round(Clamp01(alpha) * 255.0f));
 
-        return (static_cast<uint32_t>(a) << 24) |
-            (static_cast<uint32_t>(r) << 16) |
-            (static_cast<uint32_t>(g) << 8) |
-            static_cast<uint32_t>(b);
+        return (static_cast<U32>(a) << 24) |
+            (static_cast<U32>(r) << 16) |
+            (static_cast<U32>(g) << 8) |
+            static_cast<U32>(b);
     }
 
     // Unpack 32-bit integer to RGB + alpha
-    Vector4 UnpackRGBA(uint32_t packedColor)
+    Vector4 UnpackRGBA(U32 packedColor)
     {
-        float a = ((packedColor >> 24) & 0xFF) / 255.0f;
-        float r = ((packedColor >> 16) & 0xFF) / 255.0f;
-        float g = ((packedColor >> 8) & 0xFF) / 255.0f;
-        float b = (packedColor & 0xFF) / 255.0f;
+        F32 a = ((packedColor >> 24) & 0xFF) / 255.0f;
+        F32 r = ((packedColor >> 16) & 0xFF) / 255.0f;
+        F32 g = ((packedColor >> 8) & 0xFF) / 255.0f;
+        F32 b = (packedColor & 0xFF) / 255.0f;
 
         return Vector4(r, g, b, a);
     }
 
     // Gamma correction
-    Vector3 LinearToGamma(const Vector3& linearColor, float gamma)
+    Vector3 LinearToGamma(const Vector3& linearColor, F32 gamma)
     {
         return Vector3(
             Pow(linearColor.x, 1.0f / gamma),
@@ -854,7 +854,7 @@ namespace Angaraka::Math
         );
     }
 
-    Vector3 GammaToLinear(const Vector3& gammaColor, float gamma)
+    Vector3 GammaToLinear(const Vector3& gammaColor, F32 gamma)
     {
         return Vector3(
             Pow(gammaColor.x, gamma),
@@ -864,20 +864,20 @@ namespace Angaraka::Math
     }
 
     // Color interpolation
-    Vector3 ColorLerp(const Vector3& colorA, const Vector3& colorB, float t)
+    Vector3 ColorLerp(const Vector3& colorA, const Vector3& colorB, F32 t)
     {
         return colorA.Lerp(colorB, t);
     }
 
-    Vector3 ColorLerpHSV(const Vector3& rgbA, const Vector3& rgbB, float t)
+    Vector3 ColorLerpHSV(const Vector3& rgbA, const Vector3& rgbB, F32 t)
     {
         Vector3 hsvA = RGBToHSV(rgbA);
         Vector3 hsvB = RGBToHSV(rgbB);
 
         // Handle hue interpolation (shortest path around color wheel)
-        float hue1 = hsvA.x;
-        float hue2 = hsvB.x;
-        float hueDiff = hue2 - hue1;
+        F32 hue1 = hsvA.x;
+        F32 hue2 = hsvB.x;
+        F32 hueDiff = hue2 - hue1;
 
         if (hueDiff > 180.0f)
         {
@@ -898,28 +898,28 @@ namespace Angaraka::Math
     }
 
     // Color manipulation functions
-    Vector3 AdjustBrightness(const Vector3& rgb, float brightness)
+    Vector3 AdjustBrightness(const Vector3& rgb, F32 brightness)
     {
         Vector3 hsv = RGBToHSV(rgb);
         hsv.z = Clamp01(hsv.z * brightness);
         return HSVToRGB(hsv);
     }
 
-    Vector3 AdjustSaturation(const Vector3& rgb, float saturation)
+    Vector3 AdjustSaturation(const Vector3& rgb, F32 saturation)
     {
         Vector3 hsv = RGBToHSV(rgb);
         hsv.y = Clamp01(hsv.y * saturation);
         return HSVToRGB(hsv);
     }
 
-    Vector3 AdjustHue(const Vector3& rgb, float hueShift)
+    Vector3 AdjustHue(const Vector3& rgb, F32 hueShift)
     {
         Vector3 hsv = RGBToHSV(rgb);
         hsv.x = Mod(hsv.x + hueShift, 360.0f);
         return HSVToRGB(hsv);
     }
 
-    Vector3 AdjustContrast(const Vector3& rgb, float contrast)
+    Vector3 AdjustContrast(const Vector3& rgb, F32 contrast)
     {
         return Vector3(
             Clamp01((rgb.x - 0.5f) * contrast + 0.5f),

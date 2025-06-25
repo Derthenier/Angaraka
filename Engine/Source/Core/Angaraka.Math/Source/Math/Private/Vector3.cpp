@@ -29,14 +29,14 @@ namespace Angaraka::Math
         return IsNearlyEqual(x, rhs.x) && IsNearlyEqual(y, rhs.y) && IsNearlyEqual(z, rhs.z);
     }
 
-    float Vector3::Length() const
+    F32 Vector3::Length() const
     {
         return Sqrt(x * x + y * y + z * z);
     }
 
     Vector3 Vector3::Normalized() const
     {
-        float len = Length();
+        F32 len = Length();
         if (IsNearlyZero(len))
             return Vector3::Zero;
         return *this / len;
@@ -56,25 +56,25 @@ namespace Angaraka::Math
         };
     }
 
-    float Vector3::DistanceTo(const Vector3& other) const
+    F32 Vector3::DistanceTo(const Vector3& other) const
     {
         return (*this - other).Length();
     }
 
-    float Vector3::DistanceSquaredTo(const Vector3& other) const
+    F32 Vector3::DistanceSquaredTo(const Vector3& other) const
     {
         return (*this - other).LengthSquared();
     }
 
-    Vector3 Vector3::Lerp(const Vector3& target, float t) const
+    Vector3 Vector3::Lerp(const Vector3& target, F32 t) const
     {
         return *this + (target - *this) * t;
     }
 
-    Vector3 Vector3::Slerp(const Vector3& target, float t) const
+    Vector3 Vector3::Slerp(const Vector3& target, F32 t) const
     {
-        float dot = Clamp(Dot(target), -1.0f, 1.0f);
-        float theta = std::acos(dot) * t;
+        F32 dot = Clamp(Dot(target), -1.0f, 1.0f);
+        F32 theta = std::acos(dot) * t;
         Vector3 relative = (target - *this * dot).Normalized();
         return (*this * std::cos(theta)) + (relative * std::sin(theta));
     }
@@ -86,8 +86,8 @@ namespace Angaraka::Math
 
     Vector3 Vector3::Project(const Vector3& onto) const
     {
-        float dot = Dot(onto);
-        float lengthSq = onto.LengthSquared();
+        F32 dot = Dot(onto);
+        F32 lengthSq = onto.LengthSquared();
         if (IsNearlyZero(lengthSq))
             return Vector3::Zero;
         return onto * (dot / lengthSq);
@@ -98,7 +98,7 @@ namespace Angaraka::Math
         return *this - Project(from);
     }
 
-    Vector3 operator*(float scalar, const Vector3& vec)
+    Vector3 operator*(F32 scalar, const Vector3& vec)
     {
         return vec * scalar;
     }

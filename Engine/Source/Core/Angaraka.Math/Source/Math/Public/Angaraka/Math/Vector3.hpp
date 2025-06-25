@@ -14,13 +14,13 @@ namespace Angaraka::Math
 
     struct Vector3
     {
-        float x, y, z;
+        F32 x, y, z;
 
         // Constructors
         constexpr Vector3() : x(0.0f), y(0.0f), z(0.0f) {}
-        constexpr Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
-        constexpr explicit Vector3(float value) : x(value), y(value), z(value) {}
-        constexpr Vector3(const Vector2& xy, float z) : x(xy.x), y(xy.y), z(z) {}
+        constexpr Vector3(F32 x, F32 y, F32 z) : x(x), y(y), z(z) {}
+        constexpr explicit Vector3(F32 value) : x(value), y(value), z(value) {}
+        constexpr Vector3(const Vector2& xy, F32 z) : x(xy.x), y(xy.y), z(z) {}
 
         // Array access
         float& operator[](size_t index) { return (&x)[index]; }
@@ -29,8 +29,8 @@ namespace Angaraka::Math
         // Arithmetic operators
         Vector3 operator+(const Vector3& rhs) const { return { x + rhs.x, y + rhs.y, z + rhs.z }; }
         Vector3 operator-(const Vector3& rhs) const { return { x - rhs.x, y - rhs.y, z - rhs.z }; }
-        Vector3 operator*(float scalar) const { return { x * scalar, y * scalar, z * scalar }; }
-        Vector3 operator/(float scalar) const { return { x / scalar, y / scalar, z / scalar }; }
+        Vector3 operator*(F32 scalar) const { return { x * scalar, y * scalar, z * scalar }; }
+        Vector3 operator/(F32 scalar) const { return { x / scalar, y / scalar, z / scalar }; }
         Vector3 operator-() const { return { -x, -y, -z }; }
 
         // Component-wise multiplication
@@ -40,8 +40,8 @@ namespace Angaraka::Math
         // Assignment operators
         Vector3& operator+=(const Vector3& rhs) { x += rhs.x; y += rhs.y; z += rhs.z; return *this; }
         Vector3& operator-=(const Vector3& rhs) { x -= rhs.x; y -= rhs.y; z -= rhs.z; return *this; }
-        Vector3& operator*=(float scalar) { x *= scalar; y *= scalar; z *= scalar; return *this; }
-        Vector3& operator/=(float scalar) { x /= scalar; y /= scalar; z /= scalar; return *this; }
+        Vector3& operator*=(F32 scalar) { x *= scalar; y *= scalar; z *= scalar; return *this; }
+        Vector3& operator/=(F32 scalar) { x /= scalar; y /= scalar; z /= scalar; return *this; }
         Vector3& operator*=(const Vector3& rhs) { x *= rhs.x; y *= rhs.y; z *= rhs.z; return *this; }
         Vector3& operator/=(const Vector3& rhs) { x /= rhs.x; y /= rhs.y; z /= rhs.z; return *this; }
 
@@ -50,18 +50,18 @@ namespace Angaraka::Math
         bool operator!=(const Vector3& rhs) const { return !(*this == rhs); }
 
         // Vector operations
-        float Length() const;
-        float LengthSquared() const { return x * x + y * y + z * z; }
+        F32 Length() const;
+        F32 LengthSquared() const { return x * x + y * y + z * z; }
         Vector3 Normalized() const;
         void Normalize();
-        float Dot(const Vector3& rhs) const { return x * rhs.x + y * rhs.y + z * rhs.z; }
+        F32 Dot(const Vector3& rhs) const { return x * rhs.x + y * rhs.y + z * rhs.z; }
         Vector3 Cross(const Vector3& rhs) const;
 
         // Utility functions
-        float DistanceTo(const Vector3& other) const;
-        float DistanceSquaredTo(const Vector3& other) const;
-        Vector3 Lerp(const Vector3& target, float t) const;
-        Vector3 Slerp(const Vector3& target, float t) const; // Spherical linear interpolation
+        F32 DistanceTo(const Vector3& other) const;
+        F32 DistanceSquaredTo(const Vector3& other) const;
+        Vector3 Lerp(const Vector3& target, F32 t) const;
+        Vector3 Slerp(const Vector3& target, F32 t) const; // Spherical linear interpolation
         Vector3 Reflect(const Vector3& normal) const;
         Vector3 Project(const Vector3& onto) const;
         Vector3 Reject(const Vector3& from) const;
@@ -86,5 +86,5 @@ namespace Angaraka::Math
     };
 
     // Non-member operators
-    Vector3 operator*(float scalar, const Vector3& vec);
+    Vector3 operator*(F32 scalar, const Vector3& vec);
 }

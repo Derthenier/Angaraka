@@ -38,7 +38,7 @@ namespace Angaraka::Math
         Transform& operator*=(const Transform& rhs);
 
         // Interpolation
-        Transform Lerp(const Transform& target, float t) const;
+        Transform Lerp(const Transform& target, F32 t) const;
 
         // Static factory methods
         static Transform Identity();
