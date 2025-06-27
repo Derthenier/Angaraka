@@ -18,6 +18,11 @@ namespace Angaraka {
         class NPCManager;
         class DialogueSystem;
     }
+
+    namespace Graphics::DirectX12::Scene {
+        class Manager;
+    }
+
 }
 
 namespace ThreadsOfKaliyuga
@@ -36,6 +41,9 @@ namespace ThreadsOfKaliyuga
 
     private:
 
+        void Update();
+        void Render();
+
     private:
         Angaraka::Reference<Angaraka::DirectX12GraphicsSystem> m_graphicsSystem{ nullptr };
         Angaraka::Reference<Angaraka::Core::CachedResourceManager> m_resourceManager{ nullptr };
@@ -46,6 +54,9 @@ namespace ThreadsOfKaliyuga
         Angaraka::Reference<Angaraka::AI::AIManager> m_aiManager{ nullptr };
         Angaraka::Reference<Angaraka::AI::NPCManager> m_npcManager{ nullptr };
         Angaraka::Reference<Angaraka::AI::DialogueSystem> m_dialogueSystem{ nullptr };
+
+        // Scene Management
+        Angaraka::Scope<Angaraka::Graphics::DirectX12::Scene::Manager> m_sceneManager;
 
         // --- Timing ---
         LARGE_INTEGER m_perfFreq;     // Performance Counter Frequency
@@ -77,10 +88,14 @@ namespace ThreadsOfKaliyuga
         void HandleTestDialogueInput();
         void LogDialogueSystemStatus();
 
+        // Update your existing methods to handle scenes
+        bool InitializeScene();      // Initialize scene manager and load test scene
+        void UpdateScene(Angaraka::F32 deltaTime);  // Update all scene objects
+        void RenderScene();          // Render all visible objects
+
         // Shutdown helpers
         void ShutdownAISystems();
         void ShutdownEngineCore();
-
     };
 }
 

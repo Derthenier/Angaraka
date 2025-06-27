@@ -1,4 +1,4 @@
-#include "Angaraka/AssetWorkerPool.hpp"
+#include "Angaraka/Asset/WorkerPool.hpp"
 #include "Angaraka/Log.hpp"
 #include <chrono>
 

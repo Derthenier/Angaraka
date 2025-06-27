@@ -1,4 +1,4 @@
-#include "Angaraka/AssetBundleLoader.hpp"
+#include "Angaraka/Asset/BundleLoader.hpp"
 #include "Angaraka/Log.hpp"
 #include <yaml-cpp/yaml.h>
 #include <algorithm>

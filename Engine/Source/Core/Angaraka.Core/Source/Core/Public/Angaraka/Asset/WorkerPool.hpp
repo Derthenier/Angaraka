@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Angaraka/AssetLoadQueue.hpp"
-#include "Angaraka/AssetBundleConfig.hpp"
+#include "Angaraka/Asset/LoadQueue.hpp"
+#include "Angaraka/Asset/BundleConfig.hpp"
 #include <thread>
 #include <atomic>
 #include <condition_variable>

@@ -1,4 +1,4 @@
-#include "Angaraka/AssetBundleManager.hpp"
+#include "Angaraka/Asset/BundleManager.hpp"
 #include "Angaraka/Log.hpp"
 #include <algorithm>
 #include <unordered_set>

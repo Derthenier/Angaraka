@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Angaraka/AssetBundleConfig.hpp"
-#include "Angaraka/AssetBundleLoader.hpp"
-#include "Angaraka/AssetLoadQueue.hpp"
-#include "Angaraka/AssetWorkerPool.hpp"
+#include "Angaraka/Asset/BundleConfig.hpp"
+#include "Angaraka/Asset/BundleLoader.hpp"
+#include "Angaraka/Asset/LoadQueue.hpp"
+#include "Angaraka/Asset/WorkerPool.hpp"
 #include <memory>
 #include <unordered_map>
 #include <functional>

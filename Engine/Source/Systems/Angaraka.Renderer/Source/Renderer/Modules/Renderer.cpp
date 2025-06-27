@@ -6,6 +6,7 @@ module;
 #include <windows.h>
 #include <string>
 #include <memory>    // For std::unique_ptr
+#include <Angaraka/Math/MathConversion.hpp>
 #include <DirectXMath.h>
 #include <wrl/client.h>
 #include <stdexcept>
@@ -240,6 +241,49 @@ namespace Angaraka { // Use the Angaraka namespace here
 
             // Draw the mesh
             commandList->DrawIndexedInstanced(mesh->GetIndexCount(), 1, 0, 0, 0);
+
+            AGK_TRACE("DirectX12GraphicsSystem: Rendered test mesh with {} indices", mesh->GetIndexCount());
+        }
+    }
+
+    void DirectX12GraphicsSystem::RenderMesh(Core::Resource* resource, Math::Matrix4x4 worldMatrix)
+    {
+        DirectX::XMMATRIX dxWorldMatrix = Angaraka::Math::Utility::MathConversion::ToDirectXMatrix(worldMatrix);
+        Graphics::DirectX12::MeshResource* mesh = dynamic_cast<Graphics::DirectX12::MeshResource*>(resource);
+        if (mesh && mesh->IsLoaded())
+        {
+            Graphics::DirectX12::ModelViewProjectionConstantBuffer cbData;
+            cbData.model = DirectX::XMMatrixTranspose(dxWorldMatrix);
+            cbData.view = DirectX::XMMatrixTranspose(m_camera->GetViewMatrix());
+            cbData.projection = DirectX::XMMatrixTranspose(m_camera->GetProjectionMatrix());
+
+            // Update GPU constant buffer
+            m_bufferManager->UpdateConstantBuffer(cbData);
+
+            // Set vertex buffer
+            auto vertexBufferView = mesh->GetVertexBufferView();
+            commandList->IASetVertexBuffers(0, 1, vertexBufferView);
+
+            // Set index buffer if available
+            if (mesh->GetIndexCount() > 3)
+            {
+                auto indexBufferView = mesh->GetIndexBufferView();
+                commandList->IASetIndexBuffer(indexBufferView);
+
+                // Draw indexed
+                commandList->DrawIndexedInstanced(
+                    static_cast<UINT>(mesh->GetIndexCount()),
+                    1, 0, 0, 0
+                );
+            }
+            else
+            {
+                // Draw non-indexed
+                commandList->DrawInstanced(
+                    static_cast<UINT>(mesh->GetVertexCount()),
+                    1, 0, 0
+                );
+            }
 
             AGK_TRACE("DirectX12GraphicsSystem: Rendered test mesh with {} indices", mesh->GetIndexCount());
         }

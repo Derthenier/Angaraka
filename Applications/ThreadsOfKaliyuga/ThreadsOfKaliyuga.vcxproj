@@ -61,12 +61,12 @@
       <EnableModules>true</EnableModules>
       <BuildStlModules>true</BuildStlModules>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ONNX_GPU_SDK)Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>G:\Libraries\Onnx\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ONNX_GPU_SDK)Lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>G:\Libraries\Onnx\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>if not exist "$(OutDir)config" (
@@ -96,12 +96,12 @@ xcopy "$(ProjectDir)Assets" "$(OutDir)Assets" /s /e /h /c /i /y /d</Command>
       <EnableModules>true</EnableModules>
       <BuildStlModules>true</BuildStlModules>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ONNX_GPU_SDK)Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>G:\Libraries\Onnx\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ONNX_GPU_SDK)Lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>G:\Libraries\Onnx\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>if not exist "$(OutDir)config" (

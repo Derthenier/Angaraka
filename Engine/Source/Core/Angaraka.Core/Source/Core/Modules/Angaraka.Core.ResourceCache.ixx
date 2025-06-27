@@ -2,7 +2,7 @@ module;
 
 #include "Angaraka/Base.hpp"
 #include "Angaraka/ResourceCache.hpp"
-#include "Angaraka/AssetBundleConfig.hpp"
+#include "Angaraka/Asset/BundleConfig.hpp"
 
 export module Angaraka.Core.ResourceCache;
 

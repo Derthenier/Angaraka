@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Angaraka/AssetBundleConfig.hpp"
+#include "Angaraka/Asset/BundleConfig.hpp"
 #include <queue>
 #include <mutex>
 #include <functional>

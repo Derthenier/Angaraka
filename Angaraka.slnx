@@ -30,5 +30,7 @@
   </Folder>
   <Folder Name="/Solution Items/Documentation/">
     <File Path="Documentation/architecture.md" />
+    <File Path="Documentation/asset_loading.md" />
+    <File Path="Documentation/status-june-25.md" />
   </Folder>
 </Solution>

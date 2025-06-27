@@ -1,7 +1,7 @@
 #include "Game.hpp"
 #include <objbase.h> // For CoInitializeEx and CoUninitialize
 #include <Angaraka/Log.hpp>
-#include <Angaraka/AssetBundleManager.hpp>
+#include <Angaraka/Asset/BundleManager.hpp>
 
 // AI Integration Layer includes
 #include <Angaraka/AIManager.hpp>
@@ -17,6 +17,7 @@ import Angaraka.Input.Windows;
 import Angaraka.Graphics.DirectX12;
 import Angaraka.Graphics.DirectX12.Texture;
 import Angaraka.Graphics.DirectX12.Mesh;
+import Angaraka.Graphics.DirectX12.SceneManager;
 
 import ThreadsOfKaliyuga.Input;
 
@@ -98,6 +99,12 @@ namespace ThreadsOfKaliyuga
         // Initialize game-specific systems
         if (!InitializeGameSystems()) {
             AGK_APP_FATAL("Failed to initialize game systems!");
+            return false;
+        }
+
+        // Initialize scene manager
+        if (!InitializeScene()) {
+            AGK_APP_FATAL("Failed to initialize scene manager!");
             return false;
         }
 
@@ -286,39 +293,8 @@ namespace ThreadsOfKaliyuga
             m_deltaTime = static_cast<Angaraka::F32>(currentTime.QuadPart - m_lastTime.QuadPart) / static_cast<Angaraka::F32>(m_perfFreq.QuadPart);
             m_lastTime = currentTime;
 
-            // Handle player input
-            HandlePlayerInput();
-
-            // Update engine systems
-            m_inputSystem->Update(m_deltaTime);
-
-            // Update AI systems
-            UpdateAISystems(m_deltaTime);
-
-            // Update game logic
-            UpdateGameLogic(m_deltaTime);
-
-            // Render frame
-            m_graphicsSystem->BeginFrame(m_deltaTime);
-
-            // Render game objects
-            Angaraka::Core::Resource* uvGridTexture = m_resourceManager->GetResource<Angaraka::Core::Resource>("character/player_diffuse").get();
-            if (uvGridTexture) {
-                m_graphicsSystem->RenderTexture(uvGridTexture);
-            }
-
-            Angaraka::Core::Resource* player = m_resourceManager->GetResource<Angaraka::Core::Resource>("character/player_mesh").get();
-            if (player) {
-                m_graphicsSystem->RenderMesh(player);
-            }
-
-            Angaraka::Core::Resource* tree = m_resourceManager->GetResource<Angaraka::Core::Resource>("environment/tree_oak").get();
-            if (tree) {
-                m_graphicsSystem->RenderMesh(tree);
-            }
-
-            m_graphicsSystem->EndFrame();
-            m_graphicsSystem->Present();
+            Update();
+            Render();
 
             // Periodic cache monitoring
             static Angaraka::F32 cacheMonitorTimer = 0.0f;
@@ -331,6 +307,41 @@ namespace ThreadsOfKaliyuga
                 cacheMonitorTimer = 0.0f;
             }
         }
+    }
+
+    void Game::Update() {
+
+        // Handle player input
+        HandlePlayerInput();
+
+        // Update engine systems
+        m_inputSystem->Update(m_deltaTime);
+
+        // Update AI systems
+        UpdateAISystems(m_deltaTime);
+
+        // Update game logic
+        UpdateGameLogic(m_deltaTime);
+
+        // Update scene management
+        UpdateScene(m_deltaTime);
+    }
+
+    void Game::Render() {
+
+        // Render frame
+        m_graphicsSystem->BeginFrame(m_deltaTime);
+
+        // Render game objects
+        Angaraka::Core::Resource* uvGridTexture = m_resourceManager->GetResource<Angaraka::Core::Resource>("character/player_diffuse").get();
+        if (uvGridTexture) {
+            m_graphicsSystem->RenderTexture(uvGridTexture);
+        }
+
+        RenderScene();
+
+        m_graphicsSystem->EndFrame();
+        m_graphicsSystem->Present();
     }
 
     void Game::UpdateAISystems(Angaraka::F32 deltaTime)
@@ -378,6 +389,65 @@ namespace ThreadsOfKaliyuga
         // For now, dialogue system input is handled in HandleTestDialogueInput()
     }
 
+
+
+
+    // ==================================================================================
+    // Scene Management
+    // ==================================================================================
+    bool Game::InitializeScene()
+    {
+        AGK_INFO("Initializing scene management...");
+
+        // Create scene manager with dependencies
+        m_sceneManager = Angaraka::CreateScope<Angaraka::Graphics::DirectX12::Scene::Manager>(
+            m_resourceManager.get(),
+            m_graphicsSystem.get()
+        );
+
+        AGK_INFO("Scene initialized with {} objects", m_sceneManager->GetObjectCount());
+        return true;
+    }
+
+
+    void Game::UpdateScene(Angaraka::F32 deltaTime)
+    {
+        if (m_sceneManager)
+        {
+            // Load test scene
+            m_sceneManager->CreateTestScene();
+            m_sceneManager->Update(deltaTime);
+        }
+    }
+
+    void Game::RenderScene()
+    {
+        if (!m_sceneManager)
+            return;
+
+        // Get all visible objects
+        const auto& objects = m_sceneManager->GetVisibleObjects();
+
+        for (const auto& object : objects)
+        {
+            if (!object.visible)
+                continue;
+
+            // Get mesh resource
+            auto meshResource = m_resourceManager->GetResource<Angaraka::Core::Resource>(object.meshResourceId);
+            if (!meshResource)
+            {
+                AGK_WARN("Mesh resource '{}' not found for object '{}'", object.meshResourceId, object.name);
+                continue;
+            }
+
+            // Calculate world matrix for this object using Angaraka Math
+            auto modelMatrix = object.GetWorldMatrix();
+
+            // Render the mesh with the world matrix
+            m_graphicsSystem->RenderMesh(meshResource.get(), modelMatrix);
+        }
+    }
 
 
     // ==================================================================================

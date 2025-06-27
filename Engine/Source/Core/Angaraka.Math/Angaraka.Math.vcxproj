@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="Source\Math\Public\Angaraka\MathCore.hpp" />
     <ClInclude Include="Source\Math\Public\Angaraka\Math\Constants.hpp" />
+    <ClInclude Include="Source\Math\Public\Angaraka\Math\MathConversion.hpp" />
     <ClInclude Include="Source\Math\Public\Angaraka\Math\Matrix44.hpp" />
     <ClInclude Include="Source\Math\Public\Angaraka\Math\Quaternion.hpp" />
     <ClInclude Include="Source\Math\Public\Angaraka\Math\Random.hpp" />

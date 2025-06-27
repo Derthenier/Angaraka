@@ -12,7 +12,6 @@
 #include "Angaraka/Math/Transform.hpp"
 #include "Angaraka/Math/Random.hpp"
 
-#include <DirectXMath.h>
 #include <array>
 #include <string>
 

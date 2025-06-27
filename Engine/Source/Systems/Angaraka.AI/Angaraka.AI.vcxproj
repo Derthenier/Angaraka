@@ -71,7 +71,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdclatest</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)Source\AI\Public;$(SolutionDir)Engine\Source\Core\Angaraka.Core\Source\Core\Public;$(SolutionDir)Engine\Source\Core\Angaraka.Math\Source\Math\Public;$(ONNX_GPU_SDK)Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source\AI\Public;$(SolutionDir)Engine\Source\Core\Angaraka.Core\Source\Core\Public;$(SolutionDir)Engine\Source\Core\Angaraka.Math\Source\Math\Public;G:\Libraries\Onnx\include;</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -79,7 +79,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(OutDir);$(ONNX_GPU_SDK)lib;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);G:\Libraries\Onnx\lib</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -92,7 +92,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdclatest</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)Source\AI\Public;$(SolutionDir)Engine\Source\Core\Angaraka.Core\Source\Core\Public;$(SolutionDir)Engine\Source\Core\Angaraka.Math\Source\Math\Public;$(ONNX_GPU_SDK)Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source\AI\Public;$(SolutionDir)Engine\Source\Core\Angaraka.Core\Source\Core\Public;$(SolutionDir)Engine\Source\Core\Angaraka.Math\Source\Math\Public;G:\Libraries\Onnx\include;</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -100,7 +100,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(OutDir);$(ONNX_GPU_SDK)lib;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);G:\Libraries\Onnx\lib</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>

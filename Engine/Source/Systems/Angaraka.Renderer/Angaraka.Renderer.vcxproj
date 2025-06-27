@@ -124,6 +124,8 @@ xcopy "$(ProjectDir)Shaders\SimpleShader.hlsl" "$(OutDir)Shaders" /d /i /y</Comm
     <ClCompile Include="Source\Renderer\Modules\Resources\OBJLoader.ixx" />
     <ClCompile Include="Source\Renderer\Modules\PSOManager.ixx" />
     <ClCompile Include="Source\Renderer\Modules\Renderer.ixx" />
+    <ClCompile Include="Source\Renderer\Modules\Scene\SceneManager.cpp" />
+    <ClCompile Include="Source\Renderer\Modules\Scene\SceneManager.ixx" />
     <ClCompile Include="Source\Renderer\Modules\ShaderManager.ixx" />
     <ClCompile Include="Source\Renderer\Modules\SwapChainManager.ixx" />
     <ClCompile Include="Source\Renderer\Modules\BufferManager.cpp" />

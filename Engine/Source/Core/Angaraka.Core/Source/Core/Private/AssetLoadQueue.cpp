@@ -1,4 +1,4 @@
-#include "Angaraka/AssetLoadQueue.hpp"
+#include "Angaraka/Asset/LoadQueue.hpp"
 #include "Angaraka/Log.hpp"
 
 namespace Angaraka::Core {

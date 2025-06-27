@@ -1,4 +1,4 @@
-#include "Angaraka/AssetBundleConfig.hpp"
+#include "Angaraka/Asset/BundleConfig.hpp"
 #include <algorithm>
 #include <unordered_map>
 

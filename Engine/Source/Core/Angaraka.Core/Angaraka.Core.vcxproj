@@ -29,11 +29,11 @@
     <ClCompile Include="Source\Core\Private\ResourceCache.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Core\Public\Angaraka\AssetBundleManager.hpp" />
-    <ClInclude Include="Source\Core\Public\Angaraka\AssetWorkerPool.hpp" />
-    <ClInclude Include="Source\Core\Public\Angaraka\AssetBundleConfig.hpp" />
-    <ClInclude Include="Source\Core\Public\Angaraka\AssetBundleLoader.hpp" />
-    <ClInclude Include="Source\Core\Public\Angaraka\AssetLoadQueue.hpp" />
+    <ClInclude Include="Source\Core\Public\Angaraka\Asset\BundleConfig.hpp" />
+    <ClInclude Include="Source\Core\Public\Angaraka\Asset\BundleLoader.hpp" />
+    <ClInclude Include="Source\Core\Public\Angaraka\Asset\BundleManager.hpp" />
+    <ClInclude Include="Source\Core\Public\Angaraka\Asset\LoadQueue.hpp" />
+    <ClInclude Include="Source\Core\Public\Angaraka\Asset\WorkerPool.hpp" />
     <ClInclude Include="Source\Core\Public\Angaraka\Base.hpp" />
     <ClInclude Include="Source\Core\Public\Angaraka\Log.hpp" />
     <ClInclude Include="Source\Core\Public\Angaraka\ResourceCache.hpp" />
