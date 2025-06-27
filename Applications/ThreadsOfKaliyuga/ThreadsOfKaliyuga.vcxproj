@@ -138,6 +138,9 @@ xcopy "$(ProjectDir)Assets" "$(OutDir)Assets" /s /e /h /c /i /y /d</Command>
     <ProjectReference Include="..\..\Engine\Source\Systems\Angaraka.Renderer\Angaraka.Renderer.vcxproj">
       <Project>{1cf8a41d-c991-4861-9d71-f5b90a0caf01}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\Engine\Source\Systems\Angaraka.Scene\Angaraka.Scene.vcxproj">
+      <Project>{e3c0d0a9-4053-4279-8811-67ec8ebcca41}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Editor\Editor.vcxproj">
       <Project>{3cdaae00-1da8-4c2b-af6e-11f10765c3ba}</Project>
     </ProjectReference>
