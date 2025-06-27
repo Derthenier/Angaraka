@@ -110,6 +110,9 @@
     <ClCompile Include="Source\Scene\Private\Scene.cpp" />
     <ClCompile Include="Source\Scene\Private\SceneTransform.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Scene\Modules\MeshRenderer.ixx" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

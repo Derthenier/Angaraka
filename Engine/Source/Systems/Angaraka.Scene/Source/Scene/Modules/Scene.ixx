@@ -20,8 +20,8 @@ namespace Angaraka {
     }
     namespace Math {
         class Frustum;
-        class BoundingBox;
-        class Ray;
+        struct BoundingBox;
+        struct Ray;
     }
 }
 
@@ -255,6 +255,12 @@ namespace Angaraka::SceneSystem {
          */
         void PrepareRender(const Math::Vector3& cameraPosition,
             const Math::Frustum& frustum);
+
+        /**
+         * @brief Execute rendering for all visible entities
+         * @param renderer Graphics system to use for rendering
+         */
+        void ExecuteRendering(DirectX12GraphicsSystem* renderer);
 
         /**
          * @brief Get render queue

@@ -12,6 +12,10 @@
 #include "Angaraka/Math/Transform.hpp"
 #include "Angaraka/Math/Random.hpp"
 
+#include "Angaraka/Math/BoundingBox.hpp"
+#include "Angaraka/Math/Ray.hpp"
+#include "Angaraka/Math/Frustum.hpp"
+
 #include <array>
 #include <string>
 

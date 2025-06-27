@@ -7,11 +7,10 @@ module;
 
 module Angaraka.Scene;
 
-import Angaraka.Scene.Transform;
 import Angaraka.Scene.Component;
-import Angaraka.Scene.Entity;
 import Angaraka.Core.ResourceCache;
 import Angaraka.Graphics.DirectX12;
+import Angaraka.Scene.Components.MeshRenderer;
 
 namespace Angaraka::SceneSystem {
 
@@ -444,21 +443,72 @@ namespace Angaraka::SceneSystem {
     // ================== Private Helper Methods ==================
 
     void Scene::CollectRenderables(const Math::Frustum& frustum) {
-        // TODO: Implement proper frustum culling with bounding boxes
-        // For now, collect all entities with renderable components
-
         for (auto& [id, entity] : m_entities) {
             if (!entity->IsActive()) {
                 continue;
             }
 
-            // TODO: Check for MeshRenderer component
-            // For now, add to opaque queue
-            RenderEntry entry;
-            entry.entity = entity.get();
-            entry.renderOrder = entity->GetLayer();
+            // Check if entity has a MeshRenderer component
+            if (MeshRenderer* meshRenderer = entity->GetComponent<MeshRenderer>()) {
+                // Check if mesh renderer is enabled
+                if (!meshRenderer->IsEnabled()) {
+                    continue;
+                }
 
-            m_renderQueues[static_cast<size_t>(RenderQueueType::Opaque)].push_back(entry);
+                // Frustum culling
+                if (!meshRenderer->IsVisibleInFrustum(frustum)) {
+                    if (m_collectStatistics) {
+                        m_statistics.culledEntities++;
+                    }
+                    continue;
+                }
+
+                // Add to appropriate render queue
+                RenderEntry entry;
+                entry.entity = entity.get();
+                entry.renderOrder = meshRenderer->GetRenderLayer();
+
+                // For now, assume all meshes are opaque
+                // TODO: Check material properties to determine queue
+                m_renderQueues[static_cast<size_t>(RenderQueueType::Opaque)].push_back(entry);
+            }
+        }
+    }
+
+    void Scene::ExecuteRendering(DirectX12GraphicsSystem* renderer) {
+        if (!renderer) {
+            AGK_ERROR("Scene::ExecuteRendering - Renderer is null!");
+            return;
+        }
+
+        auto startTime = std::chrono::high_resolution_clock::now();
+
+        // Render each queue in order
+        for (size_t i = 0; i < static_cast<size_t>(RenderQueueType::Count); ++i) {
+            const auto& queue = m_renderQueues[i];
+
+            for (const RenderEntry& entry : queue) {
+                Entity* entity = entry.entity;
+
+                // Get MeshRenderer component
+                if (MeshRenderer* meshRenderer = entity->GetComponent<MeshRenderer>()) {
+                    // Get mesh resource
+                    if (Core::Resource* meshResource = meshRenderer->GetMeshResource()) {
+                        // Get world transform matrix
+                        Math::Matrix4x4 worldMatrix = entity->GetTransform().GetWorldMatrix();
+
+                        // Call the renderer
+                        renderer->RenderMesh(meshResource, worldMatrix);
+                    }
+                }
+            }
+        }
+
+        if (m_collectStatistics) {
+            auto endTime = std::chrono::high_resolution_clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(
+                endTime - startTime);
+            m_statistics.renderTimeMs = duration.count() / 1000.0f;
         }
     }
 

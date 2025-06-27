@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "Angaraka/Base.hpp"
+
 namespace Angaraka::Math
 {
     // ==================================================================================

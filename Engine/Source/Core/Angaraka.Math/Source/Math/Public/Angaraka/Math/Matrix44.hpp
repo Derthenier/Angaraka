@@ -5,6 +5,8 @@
 #pragma once
 
 #include <array>
+#include "Angaraka/Math/Vector3.hpp"
+#include "Angaraka/Math/Vector4.hpp"
 
 namespace Angaraka::Math
 {

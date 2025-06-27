@@ -158,25 +158,36 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Public\Angaraka\MathCore.hpp" />
+    <ClInclude Include="Source\Math\Public\Angaraka\Math\BoundingBox.hpp" />
     <ClInclude Include="Source\Math\Public\Angaraka\Math\Constants.hpp" />
+    <ClInclude Include="Source\Math\Public\Angaraka\Math\Frustum.hpp" />
     <ClInclude Include="Source\Math\Public\Angaraka\Math\MathConversion.hpp" />
     <ClInclude Include="Source\Math\Public\Angaraka\Math\Matrix44.hpp" />
     <ClInclude Include="Source\Math\Public\Angaraka\Math\Quaternion.hpp" />
     <ClInclude Include="Source\Math\Public\Angaraka\Math\Random.hpp" />
+    <ClInclude Include="Source\Math\Public\Angaraka\Math\Ray.hpp" />
     <ClInclude Include="Source\Math\Public\Angaraka\Math\Transform.hpp" />
     <ClInclude Include="Source\Math\Public\Angaraka\Math\Vector2.hpp" />
     <ClInclude Include="Source\Math\Public\Angaraka\Math\Vector3.hpp" />
     <ClInclude Include="Source\Math\Public\Angaraka\Math\Vector4.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Math\Private\BoundingBox.cpp" />
+    <ClCompile Include="Source\Math\Private\Frustum.cpp" />
     <ClCompile Include="Source\Math\Private\MathCore.cpp" />
     <ClCompile Include="Source\Math\Private\Matrix44.cpp" />
     <ClCompile Include="Source\Math\Private\Quaternion.cpp" />
     <ClCompile Include="Source\Math\Private\Random.cpp" />
+    <ClCompile Include="Source\Math\Private\Ray.cpp" />
     <ClCompile Include="Source\Math\Private\Transform.cpp" />
     <ClCompile Include="Source\Math\Private\Vector2.cpp" />
     <ClCompile Include="Source\Math\Private\Vector3.cpp" />
     <ClCompile Include="Source\Math\Private\Vector4.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Angaraka.Core\Angaraka.Core.vcxproj">
+      <Project>{4e87a4e8-238c-4cda-840e-2da0ea59955a}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

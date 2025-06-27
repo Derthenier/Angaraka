@@ -4,7 +4,8 @@
 
 #pragma once
 
-#include "Vector3.hpp"
+#include "Angaraka/Base.hpp"
+#include "Angaraka/Math/Vector3.hpp"
 
 namespace Angaraka::Math
 {
