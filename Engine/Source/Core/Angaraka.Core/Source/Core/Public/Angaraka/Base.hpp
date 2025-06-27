@@ -130,6 +130,20 @@ namespace Angaraka {
         } \
         size_t GetTypeId() const override { return StaticTypeId(); }
 
+#if _DEBUG
+#ifndef AGK_ASSERT
+#define AGK_ASSERT(condition, message) \
+    do { \
+        if (!(condition)) { \
+            throw std::runtime_error("Assertion failed: " + std::string(message)); \
+        } \
+    } while (false)
+#endif
+#else
+#ifndef AGK_ASSERT
+#define AGK_ASSERT
+#endif
+#endif // _DEBUG
 #include "Angaraka/Log.hpp"
 
 #endif // ANGARAKA_ENGINE_BASE_HPP

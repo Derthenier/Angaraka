@@ -21,6 +21,7 @@
     <Project Path="Engine/Source/Systems/Angaraka.Input/Angaraka.Input.vcxproj" Id="c2c30e95-37bc-4825-bb9e-801cf87a9aee" />
     <Project Path="Engine/Source/Systems/Angaraka.Physics/Angaraka.Physics.vcxproj" Id="ea092948-2164-4036-ba5e-e3d3057ba11f" />
     <Project Path="Engine/Source/Systems/Angaraka.Renderer/Angaraka.Renderer.vcxproj" Id="1cf8a41d-c991-4861-9d71-f5b90a0caf01" />
+    <Project Path="Engine/Source/Systems/Angaraka.Scene/Angaraka.Scene.vcxproj" Id="e3c0d0a9-4053-4279-8811-67ec8ebcca41" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
