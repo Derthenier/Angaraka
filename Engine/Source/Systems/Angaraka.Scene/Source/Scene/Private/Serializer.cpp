@@ -487,7 +487,7 @@ namespace Angaraka::SceneSystem {
 
         // Color and intensity
         const auto& color = light->GetColor();
-        node["color"] = std::vector<F32>{ color.r, color.g, color.b };
+        node["color"] = std::vector<F32>{ color.R(), color.G(), color.B()};
         node["intensity"] = light->GetIntensity();
 
         // Type-specific properties

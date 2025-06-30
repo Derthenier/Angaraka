@@ -27,6 +27,20 @@ namespace Angaraka::Math {
             return Color(red * intensity, green * intensity, blue * intensity, alpha);
         }
 
+        // Component-wise retrieval
+        F32 GetRed() const { return red; }
+        F32 GetGreen() const { return green; }
+        F32 GetBlue() const { return blue; }
+        F32 GetAlpha() const { return alpha; }
+        F32 Red() const { return red; }
+        F32 Green() const { return green; }
+        F32 Blue() const { return blue; }
+        F32 Alpha() const { return alpha; }
+        F32 R() const { return red; }
+        F32 G() const { return green; }
+        F32 B() const { return blue; }
+        F32 A() const { return alpha; }
+
     private:
         F32 red{ 0.0f };
         F32 green{ 0.0f };
