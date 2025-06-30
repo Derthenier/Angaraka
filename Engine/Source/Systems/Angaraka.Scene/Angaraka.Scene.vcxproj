@@ -103,15 +103,20 @@
   <ItemGroup>
     <ClCompile Include="Source\Scene\Modules\Component.ixx" />
     <ClCompile Include="Source\Scene\Modules\Entity.ixx" />
+    <ClCompile Include="Source\Scene\Modules\Light.ixx" />
+    <ClCompile Include="Source\Scene\Modules\MeshRenderer.ixx" />
+    <ClCompile Include="Source\Scene\Modules\OctTree.ixx" />
     <ClCompile Include="Source\Scene\Modules\Scene.ixx" />
     <ClCompile Include="Source\Scene\Modules\SceneTransform.ixx" />
+    <ClCompile Include="Source\Scene\Modules\Serializer.ixx" />
     <ClCompile Include="Source\Scene\Private\Component.cpp" />
     <ClCompile Include="Source\Scene\Private\Entity.cpp" />
+    <ClCompile Include="Source\Scene\Private\Light.cpp" />
+    <ClCompile Include="Source\Scene\Private\MeshRenderer.cpp" />
+    <ClCompile Include="Source\Scene\Private\OctTree.cpp" />
     <ClCompile Include="Source\Scene\Private\Scene.cpp" />
     <ClCompile Include="Source\Scene\Private\SceneTransform.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Source\Scene\Modules\MeshRenderer.ixx" />
+    <ClCompile Include="Source\Scene\Private\Serializer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

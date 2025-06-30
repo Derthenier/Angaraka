@@ -228,15 +228,15 @@ namespace Angaraka::SceneSystem {
     // ================== Common Component Types ==================
     // These are forward declared here for use throughout the engine
 
-    export class Transform;      // Transform component (usually built into Entity)
-    export class MeshRenderer;   // Renders a mesh
-    export class Light;          // Light source
-    export class Camera;         // Camera for rendering
-    export class AudioSource;    // 3D audio source
-    export class AudioListener;  // Audio listener (usually on camera)
-    export class Collider;       // Physics collider base
-    export class RigidBody;      // Physics rigid body
-    export class Animator;       // Animation controller
-    export class ParticleSystem; // Particle effects
-    export class Script;         // User scripts base
+    // export class Transform;      // Transform component (usually built into Entity)
+    // export class MeshRenderer;   // Renders a mesh
+    // export class Light;          // Light source
+    // export class Camera;         // Camera for rendering
+    // export class AudioSource;    // 3D audio source
+    // export class AudioListener;  // Audio listener (usually on camera)
+    // export class Collider;       // Physics collider base
+    // export class RigidBody;      // Physics rigid body
+    // export class Animator;       // Animation controller
+    // export class ParticleSystem; // Particle effects
+    // export class Script;         // User scripts base
 }

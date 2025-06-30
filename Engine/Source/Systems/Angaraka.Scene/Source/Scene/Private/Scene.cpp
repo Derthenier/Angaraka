@@ -160,7 +160,7 @@ namespace Angaraka::SceneSystem {
             if (entity->IsActive()) {
                 m_statistics.activeEntities--;
             }
-            m_statistics.componentCount -= entity->GetComponents().size();
+            m_statistics.componentCount -= static_cast<U32>(entity->GetComponents().size());
         }
 
         // Remove entity

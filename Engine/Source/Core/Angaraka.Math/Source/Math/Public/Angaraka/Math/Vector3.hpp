@@ -49,6 +49,35 @@ namespace Angaraka::Math
         bool operator==(const Vector3& rhs) const;
         bool operator!=(const Vector3& rhs) const { return !(*this == rhs); }
 
+        // Element-wise minimum with another Vector3
+        // This method takes another Vector2 and returns a new Vector3
+        // where each component is the minimum of the corresponding components
+        // of the two vectors.
+        [[nodiscard]] Vector3 Min(const Vector3& other) const
+        {
+            return Vector3(std::min(x, other.x), std::min(y, other.y), std::min(z, other.z));
+        }
+
+        // Element-wise maximum with another Vector3
+        // This method takes another Vector2 and returns a new Vector3
+        // where each component is the maximum of the corresponding components
+        // of the two vectors.
+        [[nodiscard]] Vector3 Max(const Vector3& other) const
+        {
+            return Vector3(std::max(x, other.x), std::max(y, other.y), std::max(z, other.z));
+        }
+
+        // Static versions
+        static Vector3 Min(const Vector3& a, const Vector3& b)
+        {
+            return a.Min(b);
+        }
+
+        static Vector3 Max(const Vector3& a, const Vector3& b)
+        {
+            return a.Max(b);
+        }
+
         // Vector operations
         F32 Length() const;
         F32 LengthSquared() const { return x * x + y * y + z * z; }

@@ -16,6 +16,8 @@
 #include "Angaraka/Math/Ray.hpp"
 #include "Angaraka/Math/Frustum.hpp"
 
+#include "Angaraka/Math/Color.hpp"
+
 #include <array>
 #include <string>
 
@@ -92,6 +94,8 @@ namespace Angaraka::Math {
     F32 NormalizeAngle360(F32 angle);        // Normalize to [0, 360]
     F32 NormalizeAngleRadians(F32 angle);    // Normalize to [-PI, PI]
     F32 AngleDifference(F32 a, F32 b);     // Shortest angle between two angles
+    F32 RadiansToDegrees(F32 radians);
+    F32 DegreesToRadians(F32 degrees);
 
     // Comparison with epsilon
     bool IsNearlyEqual(F32 a, F32 b, F32 epsilon = EpsilonF);
@@ -168,22 +172,4 @@ namespace Angaraka::Math {
     Vector3 ColorScreen(const Vector3& base, const Vector3& blend);
     Vector3 ColorOverlay(const Vector3& base, const Vector3& blend);
     Vector3 ColorSoftLight(const Vector3& base, const Vector3& blend);
-
-    // Common color constants
-    namespace Colors
-    {
-        const Vector3 Black = Vector3(0.0f, 0.0f, 0.0f);
-        const Vector3 White = Vector3(1.0f, 1.0f, 1.0f);
-        const Vector3 Red = Vector3(1.0f, 0.0f, 0.0f);
-        const Vector3 Green = Vector3(0.0f, 1.0f, 0.0f);
-        const Vector3 Blue = Vector3(0.0f, 0.0f, 1.0f);
-        const Vector3 Yellow = Vector3(1.0f, 1.0f, 0.0f);
-        const Vector3 Cyan = Vector3(0.0f, 1.0f, 1.0f);
-        const Vector3 Magenta = Vector3(1.0f, 0.0f, 1.0f);
-        const Vector3 Gray = Vector3(0.5f, 0.5f, 0.5f);
-        const Vector3 Orange = Vector3(1.0f, 0.5f, 0.0f);
-        const Vector3 Purple = Vector3(0.5f, 0.0f, 1.0f);
-        const Vector3 Pink = Vector3(1.0f, 0.75f, 0.8f);
-        const Vector3 Brown = Vector3(0.6f, 0.3f, 0.0f);
-    }
 } // namespace Angaraka::Math

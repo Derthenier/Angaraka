@@ -11,19 +11,8 @@ export module Angaraka.Scene;
 import Angaraka.Scene.Transform;
 import Angaraka.Scene.Component;
 import Angaraka.Scene.Entity;
-
-// Forward declare renderer types
-namespace Angaraka {
-    class DirectX12GraphicsSystem;
-    namespace Core {
-        class CachedResourceManager;
-    }
-    namespace Math {
-        class Frustum;
-        struct BoundingBox;
-        struct Ray;
-    }
-}
+import Angaraka.Graphics.DirectX12;
+import Angaraka.Core.ResourceCache;
 
 namespace Angaraka::SceneSystem {
 
@@ -310,11 +299,11 @@ namespace Angaraka::SceneSystem {
 
         // ================== Systems Access ==================
 
-        Core::CachedResourceManager* GetResourceManager() const {
+        inline Core::CachedResourceManager* GetResourceManager() const {
             return m_resourceManager;
         }
 
-        DirectX12GraphicsSystem* GetGraphicsSystem() const {
+        inline DirectX12GraphicsSystem* GetGraphicsSystem() const {
             return m_graphicsSystem;
         }
 

@@ -117,6 +117,16 @@ namespace Angaraka::Math
         return diff;
     }
 
+    F32 RadiansToDegress(F32 radians)
+    {
+        return radians * RadToDegF;
+    }
+
+    F32 DegreesToRadians(F32 degrees)
+    {
+        return degrees * DegToRadF;
+    }
+
     bool IsNearlyEqual(F32 a, F32 b, F32 epsilon)
     {
         return Abs(a - b) <= epsilon;
