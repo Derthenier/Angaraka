@@ -62,8 +62,8 @@
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)Source\$(ProjectNameShort)\Public;$(ProjectDir);$(SolutionDir)Engine\Source\Core\Angaraka.Core\Source\Core\Public;%(AdditionalIncludeDirectories)
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source\$(ProjectNameShort)\Public;$(ProjectDir);$(SolutionDir)Engine\Source\Core\Angaraka.Core\Source\Core\Public;$(SolutionDir)Engine\Source\Core\Angaraka.Math\Source\Math\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4251;4275;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -80,8 +80,8 @@
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)Source\$(ProjectNameShort)\Public;$(ProjectDir);$(SolutionDir)Engine\Source\Core\Angaraka.Core\Source\Core\Public;%(AdditionalIncludeDirectories)
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source\$(ProjectNameShort)\Public;$(ProjectDir);$(SolutionDir)Engine\Source\Core\Angaraka.Core\Source\Core\Public;$(SolutionDir)Engine\Source\Core\Angaraka.Math\Source\Math\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4251;4275;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>

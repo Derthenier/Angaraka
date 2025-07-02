@@ -1,19 +1,19 @@
 // Engine/Source/Systems/Angaraka.AI/Source/AI/Public/Angaraka/AIManager.hpp
 #pragma once
 
-#include <Angaraka/AIBase.hpp>
+#include <Angaraka/Base.hpp>
 #include <Angaraka/AIModelResource.hpp>
-#include <filesystem>
-#include <future>
+#include <Angaraka/Tokenizer.hpp>
+#include <Angaraka/MathCore.hpp>
+#include <unordered_map>
 #include <memory>
+#include <future>
 #include <queue>
 #include <thread>
-#include <unordered_map>
 
-import Angaraka.Core.ResourceCache;
+import Angaraka.Core.Resources;
 import Angaraka.Core.Config;
-
-using namespace Angaraka::Math;
+import Angaraka.Core.ResourceCache;
 
 namespace Angaraka::AI {
 
@@ -37,16 +37,34 @@ namespace Angaraka::AI {
 
     // Central AI system manager
     class AIManager {
+    private:
+        // Simple faction configs matching actual JSON structure
+        struct FactionConfig {
+            String factionId;
+            String displayName;                     // "name" in JSON
+            String description;                     // "ideology" in JSON  
+            String promptTemplate;                  // "prompt_template" in JSON
+            std::vector<String> personalityTraits;  // "personality_traits" in JSON
+            std::vector<String> keyVocabulary;      // "key_vocabulary" in JSON
+        };
+
     public:
-        explicit AIManager(const Angaraka::Config::AISystemConfig& config = Angaraka::Config::AISystemConfig{});
+        explicit AIManager(const Config::AISystemConfig& config = Config::AISystemConfig{});
         ~AIManager();
 
         // System lifecycle
-        bool Initialize(Reference<Angaraka::Core::CachedResourceManager> cachedManager);
+        bool Initialize(Reference<Angaraka::Core::CachedResourceManager> resourceManager);
         void Shutdown();
         void Update(F32 deltaTime);
 
-        // Model management
+        // Model management - NEW STRUCTURE
+        bool LoadSharedDialogueModel(const String& modelPath);
+        bool LoadFactionConfigs(const String& modelsDirectory);
+        bool LoadSharedTokenizer(const String& tokenizerPath);
+        void UnloadSharedModel();
+
+        // Legacy methods (deprecated)
+        [[deprecated("Use LoadSharedDialogueModel instead")]]
         bool LoadDialogueModel(const String& factionId, const String& modelPath);
         bool LoadTerrainModel(const String& regionType, const String& modelPath);
         bool LoadBehaviorModel(const String& behaviorType, const String& modelPath);
@@ -60,8 +78,8 @@ namespace Angaraka::AI {
 
         // Synchronous versions for immediate results
         DialogueResponse GenerateDialogueSync(const DialogueRequest& request);
-        BehaviorResponse EvaluateBehaviorSync(const BehaviorRequest& request);
         TerrainResponse GenerateTerrainSync(const TerrainRequest& request);
+        BehaviorResponse EvaluateBehaviorSync(const BehaviorRequest& request);
 
         // Faction-specific operations
         bool SwitchActiveFaction(const String& factionId);
@@ -75,20 +93,38 @@ namespace Angaraka::AI {
         void EnableProfiling(bool enable) { m_profilingEnabled = enable; }
 
         // Configuration
-        void UpdateConfig(const Angaraka::Config::AISystemConfig& config) { m_config = config; }
-        const Angaraka::Config::AISystemConfig& GetConfig() const { return m_config; }
+        void UpdateConfig(const Config::AISystemConfig& config) { m_config = config; }
+        const Config::AISystemConfig& GetConfig() const { return m_config; }
+
+        // Shared AI system access
+        Reference<Tokenizer> GetSharedTokenizer() const { return m_sharedTokenizer; }
+        Reference<FactionConfig> GetFactionConfig(const String& factionId);
+        std::vector<String> GetAvailableFactions() const;
+
+        // Legacy tokenizer management (deprecated)
+        [[deprecated("Use LoadSharedTokenizer instead")]]
+        bool LoadTokenizerForFaction(const String& factionId, const String& tokenizerPath);
+        [[deprecated("Use GetSharedTokenizer instead")]]
+        Reference<Tokenizer> GetTokenizerForFaction(const String& factionId);
 
         // Hot-swapping for development
         bool HotSwapModel(const String& modelId, const String& newModelPath);
         void EnableHotSwapping(bool enable) { m_hotSwappingEnabled = enable; }
 
     private:
-        Angaraka::Config::AISystemConfig m_config;
+        Config::AISystemConfig m_config;
         AIPerformanceMetrics m_performanceMetrics;
 
-        // Model storage and management
+        // Model storage and management - NEW STRUCTURE
+        Reference<AIModelResource> m_sharedDialogueModel;    // Single 600MB model for all factions
+        Reference<Tokenizer> m_sharedTokenizer;             // Single tokenizer for all factions
+
+        std::unordered_map<String, Reference<FactionConfig>> m_factionConfigs;
+
+        // Legacy model storage (for terrain/behavior models)
         std::unordered_map<String, Reference<AIModelResource>> m_loadedModels;
         std::unordered_map<String, std::vector<String>> m_factionModels; // faction -> model IDs
+        std::unordered_map<String, Reference<Tokenizer>> m_factionTokenizers; // DEPRECATED
         String m_activeFaction;
 
         // Resource management
@@ -123,6 +159,45 @@ namespace Angaraka::AI {
         bool LoadModelInternal(const String& modelId, const String& modelPath, const String& factionId);
         void RegisterModelWithFaction(const String& modelId, const String& factionId);
         void UnregisterModelFromFaction(const String& modelId, const String& factionId);
+
+        // Output processing helpers
+        DialogueResponse ProcessDialogueOutputs(const std::vector<Ort::Value>& outputs, Reference<AIModelResource> model, const DialogueRequest& request);
+        TerrainResponse ProcessTerrainOutputs(const std::vector<Ort::Value>& outputs, Reference<AIModelResource> model, const TerrainRequest& request);
+        BehaviorResponse ProcessBehaviorOutputs(const std::vector<Ort::Value>& outputs, Reference<AIModelResource> model, const BehaviorRequest& request);
+
+        // Tensor extraction helpers
+        std::vector<I64> ExtractInt64Tensor(const Ort::Value& tensor);
+        std::vector<F32> ExtractFloatTensor(const Ort::Value& tensor);
+        String ExtractStringTensor(const Ort::Value& tensor);
+        std::vector<String> ExtractStringTensorArray(const Ort::Value& tensor);
+
+        // Dialogue processing helpers
+        String DecodeTokensToText(const std::vector<I64>& tokens, const String& factionId);
+        String DecodeTokensBasic(const std::vector<I64>& tokens, const String& factionId);
+        String DecodeTokensEnhanced(const std::vector<I64>& tokens, const String& factionId);
+        String DecodeGPTToken(I64 tokenId);
+        String DecodeGPTTokenEnhanced(I64 tokenId);
+        String CleanGeneratedText(const String& rawText, const String& factionId);
+        bool IsGarbageText(const String& text);
+        String ClassifyEmotion(const std::vector<F32>& emotionScores);
+        void ApplyFactionDialogueStyle(DialogueResponse& response, const String& factionId);
+        String GenerateFallbackResponse(const DialogueRequest& request);
+
+        // Logits processing helpers
+        std::vector<I64> ConvertLogitsToTokens(const std::vector<F32>& logits);
+        F32 CalculateConfidenceFromLogits(const std::vector<F32>& logits);
+        std::vector<F32> ApplySoftmax(const std::vector<F32>& logits);
+
+        // Shared model helpers
+        std::vector<I64> CreateDialogueTokens(const String& fullPrompt, const String& factionId);
+        std::vector<F32> CreateFactionContextVector(const String& factionId, const DialogueRequest& request);
+
+        // New implementation helpers  
+        bool LoadFactionConfigFile(const String& factionId, const String& configPath);
+        String BuildFactionPrompt(Reference<FactionConfig> config, const DialogueRequest& request);
+        std::vector<Ort::Value> CreateDialogueInputs(const String& prompt, const DialogueRequest& request, const std::vector<String>& inputNames, const std::vector<std::vector<I64>>& inputShapes);
+        std::vector<I64> TokenizePrompt(const String& prompt);
+        void ApplyFactionPostProcessing(DialogueResponse& response, Reference<FactionConfig> config);
     };
 
     // Request/Response structures for AI operations
@@ -149,17 +224,17 @@ namespace Angaraka::AI {
     struct TerrainRequest {
         String regionType;
         String factionInfluence;
-        Vector3 centerPosition;
+        Math::Vector3 centerPosition;
         F32 radius;
-        int32_t seed;
+        I32 seed;
         F32 philosophicalResonance{ 0.5f }; // How much the terrain reflects faction philosophy
         std::vector<String> requiredFeatures;
     };
 
     struct TerrainResponse {
         std::vector<F32> heightMap;
-        std::vector<uint32_t> textureIndices;
-        std::vector<Vector3> landmarkPositions;
+        std::vector<U32> textureIndices;
+        std::vector<Math::Vector3> landmarkPositions;
         std::vector<String> landmarkTypes;
         F32 inferenceTimeMs{ 0.0f };
         bool success{ false };

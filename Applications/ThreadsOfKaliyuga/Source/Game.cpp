@@ -33,8 +33,41 @@ import ThreadsOfKaliyuga.Input;
 extern "C" { __declspec(dllexport) extern const UINT D3D12SDKVersion = 616; }
 extern "C" { __declspec(dllexport) extern const char* D3D12SDKPath = ".\\D3D12"; }
 
-namespace ThreadsOfKaliyuga
+
+// ==================================================================================
+// Application Entry Point
+// ==================================================================================
+
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
+    // Initialize COM for WIC (Windows Imaging Component)
+    HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+    if (FAILED(hr)) {
+        AGK_FATAL("Failed to initialize COM for WIC. HRESULT: {:#x}", hr);
+        return -1;
+    }
+
+    bool failure = false;
+    ThreadsOfKaliyuga::Game game;
+
+    if (game.Initialize()) {
+        game.Run();
+    }
+    else {
+        failure = true;
+    }
+
+    game.Shutdown();
+    CoUninitialize();
+
+    return failure ? -1 : 0;
+}
+
+// ==================================================================================
+// Game Class Implementation
+// ==================================================================================
+namespace ThreadsOfKaliyuga {
+
     namespace {
         Angaraka::Window window;
         Angaraka::Config::EngineConfig config;
@@ -76,6 +109,7 @@ namespace ThreadsOfKaliyuga
         }
     }
 
+#pragma region Game Class Implementation
     // ==================================================================================
     // Initialization
     // ==================================================================================
@@ -259,6 +293,17 @@ namespace ThreadsOfKaliyuga
         // Spawn test NPCs for demonstration
         SpawnTestNPCs();
 
+        // load faction dialog models
+        if (!m_aiManager->LoadSharedDialogueModel("Assets/ai/dialogue.onnx")) {
+            AGK_APP_ERROR("Failed to load shared dialogue model");
+        }
+        if (!m_aiManager->LoadFactionConfigs("Assets/ai")) {
+            AGK_APP_ERROR("Failed to load faction configurations");
+        }
+        if (!m_aiManager->LoadSharedTokenizer("Assets/ai")) {
+            AGK_APP_ERROR("Failed to load shared tokenizer");
+        }
+
         return true;
     }
 
@@ -270,6 +315,10 @@ namespace ThreadsOfKaliyuga
         AGK_APP_INFO("Game systems initialized");
         return true;
     }
+
+#pragma endregion
+
+#pragma region Game Loop
 
     // ==================================================================================
     // Main Game Loop
@@ -389,7 +438,7 @@ namespace ThreadsOfKaliyuga
         // For now, dialogue system input is handled in HandleTestDialogueInput()
     }
 
-
+#pragma endregion
 
 
     // ==================================================================================
@@ -683,33 +732,4 @@ namespace ThreadsOfKaliyuga
 
         Angaraka::Logger::Framework::Shutdown();
     }
-}
-
-// ==================================================================================
-// Application Entry Point
-// ==================================================================================
-
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
-{
-    // Initialize COM for WIC (Windows Imaging Component)
-    HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-    if (FAILED(hr)) {
-        AGK_FATAL("Failed to initialize COM for WIC. HRESULT: {:#x}", hr);
-        return -1;
-    }
-
-    bool failure = false;
-    ThreadsOfKaliyuga::Game game;
-
-    if (game.Initialize()) {
-        game.Run();
-    }
-    else {
-        failure = true;
-    }
-
-    game.Shutdown();
-    CoUninitialize();
-
-    return failure ? -1 : 0;
 }

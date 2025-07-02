@@ -106,11 +106,13 @@
   <ItemGroup>
     <ClCompile Include="Source\AI\Private\Angaraka\AIManager.cpp" />
     <ClCompile Include="Source\AI\Private\Angaraka\AIModelResource.cpp" />
+    <ClCompile Include="Source\AI\Private\Angaraka\Tokenizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\AI\Public\Angaraka\AIBase.hpp" />
     <ClInclude Include="Source\AI\Public\Angaraka\AIManager.hpp" />
     <ClInclude Include="Source\AI\Public\Angaraka\AIModelResource.hpp" />
+    <ClInclude Include="Source\AI\Public\Angaraka\Tokenizer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

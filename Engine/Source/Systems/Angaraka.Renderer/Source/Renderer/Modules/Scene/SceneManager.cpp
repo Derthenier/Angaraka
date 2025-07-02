@@ -92,12 +92,12 @@ namespace Angaraka::Graphics::DirectX12::Scene {
     {
         m_objects.clear();
         m_objectIndexMap.clear();
-        AGK_INFO("Scene cleared - all objects removed");
+        AGK_TRACE("Scene cleared - all objects removed");
     }
 
     void Manager::CreateTestScene()
     {
-        AGK_INFO("Creating test scene with multiple objects...");
+        AGK_TRACE("Creating test scene with multiple objects...");
 
         // Clear existing scene
         Clear();
@@ -158,7 +158,7 @@ namespace Angaraka::Graphics::DirectX12::Scene {
             AddObject(highObj);
         }
 
-        AGK_INFO("Test scene created with {} objects", GetObjectCount());
+        AGK_TRACE("Test scene created with {} objects", GetObjectCount());
     }
 
     void Manager::LoadSceneFromBundle(const std::string& bundleName)

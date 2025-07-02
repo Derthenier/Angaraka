@@ -316,8 +316,8 @@ namespace Angaraka::SceneSystem {
         // Spot light properties
         F32 m_innerConeAngle = 30.0f;
         F32 m_outerConeAngle = 45.0f;
-        F32 m_innerConeCosine = 0.866f; // cos(30°)
-        F32 m_outerConeCosine = 0.707f; // cos(45°)
+        F32 m_innerConeCosine = 0.866f; // cos(30)
+        F32 m_outerConeCosine = 0.707f; // cos(45)
 
         // Shadow properties
         bool m_castShadows = false;

@@ -35,7 +35,7 @@ namespace Angaraka::AI {
     struct DialogueMessageEvent : public Angaraka::Events::Event {
     public:
         EVENT_CLASS_CATEGORY(Angaraka::Events::EventCategory::Dialogue)
-            EVENT_CLASS_TYPE(DialogueMessageEvent)
+        EVENT_CLASS_TYPE(DialogueMessageEvent)
 
         String npcId;
         String message;

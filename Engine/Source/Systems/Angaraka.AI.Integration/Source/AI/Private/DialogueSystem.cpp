@@ -177,7 +177,6 @@ namespace Angaraka::AI {
 
         // Generate initial greeting from NPC
         String greetingContext = "greeting " + m_activeDialogue->currentTopic;
-        RequestAIDialogue("", greetingContext);
 
         // Execute start callback
         if (m_startCallback) {
@@ -203,8 +202,8 @@ namespace Angaraka::AI {
 
         // Update statistics
         m_totalConversations++;
-
         TransitionToState(DialogueState::WaitingForNPC);
+        RequestAIDialogue("", greetingContext);
         return true;
     }
 
@@ -299,6 +298,12 @@ namespace Angaraka::AI {
 
         const DialogueChoice& choice = m_activeDialogue->currentChoices[choiceIndex];
 
+        DialogueChoiceSelectedEvent choiceEvent;
+        choiceEvent.npcId = m_activeDialogue->npcId;
+        choiceEvent.playerChoice = choice.choiceText;
+        choiceEvent.choiceIndex = choiceIndex;
+        choiceEvent.choiceContext = m_activeDialogue->conversationContext;
+
         if (!choice.isAvailable) {
             AGK_WARN("DialogueSystem: Selected choice is not available: {0}", choice.unavailableReason);
             return;
@@ -315,11 +320,6 @@ namespace Angaraka::AI {
         }
 
         // Publish choice event
-        DialogueChoiceSelectedEvent choiceEvent;
-        choiceEvent.npcId = m_activeDialogue->npcId;
-        choiceEvent.playerChoice = choice.choiceText;
-        choiceEvent.choiceIndex = choiceIndex;
-        choiceEvent.choiceContext = m_activeDialogue->conversationContext;
         Angaraka::Events::EventManager::Get().Broadcast(choiceEvent);
 
         // Note: Actual event publishing would depend on your EventManager API
@@ -404,9 +404,9 @@ namespace Angaraka::AI {
 
         // Request AI response
         String conversationContext = BuildConversationContext();
-        RequestAIDialogue(choice, conversationContext);
-
         TransitionToState(DialogueState::WaitingForNPC);
+
+        RequestAIDialogue(choice, conversationContext);
     }
 
     void DialogueSystem::HandleAIResponse(const String& npcId, const String& response, const String& emotionalTone) {
