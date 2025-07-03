@@ -27,6 +27,8 @@ import Angaraka.Camera;
 import Angaraka.Core.Config;
 import Angaraka.Core.Resources;
 
+import Angaraka.Math.Matrix4x4;
+
 namespace Angaraka { // Use the Angaraka namespace here
 
     export class DirectX12GraphicsSystem

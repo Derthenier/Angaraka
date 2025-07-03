@@ -2,6 +2,9 @@
 #include <Angaraka/AIManager.hpp>
 #include <sstream>
 
+import Angaraka.Math;
+import Angaraka.Math.Random;
+
 import Angaraka.Core.Events;
 import Angaraka.Core.ResourceCache;
 import Angaraka.Graphics.DirectX12;
@@ -395,9 +398,9 @@ namespace Angaraka::AI {
     // ==================================================================================
 
     void NPCController::UpdateRelationship(F32 trustDelta, F32 respectDelta, F32 fearDelta) {
-        m_npcData.relationship.trust = Clamp(m_npcData.relationship.trust + trustDelta, 0.0f, 1.0f);
-        m_npcData.relationship.respect = Clamp(m_npcData.relationship.respect + respectDelta, 0.0f, 1.0f);
-        m_npcData.relationship.fear = Clamp(m_npcData.relationship.fear + fearDelta, 0.0f, 1.0f);
+        m_npcData.relationship.trust = Math::Util::Clamp(m_npcData.relationship.trust + trustDelta, 0.0f, 1.0f);
+        m_npcData.relationship.respect = Math::Util::Clamp(m_npcData.relationship.respect + respectDelta, 0.0f, 1.0f);
+        m_npcData.relationship.fear = Math::Util::Clamp(m_npcData.relationship.fear + fearDelta, 0.0f, 1.0f);
 
         AGK_DEBUG("NPCController: Updated relationship for NPC '{0}' - Trust: {1:.2f}, Respect: {2:.2f}, Fear: {3:.2f}",
             m_npcData.npcId, m_npcData.relationship.trust, m_npcData.relationship.respect, m_npcData.relationship.fear);
@@ -413,7 +416,7 @@ namespace Angaraka::AI {
             m_npcData.knowledge.knownTopics.push_back(topic);
         }
 
-        m_npcData.knowledge.topicExpertise[topic] = Clamp(expertise, 0.0f, 1.0f);
+        m_npcData.knowledge.topicExpertise[topic] = Math::Util::Clamp(expertise, 0.0f, 1.0f);
 
         AGK_DEBUG("NPCController: Added topic '{0}' with expertise {1:.2f} to NPC '{2}'",
             topic, expertise, m_npcData.npcId);
@@ -639,7 +642,7 @@ namespace Angaraka::AI {
             // Randomly look around or perform idle actions
             if (m_npcData.distanceToPlayer > m_npcData.interactionRange * 2.0f) {
                 // Far from player - might start patrolling
-                if (Random::Range(0.0f, 1.0f) < 0.1f) { // 10% chance per check
+                if (Math::Random::Range(0.0f, 1.0f) < 0.1f) { // 10% chance per check
                     ChangeState(NPCState::Patrol, "Random patrol decision");
                 }
             }
@@ -672,15 +675,15 @@ namespace Angaraka::AI {
 
             // Simple random movement (could be enhanced with waypoints)
             Vector3 randomOffset = Vector3(
-                Random::Range(-2.0f, 2.0f),
+                Math::Random::Range(-2.0f, 2.0f),
                 0.0f,
-                Random::Range(-2.0f, 2.0f)
+                Math::Random::Range(-2.0f, 2.0f)
             );
 
             SetPosition(m_npcData.position + randomOffset);
 
             // Return to idle after some time
-            if (Random::Range(0.0f, 1.0f) < 0.3f) { // 30% chance to stop patrolling
+            if (Math::Random::Range(0.0f, 1.0f) < 0.3f) { // 30% chance to stop patrolling
                 ChangeState(NPCState::Idle, "Finished patrolling");
             }
         }

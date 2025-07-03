@@ -1,9 +1,11 @@
-#pragma once
+module;
 
-#include "Vector3.hpp"
-#include "Matrix44.hpp"
-#include <limits>
-#include <array>
+#include <Angaraka/Base.hpp>
+
+export module Angaraka.Math.BoundingBox;
+
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Matrix4x4;
 
 namespace Angaraka::Math {
 
@@ -14,7 +16,7 @@ namespace Angaraka::Math {
      * minimum and maximum corners. Used for collision detection,
      * frustum culling, and spatial queries.
      */
-    struct BoundingBox {
+    export struct BoundingBox {
         Vector3 min;
         Vector3 max;
 
@@ -189,5 +191,4 @@ namespace Angaraka::Math {
         bool operator==(const BoundingBox& other) const;
         bool operator!=(const BoundingBox& other) const;
     };
-
 } // namespace Angaraka::Math

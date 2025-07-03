@@ -1,29 +1,27 @@
-// ==================================================================================
-// AngarakaMath/Public/Math/Matrix44.hpp - 4x4 Matrix
-// ==================================================================================
+module;
 
-#pragma once
-
+#include <Angaraka/Base.hpp>
 #include <array>
-#include "Angaraka/Math/Vector3.hpp"
-#include "Angaraka/Math/Vector4.hpp"
+export module Angaraka.Math.Matrix4x4;
 
-namespace Angaraka::Math
-{
-    struct Quaternion;
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Vector4;
+
+namespace Angaraka::Math {
+
+    export struct Quaternion; // Forward declaration
 
     // ==================================================================================
     // Matrix4x4 - 4x4 Matrix (Column-major for OpenGL compatibility)
     // ==================================================================================
-
-    struct Matrix4x4
+    export struct Matrix4x4
     {
         // Column-major storage (OpenGL style)
         // [0 4 8  12]
         // [1 5 9  13]
         // [2 6 10 14]
         // [3 7 11 15]
-        std::array<float, 16> m;
+        std::array<F32, 16> m;
 
         // Constructors
         Matrix4x4();
@@ -34,12 +32,12 @@ namespace Angaraka::Math
             F32 m30, F32 m31, F32 m32, F32 m33);
 
         // Element access (row, column)
-        float& operator()(size_t row, size_t col) { return m[col * 4 + row]; }
-        const float& operator()(size_t row, size_t col) const { return m[col * 4 + row]; }
+        inline F32& operator()(size_t row, size_t col) { return m[col * 4 + row]; }
+        inline const F32& operator()(size_t row, size_t col) const { return m[col * 4 + row]; }
 
         // Column access
-        float* GetColumnPtr(size_t col) { return &m[col * 4]; }
-        const float* GetColumnPtr(size_t col) const { return &m[col * 4]; }
+        inline F32* GetColumnPtr(size_t col) { return &m[col * 4]; }
+        inline const F32* GetColumnPtr(size_t col) const { return &m[col * 4]; }
 
         // Row/Column access
         Vector4 GetRow(size_t row) const;
@@ -117,4 +115,4 @@ namespace Angaraka::Math
         static Matrix4x4 OrthographicScreen(F32 screenWidth, F32 screenHeight);
         static Matrix4x4 OrthographicAspect(F32 size, F32 aspectRatio, F32 nearPlane, F32 farPlane);
     };
-}
+} // namespace Angaraka::Math

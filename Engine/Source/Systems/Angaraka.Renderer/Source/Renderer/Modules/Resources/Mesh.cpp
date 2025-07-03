@@ -9,6 +9,7 @@ module;
 
 module Angaraka.Graphics.DirectX12.Mesh;
 
+import Angaraka.Math;
 import Angaraka.Core.Resources;
 import Angaraka.Graphics.DirectX12;
 
@@ -516,10 +517,10 @@ namespace Angaraka::Graphics::DirectX12 {
         AGK_INFO("  - Total Meshes: {}", stats.totalMeshes);
         AGK_INFO("  - Total Vertices: {}", stats.totalVertices);
         AGK_INFO("  - Total Indices: {}", stats.totalIndices);
-        AGK_INFO("  - Vertex Memory: {:.2f} MB", static_cast<F64>(stats.totalVertexMemory) * Angaraka::Math::BytesToMB);
-        AGK_INFO("  - Index Memory: {:.2f} MB", static_cast<F64>(stats.totalIndexMemory) * Angaraka::Math::BytesToMB);
-        AGK_INFO("  - Upload Memory: {:.2f} MB", static_cast<F64>(stats.totalUploadMemory) * Angaraka::Math::BytesToMB);
-        AGK_INFO("  - Total GPU Memory: {:.2f} MB", static_cast<F64>(stats.totalVertexMemory + stats.totalIndexMemory) * Angaraka::Math::BytesToMB);
+        AGK_INFO("  - Vertex Memory: {:.2f} MB", static_cast<F64>(stats.totalVertexMemory) * Math::Constants::BytesToMB);
+        AGK_INFO("  - Index Memory: {:.2f} MB", static_cast<F64>(stats.totalIndexMemory) * Math::Constants::BytesToMB);
+        AGK_INFO("  - Upload Memory: {:.2f} MB", static_cast<F64>(stats.totalUploadMemory) * Math::Constants::BytesToMB);
+        AGK_INFO("  - Total GPU Memory: {:.2f} MB", static_cast<F64>(stats.totalVertexMemory + stats.totalIndexMemory) * Math::Constants::BytesToMB);
     }
 
 } // namespace Angaraka::Graphics::DirectX12

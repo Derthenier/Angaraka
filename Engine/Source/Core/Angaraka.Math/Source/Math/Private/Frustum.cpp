@@ -1,5 +1,11 @@
-#include "Angaraka/Math/Frustum.hpp"
+module;
+
 #include <cmath>
+
+module Angaraka.Math.Frustum;
+
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Vector4;
 
 namespace Angaraka::Math {
 

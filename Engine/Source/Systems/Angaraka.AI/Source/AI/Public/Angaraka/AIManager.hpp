@@ -4,7 +4,6 @@
 #include <Angaraka/Base.hpp>
 #include <Angaraka/AIModelResource.hpp>
 #include <Angaraka/Tokenizer.hpp>
-#include <Angaraka/MathCore.hpp>
 #include <unordered_map>
 #include <memory>
 #include <future>
@@ -14,6 +13,7 @@
 import Angaraka.Core.Resources;
 import Angaraka.Core.Config;
 import Angaraka.Core.ResourceCache;
+import Angaraka.Math.Vector3;
 
 namespace Angaraka::AI {
 

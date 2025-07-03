@@ -1,12 +1,16 @@
 // ==================================================================================
 // AngarakaMath/Public/Math/Quaternion.cpp
 // ==================================================================================
+module;
 
-#pragma once
-
-#include "Angaraka/MathCore.hpp"
-#include "Angaraka/Math/Quaternion.hpp"
+#include <Angaraka/Base.hpp>
 #include <cmath>
+
+module Angaraka.Math.Quaternion;
+
+import Angaraka.Math;
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Matrix4x4;
 
 namespace Angaraka::Math
 {
@@ -49,19 +53,19 @@ namespace Angaraka::Math
 
     bool Quaternion::operator==(const Quaternion& rhs) const
     {
-        return IsNearlyEqual(x, rhs.x) && IsNearlyEqual(y, rhs.y) &&
-            IsNearlyEqual(z, rhs.z) && IsNearlyEqual(w, rhs.w);
+        return Util::IsNearlyEqual(x, rhs.x) && Util::IsNearlyEqual(y, rhs.y) &&
+            Util::IsNearlyEqual(z, rhs.z) && Util::IsNearlyEqual(w, rhs.w);
     }
 
     F32 Quaternion::Length() const
     {
-        return Sqrt(x * x + y * y + z * z + w * w);
+        return Util::Sqrt(x * x + y * y + z * z + w * w);
     }
 
     Quaternion Quaternion::Normalized() const
     {
         F32 len = Length();
-        if (IsNearlyZero(len))
+        if (Util::IsNearlyZero(len))
             return Identity();
         return *this * (1.0f / len);
     }
@@ -74,7 +78,7 @@ namespace Angaraka::Math
     Quaternion Quaternion::Inverted() const
     {
         F32 lengthSq = LengthSquared();
-        if (IsNearlyZero(lengthSq))
+        if (Util::IsNearlyZero(lengthSq))
             return Identity();
 
         Quaternion conj = Conjugated();
@@ -122,8 +126,8 @@ namespace Angaraka::Math
 
         // Pitch (y-axis rotation)
         F32 sinp = 2.0f * (w * y - z * x);
-        if (Abs(sinp) >= 1.0f)
-            angles.y = std::copysign(HalfPiF, sinp); // Use 90 degrees if out of range
+        if (Util::Abs(sinp) >= 1.0f)
+            angles.y = std::copysign(Constants::HalfPiF, sinp); // Use 90 degrees if out of range
         else
             angles.y = std::asin(sinp);
 

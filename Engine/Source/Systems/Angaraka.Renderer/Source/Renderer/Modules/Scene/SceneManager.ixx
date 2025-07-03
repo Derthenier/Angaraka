@@ -1,10 +1,12 @@
 ﻿module;
 
 #include "Angaraka/GraphicsBase.hpp"
-#include "Angaraka/MathCore.hpp"
 
 export module Angaraka.Graphics.DirectX12.SceneManager;
 
+import Angaraka.Math;
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Matrix4x4;
 import Angaraka.Graphics.DirectX12;
 import Angaraka.Core.ResourceCache;
 
@@ -61,9 +63,9 @@ namespace Angaraka::Graphics::DirectX12::Scene {
                 rotation.z += rotationSpeed.z * deltaTime;
 
                 // Keep angles in [0, 2π] range
-                if (rotation.x > Math::TwoPiF) rotation.x -= Math::TwoPiF;
-                if (rotation.y > Math::TwoPiF) rotation.y -= Math::TwoPiF;
-                if (rotation.z > Math::TwoPiF) rotation.z -= Math::TwoPiF;
+                if (rotation.x > Math::Constants::TwoPiF) rotation.x -= Math::Constants::TwoPiF;
+                if (rotation.y > Math::Constants::TwoPiF) rotation.y -= Math::Constants::TwoPiF;
+                if (rotation.z > Math::Constants::TwoPiF) rotation.z -= Math::Constants::TwoPiF;
             }
         }
     };

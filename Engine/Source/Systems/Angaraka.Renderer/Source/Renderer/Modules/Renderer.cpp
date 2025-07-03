@@ -6,7 +6,6 @@ module;
 #include <windows.h>
 #include <string>
 #include <memory>    // For std::unique_ptr
-#include <Angaraka/Math/MathConversion.hpp>
 #include <DirectXMath.h>
 #include <wrl/client.h>
 #include <stdexcept>
@@ -27,28 +26,28 @@ import Angaraka.Graphics.DirectX12.Mesh;
 
 import Angaraka.Camera;
 
-// Global/Static Data (specific to this implementation unit)
-// This will remain here for now, as it's geometry data.
-namespace {
-    ID3D12GraphicsCommandList* commandList = nullptr;
-
-
-
-    Angaraka::Graphics::DirectX12::ModelViewProjectionConstantBuffer mvpCPUData{};
-
-    // Define the input layout for our vertex structure
-    const D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        // If you add color to your Vertex struct:
-        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-    };
-    const UINT numInputElements = _countof(inputLayout);
-
-} // anonymous namespace
-
+import Angaraka.Math.DirectXInterop; // For matrix conversions
 
 namespace Angaraka { // Use the Angaraka namespace here
+
+    // Global/Static Data (specific to this implementation unit)
+    // This will remain here for now, as it's geometry data.
+    namespace {
+        ID3D12GraphicsCommandList* commandList = nullptr;
+
+        Angaraka::Graphics::DirectX12::ModelViewProjectionConstantBuffer mvpCPUData{};
+
+        // Define the input layout for our vertex structure
+        const D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
+            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,                            D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+        };
+        const UINT numInputElements = _countof(inputLayout);
+
+    } // anonymous namespace
+
+
 
     DirectX12GraphicsSystem::DirectX12GraphicsSystem() {
         AGK_INFO("DirectX12GraphicsSystem: Constructor called.");
@@ -248,7 +247,7 @@ namespace Angaraka { // Use the Angaraka namespace here
 
     void DirectX12GraphicsSystem::RenderMesh(Core::Resource* resource, Math::Matrix4x4 worldMatrix)
     {
-        DirectX::XMMATRIX dxWorldMatrix = Angaraka::Math::Utility::MathConversion::ToDirectXMatrix(worldMatrix);
+        DirectX::XMMATRIX dxWorldMatrix = Angaraka::Math::MathConversion::ToDirectXMatrix(worldMatrix);
         Graphics::DirectX12::MeshResource* mesh = dynamic_cast<Graphics::DirectX12::MeshResource*>(resource);
         if (mesh && mesh->IsLoaded())
         {

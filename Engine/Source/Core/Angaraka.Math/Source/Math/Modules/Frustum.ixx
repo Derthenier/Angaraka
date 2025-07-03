@@ -1,10 +1,13 @@
-#pragma once
+module;
 
-#include "Vector3.hpp"
-#include "Vector4.hpp"
-#include "Matrix44.hpp"
-#include "BoundingBox.hpp"
-#include <array>
+#include <Angaraka/Base.hpp>
+
+export module Angaraka.Math.Frustum;
+
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Vector4;
+import Angaraka.Math.Matrix4x4;
+import Angaraka.Math.BoundingBox;
 
 namespace Angaraka::Math {
 
@@ -14,7 +17,7 @@ namespace Angaraka::Math {
      * Represents the 6 planes of a view frustum (near, far, left, right, top, bottom).
      * Used to determine which objects are visible to the camera.
      */
-    class Frustum {
+    export class Frustum {
     public:
         /**
          * @brief Plane indices
@@ -161,5 +164,4 @@ namespace Angaraka::Math {
         // Helper to compute corners
         void ComputeCorners() const;
     };
-
 } // namespace Angaraka::Math

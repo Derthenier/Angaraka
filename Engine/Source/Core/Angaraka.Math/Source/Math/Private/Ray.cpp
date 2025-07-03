@@ -1,7 +1,14 @@
-#include "Angaraka/Math/Ray.hpp"
-#include "Angaraka/Math/Matrix44.hpp"
+module;
+
+#include <Angaraka/Base.hpp>
 #include <cmath>
 #include <algorithm>
+
+module Angaraka.Math.Ray;
+
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Vector4;
+import Angaraka.Math.Matrix4x4;
 
 namespace Angaraka::Math {
 

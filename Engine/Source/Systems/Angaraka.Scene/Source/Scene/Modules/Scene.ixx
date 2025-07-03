@@ -1,12 +1,17 @@
 module;
 
 #include "Angaraka/Base.hpp"
-#include "Angaraka/MathCore.hpp"
 #include <unordered_map>
 #include <vector>
 #include <functional>
 
 export module Angaraka.Scene;
+
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Quaternion;
+import Angaraka.Math.BoundingBox;
+import Angaraka.Math.Ray;
+import Angaraka.Math.Frustum;
 
 import Angaraka.Scene.Transform;
 import Angaraka.Scene.Component;

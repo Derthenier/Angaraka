@@ -1,10 +1,10 @@
 module;
 
 #include "Angaraka/GraphicsBase.hpp"
-#include "Angaraka/MathCore.hpp"
 
 module Angaraka.Graphics.DirectX12.SceneManager;
 
+import Angaraka.Math;
 import Angaraka.Graphics.DirectX12;
 import Angaraka.Graphics.DirectX12.Mesh;
 import Angaraka.Core.ResourceCache;
@@ -117,7 +117,7 @@ namespace Angaraka::Graphics::DirectX12::Scene {
         // Surrounding objects in a circle
         const int numObjects = 8;
         const F32 radius = 5.0f;
-        const F32 angleStep = Math::TwoPiF / numObjects;
+        const F32 angleStep = Math::Constants::TwoPiF / numObjects;
 
         for (int i = 0; i < numObjects; ++i)
         {

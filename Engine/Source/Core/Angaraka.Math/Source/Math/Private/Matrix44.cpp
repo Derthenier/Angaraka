@@ -1,10 +1,17 @@
 // ==================================================================================
 // AngarakaMath/Private/Matrix44.cpp
 // ==================================================================================
+module;
 
-#include "Angaraka/MathCore.hpp"
-#include "Angaraka/Math/Matrix44.hpp"
+#include <Angaraka/Base.hpp>
 #include <cmath>
+
+module Angaraka.Math.Matrix4x4;
+
+import Angaraka.Math;
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Vector4;
+import Angaraka.Math.Quaternion;
 
 namespace Angaraka::Math
 {
@@ -154,7 +161,7 @@ namespace Angaraka::Math
     {
         for (int i = 0; i < 16; ++i)
         {
-            if (!IsNearlyEqual(m[i], rhs.m[i]))
+            if (!Util::IsNearlyEqual(m[i], rhs.m[i]))
                 return false;
         }
         return true;
@@ -177,7 +184,7 @@ namespace Angaraka::Math
     Vector3 Matrix4x4::TransformPoint(const Vector3& point) const
     {
         Vector4 result = *this * Vector4(point, 1.0f);
-        if (IsNearlyZero(result.w))
+        if (Util::IsNearlyZero(result.w))
             return result.xyz();
         return result.xyz() / result.w;
     }
@@ -281,7 +288,7 @@ namespace Angaraka::Math
 
         F32 det = Determinant();
 
-        if (IsNearlyZero(det))
+        if (Util::IsNearlyZero(det))
         {
             // Matrix is not invertible, return identity
             return Identity();
@@ -341,7 +348,7 @@ namespace Angaraka::Math
 
         if (trace > 0.0f)
         {
-            F32 s = Sqrt(trace + 1.0f) * 2.0f; // s = 4 * qw
+            F32 s = Util::Sqrt(trace + 1.0f) * 2.0f; // s = 4 * qw
             F32 w = 0.25f * s;
             F32 x = (rotMatrix(2, 1) - rotMatrix(1, 2)) / s;
             F32 y = (rotMatrix(0, 2) - rotMatrix(2, 0)) / s;
@@ -350,7 +357,7 @@ namespace Angaraka::Math
         }
         else if (rotMatrix(0, 0) > rotMatrix(1, 1) && rotMatrix(0, 0) > rotMatrix(2, 2))
         {
-            F32 s = Sqrt(1.0f + rotMatrix(0, 0) - rotMatrix(1, 1) - rotMatrix(2, 2)) * 2.0f; // s = 4 * qx
+            F32 s = Util::Sqrt(1.0f + rotMatrix(0, 0) - rotMatrix(1, 1) - rotMatrix(2, 2)) * 2.0f; // s = 4 * qx
             F32 w = (rotMatrix(2, 1) - rotMatrix(1, 2)) / s;
             F32 x = 0.25f * s;
             F32 y = (rotMatrix(0, 1) + rotMatrix(1, 0)) / s;
@@ -359,7 +366,7 @@ namespace Angaraka::Math
         }
         else if (rotMatrix(1, 1) > rotMatrix(2, 2))
         {
-            F32 s = Sqrt(1.0f + rotMatrix(1, 1) - rotMatrix(0, 0) - rotMatrix(2, 2)) * 2.0f; // s = 4 * qy
+            F32 s = Util::Sqrt(1.0f + rotMatrix(1, 1) - rotMatrix(0, 0) - rotMatrix(2, 2)) * 2.0f; // s = 4 * qy
             F32 w = (rotMatrix(0, 2) - rotMatrix(2, 0)) / s;
             F32 x = (rotMatrix(0, 1) + rotMatrix(1, 0)) / s;
             F32 y = 0.25f * s;
@@ -368,7 +375,7 @@ namespace Angaraka::Math
         }
         else
         {
-            F32 s = Sqrt(1.0f + rotMatrix(2, 2) - rotMatrix(0, 0) - rotMatrix(1, 1)) * 2.0f; // s = 4 * qz
+            F32 s = Util::Sqrt(1.0f + rotMatrix(2, 2) - rotMatrix(0, 0) - rotMatrix(1, 1)) * 2.0f; // s = 4 * qz
             F32 w = (rotMatrix(1, 0) - rotMatrix(0, 1)) / s;
             F32 x = (rotMatrix(0, 2) + rotMatrix(2, 0)) / s;
             F32 y = (rotMatrix(1, 2) + rotMatrix(2, 1)) / s;
@@ -581,7 +588,7 @@ namespace Angaraka::Math
         F32 depth = farPlane - nearPlane;
 
         // Validate input parameters
-        if (IsNearlyZero(width) || IsNearlyZero(height) || IsNearlyZero(depth))
+        if (Util::IsNearlyZero(width) || Util::IsNearlyZero(height) || Util::IsNearlyZero(depth))
         {
             // Return identity matrix for invalid parameters
             return Identity();

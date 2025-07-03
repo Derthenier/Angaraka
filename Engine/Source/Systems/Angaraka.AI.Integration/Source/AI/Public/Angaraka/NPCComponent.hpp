@@ -2,6 +2,11 @@
 
 #include <Angaraka/AIBase.hpp>
 
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Matrix4x4;
+import Angaraka.Math.Quaternion;
+import Angaraka.Math.Transform;
+
 namespace Angaraka::AI {
 
     // Forward declarations

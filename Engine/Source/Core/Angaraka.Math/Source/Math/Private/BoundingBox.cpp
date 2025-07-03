@@ -1,6 +1,12 @@
-#include "Angaraka/Math/BoundingBox.hpp"
+module;
+
 #include <algorithm>
 #include <cmath>
+
+module Angaraka.Math.BoundingBox;
+
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Matrix4x4;
 
 namespace Angaraka::Math {
 

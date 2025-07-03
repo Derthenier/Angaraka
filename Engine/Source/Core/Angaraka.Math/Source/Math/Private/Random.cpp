@@ -1,12 +1,19 @@
 // ==================================================================================
 // AngarakaMath/Public/Math/Random.cpp
 // ==================================================================================
+module;
 
-#pragma once
-
-#include "Angaraka/MathCore.hpp"
-#include "Angaraka/Math/Random.hpp"
+#include <Angaraka/Base.hpp>
+#include <cstdint>
 #include <random>
+
+module Angaraka.Math.Random;
+
+import Angaraka.Math;
+import Angaraka.Math.Vector2;
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Vector4;
+import Angaraka.Math.Color;
 
 namespace Angaraka::Math
 {
@@ -58,14 +65,14 @@ namespace Angaraka::Math
 
     Vector2 Random::InsideUnitCircle()
     {
-        F32 angle = Range(0.0f, TwoPiF);
-        F32 radius = Sqrt(Value()); // Square root for uniform distribution
+        F32 angle = Range(0.0f, Constants::TwoPiF);
+        F32 radius = Util::Sqrt(Value()); // Square root for uniform distribution
         return { radius * std::cos(angle), radius * std::sin(angle) };
     }
 
     Vector2 Random::OnUnitCircle()
     {
-        F32 angle = Range(0.0f, TwoPiF);
+        F32 angle = Range(0.0f, Constants::TwoPiF);
         return { std::cos(angle), std::sin(angle) };
     }
 
@@ -82,7 +89,7 @@ namespace Angaraka::Math
 
     Vector3 Random::OnUnitSphere()
     {
-        F32 theta = Range(0.0f, TwoPiF);
+        F32 theta = Range(0.0f, Constants::TwoPiF);
         F32 phi = std::acos(Range(-1.0f, 1.0f));
 
         F32 sinPhi = std::sin(phi);
@@ -116,6 +123,6 @@ namespace Angaraka::Math
         F32 s = Range(satMin, satMax);
         F32 v = Range(valMin, valMax);
 
-        return HSVToRGB(h, s, v);
+        return Color::HSVToRGB(h, s, v).ToVector3();
     }
 }

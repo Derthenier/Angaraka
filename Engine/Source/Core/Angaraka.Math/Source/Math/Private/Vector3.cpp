@@ -1,13 +1,17 @@
 // ==================================================================================
 // AngarakaMath/Private/Vector3.cpp
 // ==================================================================================
+module;
 
-#include "Angaraka/MathCore.hpp"
-#include "Angaraka/Math/Vector3.hpp"
+#include <Angaraka/Base.hpp>
 #include <cmath>
 
-namespace Angaraka::Math
-{
+module Angaraka.Math.Vector3;
+
+import Angaraka.Math;
+
+namespace Angaraka::Math {
+
     // ==================================================================================
     // Vector3 Implementation
     // ==================================================================================
@@ -26,18 +30,18 @@ namespace Angaraka::Math
 
     bool Vector3::operator==(const Vector3& rhs) const
     {
-        return IsNearlyEqual(x, rhs.x) && IsNearlyEqual(y, rhs.y) && IsNearlyEqual(z, rhs.z);
+        return Util::IsNearlyEqual(x, rhs.x) && Util::IsNearlyEqual(y, rhs.y) && Util::IsNearlyEqual(z, rhs.z);
     }
 
     F32 Vector3::Length() const
     {
-        return Sqrt(x * x + y * y + z * z);
+        return Util::Sqrt(x * x + y * y + z * z);
     }
 
     Vector3 Vector3::Normalized() const
     {
         F32 len = Length();
-        if (IsNearlyZero(len))
+        if (Util::IsNearlyZero(len))
             return Vector3::Zero;
         return *this / len;
     }
@@ -73,7 +77,7 @@ namespace Angaraka::Math
 
     Vector3 Vector3::Slerp(const Vector3& target, F32 t) const
     {
-        F32 dot = Clamp(Dot(target), -1.0f, 1.0f);
+        F32 dot = Util::Clamp(Dot(target), -1.0f, 1.0f);
         F32 theta = std::acos(dot) * t;
         Vector3 relative = (target - *this * dot).Normalized();
         return (*this * std::cos(theta)) + (relative * std::sin(theta));
@@ -88,7 +92,7 @@ namespace Angaraka::Math
     {
         F32 dot = Dot(onto);
         F32 lengthSq = onto.LengthSquared();
-        if (IsNearlyZero(lengthSq))
+        if (Util::IsNearlyZero(lengthSq))
             return Vector3::Zero;
         return onto * (dot / lengthSq);
     }

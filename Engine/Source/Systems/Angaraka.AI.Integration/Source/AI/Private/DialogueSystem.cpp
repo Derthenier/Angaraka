@@ -4,6 +4,8 @@
 #include "Angaraka/NPCManager.hpp"
 #include <sstream>
 
+import Angaraka.Math;
+
 using namespace Angaraka::Core;
 
 namespace Angaraka::AI {
@@ -682,7 +684,7 @@ namespace Angaraka::AI {
             baseImpact *= 1.3f; // Vaikuntha values logic
         }
 
-        return Clamp(baseImpact, -1.0f, 1.0f);
+        return Math::Util::Clamp(baseImpact, -1.0f, 1.0f);
     }
 
     // ==================================================================================
@@ -1251,7 +1253,7 @@ namespace Angaraka::AI {
             }
         }
 
-        return Clamp(baseImpact, -1.0f, 1.0f);
+        return Math::Util::Clamp(baseImpact, -1.0f, 1.0f);
     }
 
     void DialogueSystem::AddExchange(const String& speaker, const String& message, const String& tone) {

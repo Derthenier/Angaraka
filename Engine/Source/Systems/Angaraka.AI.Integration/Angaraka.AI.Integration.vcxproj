@@ -34,6 +34,9 @@
     <ProjectReference Include="..\..\Core\Angaraka.Core\Angaraka.Core.vcxproj">
       <Project>{4e87a4e8-238c-4cda-840e-2da0ea59955a}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\Core\Angaraka.Math\Angaraka.Math.vcxproj">
+      <Project>{55d8173b-e8a6-45b0-bab8-dda3ba0eb5ff}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Angaraka.AI\Angaraka.AI.vcxproj">
       <Project>{669bde97-b08d-4c55-b35a-2afdc4f6250b}</Project>
     </ProjectReference>

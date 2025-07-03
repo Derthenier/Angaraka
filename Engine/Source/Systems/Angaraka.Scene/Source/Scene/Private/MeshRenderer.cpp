@@ -1,7 +1,6 @@
 module;
 
 #include "Angaraka/Base.hpp"
-#include "Angaraka/MathCore.hpp"
 
 module Angaraka.Scene.Components.MeshRenderer;
 
@@ -11,6 +10,11 @@ import Angaraka.Scene.Entity;
 import Angaraka.Core.Resources;
 import Angaraka.Core.ResourceCache;
 import Angaraka.Scene;
+
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Matrix4x4;
+import Angaraka.Math.BoundingBox;
+import Angaraka.Math.Frustum;
 
 namespace Angaraka::SceneSystem {
 

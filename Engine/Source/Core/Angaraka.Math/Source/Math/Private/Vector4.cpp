@@ -1,13 +1,17 @@
 // ==================================================================================
 // AngarakaMath/Private/Vector4.cpp
 // ==================================================================================
+module;
 
-#include "Angaraka/MathCore.hpp"
-#include "Angaraka/Math/Vector4.hpp"
+#include <Angaraka/Base.hpp>
 #include <cmath>
 
-namespace Angaraka::Math
-{
+module Angaraka.Math.Vector4;
+
+import Angaraka.Math;
+
+namespace Angaraka::Math {
+
     // ==================================================================================
     // Vector4 Implementation
     // ==================================================================================
@@ -21,19 +25,19 @@ namespace Angaraka::Math
 
     bool Vector4::operator==(const Vector4& rhs) const
     {
-        return IsNearlyEqual(x, rhs.x) && IsNearlyEqual(y, rhs.y) &&
-            IsNearlyEqual(z, rhs.z) && IsNearlyEqual(w, rhs.w);
+        return Util::IsNearlyEqual(x, rhs.x) && Util::IsNearlyEqual(y, rhs.y) &&
+            Util::IsNearlyEqual(z, rhs.z) && Util::IsNearlyEqual(w, rhs.w);
     }
 
     F32 Vector4::Length() const
     {
-        return Sqrt(x * x + y * y + z * z + w * w);
+        return Util::Sqrt(x * x + y * y + z * z + w * w);
     }
 
     Vector4 Vector4::Normalized() const
     {
         F32 len = Length();
-        if (IsNearlyZero(len))
+        if (Util::IsNearlyZero(len))
             return Vector4::Zero;
         return *this / len;
     }

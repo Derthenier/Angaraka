@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Angaraka/Base.hpp>
-#include <Angaraka/MathCore.hpp>
 #include <algorithm>
 #include <chrono>
 #include <functional>

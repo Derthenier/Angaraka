@@ -1,60 +1,57 @@
-// ==================================================================================
-// AngarakaMath/Public/Math/Quaternion.hpp - Rotation representation
-// ==================================================================================
+module;
 
-#pragma once
+#include <Angaraka/Base.hpp>
 
-#include "Angaraka/Base.hpp"
-#include "Angaraka/Math/Vector3.hpp"
+export module Angaraka.Math.Quaternion;
 
-namespace Angaraka::Math
-{
-    struct Matrix4x4;
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Matrix4x4;
+
+namespace Angaraka::Math {
 
     // ==================================================================================
     // Quaternion - Rotation representation
     // ==================================================================================
-
-    struct Quaternion
+    export struct Quaternion
     {
         F32 x, y, z, w;
 
         // Constructors
-        constexpr Quaternion() : x(0.0f), y(0.0f), z(0.0f), w(1.0f) {}
-        constexpr Quaternion(F32 x, F32 y, F32 z, F32 w) : x(x), y(y), z(z), w(w) {}
+        inline constexpr Quaternion() : x(0.0f), y(0.0f), z(0.0f), w(1.0f) {}
+        inline constexpr Quaternion(F32 x, F32 y, F32 z, F32 w) : x(x), y(y), z(z), w(w) {}
         explicit Quaternion(const Vector3& axis, F32 angle);
         explicit Quaternion(const Vector3& eulerAngles);
         explicit Quaternion(const Matrix4x4& rotationMatrix);
 
         // Array access
-        float& operator[](size_t index) { return (&x)[index]; }
-        const float& operator[](size_t index) const { return (&x)[index]; }
+        F32& operator[](size_t index) { return (&x)[index]; }
+        const F32& operator[](size_t index) const { return (&x)[index]; }
 
         // Arithmetic operators
-        Quaternion operator+(const Quaternion& rhs) const { return { x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w }; }
-        Quaternion operator-(const Quaternion& rhs) const { return { x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w }; }
+        inline Quaternion operator+(const Quaternion& rhs) const { return { x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w }; }
+        inline Quaternion operator-(const Quaternion& rhs) const { return { x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w }; }
         Quaternion operator*(const Quaternion& rhs) const;
-        Quaternion operator*(F32 scalar) const { return { x * scalar, y * scalar, z * scalar, w * scalar }; }
+        inline Quaternion operator*(F32 scalar) const { return { x * scalar, y * scalar, z * scalar, w * scalar }; }
         Quaternion operator-() const { return { -x, -y, -z, -w }; }
 
         // Assignment operators
-        Quaternion& operator+=(const Quaternion& rhs) { x += rhs.x; y += rhs.y; z += rhs.z; w += rhs.w; return *this; }
-        Quaternion& operator-=(const Quaternion& rhs) { x -= rhs.x; y -= rhs.y; z -= rhs.z; w -= rhs.w; return *this; }
+        inline Quaternion& operator+=(const Quaternion& rhs) { x += rhs.x; y += rhs.y; z += rhs.z; w += rhs.w; return *this; }
+        inline Quaternion& operator-=(const Quaternion& rhs) { x -= rhs.x; y -= rhs.y; z -= rhs.z; w -= rhs.w; return *this; }
         Quaternion& operator*=(const Quaternion& rhs);
-        Quaternion& operator*=(F32 scalar) { x *= scalar; y *= scalar; z *= scalar; w *= scalar; return *this; }
+        inline Quaternion& operator*=(F32 scalar) { x *= scalar; y *= scalar; z *= scalar; w *= scalar; return *this; }
 
         // Comparison
         bool operator==(const Quaternion& rhs) const;
-        bool operator!=(const Quaternion& rhs) const { return !(*this == rhs); }
+        inline bool operator!=(const Quaternion& rhs) const { return !(*this == rhs); }
 
         // Quaternion operations
         F32 Length() const;
-        F32 LengthSquared() const { return x * x + y * y + z * z + w * w; }
+        inline F32 LengthSquared() const { return x * x + y * y + z * z + w * w; }
         Quaternion Normalized() const;
         void Normalize();
-        Quaternion Conjugated() const { return { -x, -y, -z, w }; }
+        inline Quaternion Conjugated() const { return { -x, -y, -z, w }; }
         Quaternion Inverted() const;
-        F32 Dot(const Quaternion& rhs) const { return x * rhs.x + y * rhs.y + z * rhs.z + w * rhs.w; }
+        inline F32 Dot(const Quaternion& rhs) const { return x * rhs.x + y * rhs.y + z * rhs.z + w * rhs.w; }
 
         // Rotation operations
         Vector3 RotateVector(const Vector3& vec) const;
@@ -78,4 +75,4 @@ namespace Angaraka::Math
         static Quaternion Slerp(const Quaternion& a, const Quaternion& b, F32 t);
         static Quaternion Squad(const Quaternion& a, const Quaternion& b, const Quaternion& c, const Quaternion& d, F32 t);
     };
-}
+} // namespace Angaraka::Math

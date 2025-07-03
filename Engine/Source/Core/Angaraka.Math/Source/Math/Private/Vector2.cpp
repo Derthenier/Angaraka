@@ -1,12 +1,16 @@
 // ==================================================================================
 // AngarakaMath/Private/Vector2.cpp
 // ==================================================================================
+module;
 
-#include "Angaraka/MathCore.hpp"
-#include "Angaraka/Math/Vector2.hpp"
+#include <Angaraka/Base.hpp>
 
-namespace Angaraka::Math
-{
+module Angaraka.Math.Vector2;
+
+import Angaraka.Math;
+
+namespace Angaraka::Math {
+
     // ==================================================================================
     // Vector2 Implementation
     // ==================================================================================
@@ -22,18 +26,18 @@ namespace Angaraka::Math
 
     bool Vector2::operator==(const Vector2& rhs) const
     {
-        return IsNearlyEqual(x, rhs.x) && IsNearlyEqual(y, rhs.y);
+        return Util::IsNearlyEqual(x, rhs.x) && Util::IsNearlyEqual(y, rhs.y);
     }
 
     F32 Vector2::Length() const
     {
-        return Sqrt(x * x + y * y);
+        return Util::Sqrt(x * x + y * y);
     }
 
     Vector2 Vector2::Normalized() const
     {
         F32 len = Length();
-        if (IsNearlyZero(len))
+        if (Util::IsNearlyZero(len))
             return Vector2::Zero;
         return *this / len;
     }

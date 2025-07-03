@@ -1,13 +1,16 @@
 module;
 
 #include "Angaraka/Base.hpp"
-#include "Angaraka/MathCore.hpp"
 
 #undef near
 #undef far
 
 export module Angaraka.Scene.Components.Light;
 
+import Angaraka.Math;
+import Angaraka.Math.Color;
+import Angaraka.Math.Vector4;
+import Angaraka.Math.BoundingBox;
 import Angaraka.Scene.Component;
 
 namespace Angaraka::SceneSystem {
@@ -71,7 +74,7 @@ namespace Angaraka::SceneSystem {
          * @brief Set light intensity (brightness multiplier)
          */
         void SetIntensity(F32 intensity) {
-            m_intensity = Math::Max(0.0f, intensity);
+            m_intensity = Math::Util::Max(0.0f, intensity);
             m_dirty = true;
         }
 
@@ -90,7 +93,7 @@ namespace Angaraka::SceneSystem {
          * @brief Set light range (point and spot lights)
          */
         void SetRange(F32 range) {
-            m_range = Math::Max(0.0f, range);
+            m_range = Math::Util::Max(0.0f, range);
             m_dirty = true;
         }
 
@@ -122,8 +125,8 @@ namespace Angaraka::SceneSystem {
          * @param angle Angle in degrees
          */
         void SetInnerConeAngle(F32 angle) {
-            m_innerConeAngle = Math::Clamp(angle, 0.0f, m_outerConeAngle);
-            m_innerConeCosine = std::cos(Math::DegreesToRadians(m_innerConeAngle));
+            m_innerConeAngle = Math::Util::Clamp(angle, 0.0f, m_outerConeAngle);
+            m_innerConeCosine = std::cos(Math::Util::DegreesToRadians(m_innerConeAngle));
             m_dirty = true;
         }
 
@@ -135,8 +138,8 @@ namespace Angaraka::SceneSystem {
          * @param angle Angle in degrees
          */
         void SetOuterConeAngle(F32 angle) {
-            m_outerConeAngle = Math::Clamp(angle, m_innerConeAngle, 90.0f);
-            m_outerConeCosine = std::cos(Math::DegreesToRadians(m_outerConeAngle));
+            m_outerConeAngle = Math::Util::Clamp(angle, m_innerConeAngle, 90.0f);
+            m_outerConeCosine = std::cos(Math::Util::DegreesToRadians(m_outerConeAngle));
             m_dirty = true;
         }
 
@@ -173,7 +176,7 @@ namespace Angaraka::SceneSystem {
          * @brief Set shadow strength (0 = no shadows, 1 = full shadows)
          */
         void SetShadowStrength(F32 strength) {
-            m_shadowStrength = Math::Clamp01(strength);
+            m_shadowStrength = Math::Util::Clamp01(strength);
         }
 
         F32 GetShadowStrength() const { return m_shadowStrength; }

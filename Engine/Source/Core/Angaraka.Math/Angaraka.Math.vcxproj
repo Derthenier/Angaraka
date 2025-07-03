@@ -74,11 +74,13 @@
     <IntDir>$(SolutionDir)Build\$(Platform)\int\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
     <PublicIncludeDirectories>$(ProjectDir)Source\Math\Public</PublicIncludeDirectories>
+    <PublicModuleDirectories>$(ProjectDir)Source\Math\Modules</PublicModuleDirectories>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IntDir>$(SolutionDir)Build\$(Platform)\int\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
     <PublicIncludeDirectories>$(ProjectDir)Source\Math\Public</PublicIncludeDirectories>
+    <PublicModuleDirectories>$(ProjectDir)Source\Math\Modules</PublicModuleDirectories>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -157,27 +159,23 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Math\Public\Angaraka\MathCore.hpp" />
-    <ClInclude Include="Source\Math\Public\Angaraka\Math\BoundingBox.hpp" />
-    <ClInclude Include="Source\Math\Public\Angaraka\Math\Color.hpp" />
-    <ClInclude Include="Source\Math\Public\Angaraka\Math\Constants.hpp" />
-    <ClInclude Include="Source\Math\Public\Angaraka\Math\DirectXInterop.hpp" />
-    <ClInclude Include="Source\Math\Public\Angaraka\Math\Frustum.hpp" />
-    <ClInclude Include="Source\Math\Public\Angaraka\Math\MathConversion.hpp" />
-    <ClInclude Include="Source\Math\Public\Angaraka\Math\Matrix44.hpp" />
-    <ClInclude Include="Source\Math\Public\Angaraka\Math\Quaternion.hpp" />
-    <ClInclude Include="Source\Math\Public\Angaraka\Math\Random.hpp" />
-    <ClInclude Include="Source\Math\Public\Angaraka\Math\Ray.hpp" />
-    <ClInclude Include="Source\Math\Public\Angaraka\Math\Transform.hpp" />
-    <ClInclude Include="Source\Math\Public\Angaraka\Math\Vector2.hpp" />
-    <ClInclude Include="Source\Math\Public\Angaraka\Math\Vector3.hpp" />
-    <ClInclude Include="Source\Math\Public\Angaraka\Math\Vector4.hpp" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClCompile Include="Source\Math\Modules\BoundingBox.ixx" />
+    <ClCompile Include="Source\Math\Modules\Color.ixx" />
+    <ClCompile Include="Source\Math\Modules\CoreMath.ixx" />
+    <ClCompile Include="Source\Math\Modules\DirectXInterop.ixx" />
+    <ClCompile Include="Source\Math\Modules\Frustum.ixx" />
+    <ClCompile Include="Source\Math\Modules\Matrix4x4.ixx" />
+    <ClCompile Include="Source\Math\Modules\Quaternion.ixx" />
+    <ClCompile Include="Source\Math\Modules\Random.ixx" />
+    <ClCompile Include="Source\Math\Modules\Ray.ixx" />
+    <ClCompile Include="Source\Math\Modules\Transform.ixx" />
+    <ClCompile Include="Source\Math\Modules\Vector2.ixx" />
+    <ClCompile Include="Source\Math\Modules\Vector3.ixx" />
+    <ClCompile Include="Source\Math\Modules\Vector4.ixx" />
     <ClCompile Include="Source\Math\Private\BoundingBox.cpp" />
     <ClCompile Include="Source\Math\Private\Color.cpp" />
+    <ClCompile Include="Source\Math\Private\CoreMath.cpp" />
     <ClCompile Include="Source\Math\Private\Frustum.cpp" />
-    <ClCompile Include="Source\Math\Private\MathCore.cpp" />
     <ClCompile Include="Source\Math\Private\Matrix44.cpp" />
     <ClCompile Include="Source\Math\Private\Quaternion.cpp" />
     <ClCompile Include="Source\Math\Private\Random.cpp" />

@@ -1,7 +1,12 @@
-#pragma once
+module;
 
-#include "Angaraka/Math/Vector3.hpp"
-#include "Angaraka/Math/Matrix44.hpp"
+#include <Angaraka/Base.hpp>
+
+export module Angaraka.Math.Ray;
+
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Vector4;
+import Angaraka.Math.Matrix4x4;
 
 namespace Angaraka::Math {
 
@@ -11,7 +16,7 @@ namespace Angaraka::Math {
      * A ray is defined by an origin point and a direction vector.
      * Used for mouse picking, collision detection, and visibility tests.
      */
-    struct Ray {
+    export struct Ray {
         Vector3 origin;
         Vector3 direction;  // Should be normalized for most operations
 
@@ -132,5 +137,4 @@ namespace Angaraka::Math {
         bool operator==(const Ray& other) const;
         bool operator!=(const Ray& other) const;
     };
-
 } // namespace Angaraka::Math

@@ -1,7 +1,6 @@
 module;
 
 #include "Angaraka/Base.hpp"
-#include "Angaraka/MathCore.hpp"
 #include <yaml-cpp/yaml.h>
 #include <functional>
 #include <unordered_map>
@@ -14,6 +13,8 @@ import Angaraka.Scene.Entity;
 import Angaraka.Scene.Component;
 import Angaraka.Scene.Transform;
 import Angaraka.Scene.Components.MeshRenderer;
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Quaternion;
 
 namespace Angaraka::SceneSystem {
 

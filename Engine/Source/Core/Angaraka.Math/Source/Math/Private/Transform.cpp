@@ -1,15 +1,19 @@
 // ==================================================================================
 // AngarakaMath/Public/Math/Transform.cpp
 // ==================================================================================
+module;
 
-#pragma once
-
-#include "Angaraka/MathCore.hpp"
-#include "Angaraka/Math/Transform.hpp"
+#include <Angaraka/Base.hpp>
 #include <cmath>
 
-namespace Angaraka::Math
-{
+module Angaraka.Math.Transform;
+
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Matrix4x4;
+import Angaraka.Math.Quaternion;
+
+namespace Angaraka::Math {
+
     // ==================================================================================
     // Transform Implementation
     // ==================================================================================
@@ -91,5 +95,25 @@ namespace Angaraka::Math
     Transform Transform::Identity()
     {
         return Transform();
+    }
+
+    Transform Transform::Translation(const Vector3& position)
+    {
+        return Transform(position, Quaternion::Identity(), Vector3::One);
+    }
+
+    Transform Transform::Rotation(const Quaternion& rotation)
+    {
+        return Transform(Vector3::Zero, rotation, Vector3::One);
+    }
+
+    Transform Transform::Scale(const Vector3& scale)
+    {
+        return Transform(Vector3::Zero, Quaternion::Identity(), scale);
+    }
+
+    Transform Transform::TRS(const Vector3& translation, const Quaternion& rotation, const Vector3& scale)
+    {
+        return Transform(translation, rotation, scale);
     }
 }

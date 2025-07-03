@@ -1,9 +1,6 @@
 module;
 
 #include "Angaraka/Base.hpp"
-#include "Angaraka/Math/BoundingBox.hpp"
-#include "Angaraka/Math/Frustum.hpp"
-#include "Angaraka/Math/Ray.hpp"
 #include <vector>
 #include <array>
 #include <functional>
@@ -13,6 +10,11 @@ export module Angaraka.Scene.Octree;
 
 import Angaraka.Scene.Entity;
 import Angaraka.Scene.Components.MeshRenderer;
+
+import Angaraka.Math.Vector3;
+import Angaraka.Math.BoundingBox;
+import Angaraka.Math.Frustum;
+import Angaraka.Math.Ray;
 
 namespace Angaraka::SceneSystem {
 

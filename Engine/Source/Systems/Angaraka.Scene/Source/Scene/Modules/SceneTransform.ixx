@@ -1,9 +1,13 @@
 module;
 
 #include <Angaraka/Base.hpp>
-#include <Angaraka/MathCore.hpp>
 
 export module Angaraka.Scene.Transform;
+
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Matrix4x4;
+import Angaraka.Math.Quaternion;
+import Angaraka.Math.Transform;
 
 namespace Angaraka::SceneSystem {
 

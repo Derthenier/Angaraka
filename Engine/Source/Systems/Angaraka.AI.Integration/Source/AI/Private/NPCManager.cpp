@@ -7,6 +7,10 @@ import Angaraka.Core.Events;
 import Angaraka.Core.ResourceCache;
 import Angaraka.Graphics.DirectX12;
 
+import Angaraka.Math;
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Random;
+
 using namespace Angaraka::Core;
 using namespace Angaraka::Events;
 
@@ -106,11 +110,11 @@ namespace Angaraka::AI {
 
         // Process NPCs in batches for performance
         if (m_settings.enableBatchUpdates) {
-            U32 npcsToUpdate = Min(m_settings.maxUpdatesPerFrame, static_cast<U32>(m_activeNPCs.size()));
+            U32 npcsToUpdate = Math::Util::Min(m_settings.maxUpdatesPerFrame, static_cast<U32>(m_activeNPCs.size()));
 
             if (npcsToUpdate > 0) {
-                U32 batchSize = Max(1u, npcsToUpdate / 4); // Process in 4 batches per frame
-                U32 endIndex = Min(m_currentUpdateIndex + batchSize, static_cast<U32>(m_activeNPCs.size()));
+                U32 batchSize = Math::Util::Max(1u, npcsToUpdate / 4); // Process in 4 batches per frame
+                U32 endIndex = Math::Util::Min(m_currentUpdateIndex + batchSize, static_cast<U32>(m_activeNPCs.size()));
 
                 std::vector<NPCController*> batchNPCs(m_activeNPCs.begin() + m_currentUpdateIndex,
                     m_activeNPCs.begin() + endIndex);
@@ -789,7 +793,7 @@ namespace Angaraka::AI {
             F32 dotProduct = cameraDir.Dot(toNPC);
 
             // Simple FOV check (cos of half FOV angle)
-            F32 cosHalfFOV = Math::CosDegrees(fov * 0.5f * Math::DegToRadF);
+            F32 cosHalfFOV = Math::Util::CosDegrees(fov * 0.5f * Math::Constants::DegToRadF);
             bool inFrustum = dotProduct >= cosHalfFOV;
 
             NPCComponent& npcData = npcController->GetNPCData();
@@ -1464,7 +1468,7 @@ namespace Angaraka::AI {
         // Spawning Helpers
         // ==================================================================================
 
-        std::vector<NPCSpawnParams> GenerateRandomNPCs(U32 count, const Vector3& center, F32 radius) {
+        std::vector<NPCSpawnParams> GenerateRandomNPCs(U32 count, const Math::Vector3& center, F32 radius) {
             std::vector<NPCSpawnParams> spawnList;
             spawnList.reserve(count);
 
@@ -1480,19 +1484,19 @@ namespace Angaraka::AI {
                 params.templateId = templates[i % templates.size()];
 
                 // Random position within radius using proper distribution
-                F32 angle = Random::Range(0.0f, Math::TwoPiF);
-                F32 distance = Random::Range(0.0f, radius);
-                params.position = center + Vector3(
-                    Math::CosDegrees(angle) * distance,
+                F32 angle = Math::Random::Range(0.0f, Math::Constants::TwoPiF);
+                F32 distance = Math::Random::Range(0.0f, radius);
+                params.position = center + Math::Vector3(
+                    Math::Util::CosDegrees(angle) * distance,
                     0.0f, // Keep NPCs on ground level
-                    Math::SinDegrees(angle) * distance
+                    Math::Util::SinDegrees(angle) * distance
                 );
 
                 // Random Y rotation (facing direction)
-                params.rotation = Vector3(0.0f, Random::Range(0.0f, Math::TwoPiF), 0.0f);
+                params.rotation = Math::Vector3(0.0f, Math::Random::Range(0.0f, Math::Constants::TwoPiF), 0.0f);
 
                 // Default scale
-                params.scale = Vector3::One;
+                params.scale = Math::Vector3::One;
 
                 // All NPCs start active and visible
                 params.isActive = true;
@@ -1805,8 +1809,8 @@ namespace Angaraka::AI {
                 if (!npc) continue;
 
                 F32 distance = NPCUtils::CalculateDistance(npc->GetPosition(), playerPos);
-                minDistance = Min(minDistance, distance);
-                maxDistance = Max(maxDistance, distance);
+                minDistance = Math::Util::Min(minDistance, distance);
+                maxDistance = Math::Util::Max(maxDistance, distance);
                 totalDistance += distance;
             }
 

@@ -3,6 +3,8 @@
 #include <sstream>
 #include <regex>
 
+import Angaraka.Math;
+
 namespace Angaraka::AI::DialogueUtils {
 
     // ==================================================================================
@@ -340,7 +342,7 @@ namespace Angaraka::AI::DialogueUtils {
             break;
         }
 
-        return Clamp(baseDifficulty, 0.1f, 1.0f);
+        return Math::Util::Clamp(baseDifficulty, 0.1f, 1.0f);
     }
 
     // ==================================================================================
@@ -443,7 +445,7 @@ namespace Angaraka::AI::DialogueUtils {
 
             // Tension from relationship impact
             if (exchange.relationshipImpact < -0.1f) {
-                exchangeTension += Abs(exchange.relationshipImpact) * 2.0f;
+                exchangeTension += Math::Util::Abs(exchange.relationshipImpact) * 2.0f;
             }
             else if (exchange.relationshipImpact > 0.1f) {
                 exchangeTension -= exchange.relationshipImpact;
@@ -457,7 +459,7 @@ namespace Angaraka::AI::DialogueUtils {
         // Normalize by number of exchanges
         tension /= exchanges.size();
 
-        return Clamp(tension, 0.0f, 1.0f);
+        return Math::Util::Clamp(tension, 0.0f, 1.0f);
     }
 
     std::vector<String> GetFrequentTopics(const std::vector<DialogueExchange>& exchanges) {
@@ -479,7 +481,7 @@ namespace Angaraka::AI::DialogueUtils {
         std::vector<String> frequentTopics;
         const size_t maxTopics = 5;
 
-        for (size_t i = 0; i < Min(maxTopics, sortedTopics.size()); ++i) {
+        for (size_t i = 0; i < Math::Util::Min(maxTopics, sortedTopics.size()); ++i) {
             if (sortedTopics[i].second >= 2) { // Only include topics mentioned at least twice
                 frequentTopics.push_back(sortedTopics[i].first);
             }
@@ -813,7 +815,7 @@ namespace Angaraka::AI::DialogueUtils {
             }
 
             // Base complexity from length
-            messageComplexity += Min(wordCount / 20.0f, 1.0f) * 0.3f;
+            messageComplexity += Math::Util::Min(wordCount / 20.0f, 1.0f) * 0.3f;
 
             // Complexity from vocabulary
             messageComplexity += (static_cast<F32>(longWordCount) / wordCount) * 0.4f;
@@ -825,11 +827,11 @@ namespace Angaraka::AI::DialogueUtils {
 
             if (sentenceCount > 0) {
                 F32 avgWordsPerSentence = static_cast<F32>(wordCount) / sentenceCount;
-                messageComplexity += Min(avgWordsPerSentence / 15.0f, 1.0f) * 0.2f;
+                messageComplexity += Math::Util::Min(avgWordsPerSentence / 15.0f, 1.0f) * 0.2f;
             }
 
             // Complexity from topics discussed
-            messageComplexity += Min(static_cast<F32>(exchange.topics.size()) / 3.0f, 1.0f) * 0.1f;
+            messageComplexity += Math::Util::Min(static_cast<F32>(exchange.topics.size()) / 3.0f, 1.0f) * 0.1f;
 
             totalComplexity += messageComplexity;
         }
@@ -873,8 +875,8 @@ namespace Angaraka::AI::DialogueUtils {
             }
 
             toneProgression.push_back(toneValue);
-            peakPositive = Max(peakPositive, toneValue);
-            peakNegative = Min(peakNegative, toneValue);
+            peakPositive = Math::Util::Max(peakPositive, toneValue);
+            peakNegative = Math::Util::Min(peakNegative, toneValue);
         }
 
         if (!toneProgression.empty()) {
@@ -883,9 +885,9 @@ namespace Angaraka::AI::DialogueUtils {
 
             // Calculate volatility (how much the tone changes)
             for (size_t i = 1; i < toneProgression.size(); ++i) {
-                volatility += Abs(toneProgression[i] - toneProgression[i - 1]);
+                volatility += Math::Util::Abs(toneProgression[i] - toneProgression[i - 1]);
             }
-            volatility /= Max(1.0f, static_cast<F32>(toneProgression.size() - 1));
+            volatility /= Math::Util::Max(1.0f, static_cast<F32>(toneProgression.size() - 1));
         }
 
         emotionalMetrics["initial_tone"] = initialTone;
@@ -1136,49 +1138,49 @@ namespace Angaraka::AI::DialogueUtils {
         if (exchangeCount >= 4 && exchangeCount <= 12) {
             lengthScore = 1.0f; // Optimal length
         }
- else if (exchangeCount >= 2 && exchangeCount <= 16) {
-  lengthScore = 0.7f; // Acceptable length
-}
-else {
- lengthScore = 0.3f; // Too short or too long
-}
-qualityScore += lengthScore;
-factors += 1.0f;
+        else if (exchangeCount >= 2 && exchangeCount <= 16) {
+            lengthScore = 0.7f; // Acceptable length
+        }
+        else {
+            lengthScore = 0.3f; // Too short or too long
+        }
+        qualityScore += lengthScore;
+        factors += 1.0f;
 
-// Factor 2: Topic diversity
-auto topics = GetFrequentTopics(exchanges);
-F32 topicScore = Min(static_cast<F32>(topics.size()) / 3.0f, 1.0f);
-qualityScore += topicScore;
-factors += 1.0f;
+        // Factor 2: Topic diversity
+        auto topics = GetFrequentTopics(exchanges);
+        F32 topicScore = Math::Util::Min(static_cast<F32>(topics.size()) / 3.0f, 1.0f);
+        qualityScore += topicScore;
+        factors += 1.0f;
 
-// Factor 3: Emotional engagement
-auto emotional = AnalyzeEmotionalProgression(exchanges);
-F32 emotionalScore = 0.5f; // Default
-if (!emotional.empty()) {
-    F32 range = emotional["emotional_range"];
-    F32 volatility = emotional["volatility"];
+        // Factor 3: Emotional engagement
+        auto emotional = AnalyzeEmotionalProgression(exchanges);
+        F32 emotionalScore = 0.5f; // Default
+        if (!emotional.empty()) {
+            F32 range = emotional["emotional_range"];
+            F32 volatility = emotional["volatility"];
 
-    // Good emotional engagement without excessive volatility
-    emotionalScore = Min(range, 1.0f) * 0.7f + Min(1.0f - volatility * 2.0f, 1.0f) * 0.3f;
-}
-qualityScore += emotionalScore;
-factors += 1.0f;
+            // Good emotional engagement without excessive volatility
+            emotionalScore = Math::Util::Min(range, 1.0f) * 0.7f + Math::Util::Min(1.0f - volatility * 2.0f, 1.0f) * 0.3f;
+        }
+        qualityScore += emotionalScore;
+        factors += 1.0f;
 
-// Factor 4: Dialogue complexity
-F32 complexity = CalculateDialogueComplexity(exchanges);
-F32 complexityScore = Min(complexity * 1.5f, 1.0f); // Reward complexity but cap it
-qualityScore += complexityScore;
-factors += 1.0f;
+        // Factor 4: Dialogue complexity
+        F32 complexity = CalculateDialogueComplexity(exchanges);
+        F32 complexityScore = Math::Util::Min(complexity * 1.5f, 1.0f); // Reward complexity but cap it
+        qualityScore += complexityScore;
+        factors += 1.0f;
 
-// Factor 5: Tension balance (some tension is good, too much is bad)
-F32 tension = CalculateConversationTension(exchanges);
-F32 tensionScore = 1.0f - Abs(tension - 0.3f) / 0.7f; // Optimal tension around 0.3
-tensionScore = Max(tensionScore, 0.0f);
-qualityScore += tensionScore;
-factors += 1.0f;
+        // Factor 5: Tension balance (some tension is good, too much is bad)
+        F32 tension = CalculateConversationTension(exchanges);
+        F32 tensionScore = 1.0f - Math::Util::Abs(tension - 0.3f) / 0.7f; // Optimal tension around 0.3
+        tensionScore = Math::Util::Max(tensionScore, 0.0f);
+        qualityScore += tensionScore;
+        factors += 1.0f;
 
-return factors > 0.0f ? qualityScore / factors : 0.0f;
-}
+        return factors > 0.0f ? qualityScore / factors : 0.0f;
+    }
 
     String GetQualityFeedback(F32 qualityScore) {
         if (qualityScore >= 0.8f) {

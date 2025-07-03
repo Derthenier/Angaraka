@@ -1,19 +1,19 @@
-// ==================================================================================
-// AngarakaMath/Public/Math/Transform.hpp - Combined Translation, Rotation, Scale
-// ==================================================================================
+module;
 
-#pragma once
+#include <Angaraka/Base.hpp>
 
-#include "Vector3.hpp"
-#include "Quaternion.hpp"
+export module Angaraka.Math.Transform;
 
-namespace Angaraka::Math
-{
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Matrix4x4;
+import Angaraka.Math.Quaternion;
+
+namespace Angaraka::Math {
+
     // ==================================================================================
     // Transform - Combined Translation, Rotation, Scale
     // ==================================================================================
-
-    struct Transform
+    export struct Transform
     {
         Vector3 position;
         Quaternion rotation;
@@ -47,4 +47,4 @@ namespace Angaraka::Math
         static Transform Scale(const Vector3& scale);
         static Transform TRS(const Vector3& translation, const Quaternion& rotation, const Vector3& scale);
     };
-}
+} // namespace Angaraka::Math
