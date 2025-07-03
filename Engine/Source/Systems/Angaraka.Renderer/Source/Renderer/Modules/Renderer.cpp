@@ -34,8 +34,7 @@ namespace Angaraka { // Use the Angaraka namespace here
     // This will remain here for now, as it's geometry data.
     namespace {
         ID3D12GraphicsCommandList* commandList = nullptr;
-
-        Angaraka::Graphics::DirectX12::ModelViewProjectionConstantBuffer mvpCPUData{};
+        Graphics::DirectX12::MVPConstantBuffer cbData;
 
         // Define the input layout for our vertex structure
         const D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
@@ -157,10 +156,6 @@ namespace Angaraka { // Use the Angaraka namespace here
         );
         AGK_INFO("DirectX12GraphicsSystem: Camera initialized.");
 
-        mvpCPUData.model = DirectX::XMMatrixIdentity();
-        mvpCPUData.view = DirectX::XMMatrixIdentity();
-        mvpCPUData.projection = DirectX::XMMatrixIdentity();
-
         AGK_INFO("DirectX12GraphicsSystem: Initialization complete.");
         return true;
     }
@@ -220,41 +215,13 @@ namespace Angaraka { // Use the Angaraka namespace here
         }
     }
 
-    void DirectX12GraphicsSystem::RenderMesh(Core::Resource* resource)
-    {
-        Graphics::DirectX12::MeshResource* mesh = dynamic_cast<Graphics::DirectX12::MeshResource*>(resource);
-        if (mesh && mesh->IsLoaded())
-        {
-            DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationY(m_elapsedTime * 0.5f); // Rotate around Y-axis
-            DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(2.0f, 0.0f, 5.0f); // Move away from camera
-
-            mvpCPUData.model = DirectX::XMMatrixTranspose(rotation * translation); // Combine transformations
-            mvpCPUData.view = DirectX::XMMatrixTranspose(m_camera->GetViewMatrix());
-            mvpCPUData.projection = DirectX::XMMatrixTranspose(m_camera->GetProjectionMatrix());
-
-            m_bufferManager->UpdateConstantBuffer(mvpCPUData);
-
-            // Bind mesh vertex and index buffers
-            commandList->IASetVertexBuffers(0, 1, mesh->GetVertexBufferView());
-            commandList->IASetIndexBuffer(mesh->GetIndexBufferView());
-
-            // Draw the mesh
-            commandList->DrawIndexedInstanced(mesh->GetIndexCount(), 1, 0, 0, 0);
-
-            AGK_TRACE("DirectX12GraphicsSystem: Rendered test mesh with {} indices", mesh->GetIndexCount());
-        }
-    }
-
     void DirectX12GraphicsSystem::RenderMesh(Core::Resource* resource, Math::Matrix4x4 worldMatrix)
     {
         DirectX::XMMATRIX dxWorldMatrix = Angaraka::Math::MathConversion::ToDirectXMatrix(worldMatrix);
         Graphics::DirectX12::MeshResource* mesh = dynamic_cast<Graphics::DirectX12::MeshResource*>(resource);
         if (mesh && mesh->IsLoaded())
         {
-            Graphics::DirectX12::ModelViewProjectionConstantBuffer cbData;
-            cbData.model = DirectX::XMMatrixTranspose(dxWorldMatrix);
-            cbData.view = DirectX::XMMatrixTranspose(m_camera->GetViewMatrix());
-            cbData.projection = DirectX::XMMatrixTranspose(m_camera->GetProjectionMatrix());
+            m_camera->FillMVPConstantBuffer(cbData, worldMatrix);
 
             // Update GPU constant buffer
             m_bufferManager->UpdateConstantBuffer(cbData);
@@ -309,7 +276,7 @@ namespace Angaraka { // Use the Angaraka namespace here
         ID3D12DescriptorHeap* ppHeaps[] = { m_textureManager->GetSrvHeap() }; // Assuming TextureManager has a getter for its SRV heap
         commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 
-        m_bufferManager->UpdateConstantBuffer(mvpCPUData);
+        m_bufferManager->UpdateConstantBuffer(cbData);
         commandList->SetGraphicsRootConstantBufferView(0, m_bufferManager->GetConstantBufferGPUAddress());
 
         unsigned int currentBackBufferIndex = m_swapChainManager->GetCurrentBackBufferIndex();

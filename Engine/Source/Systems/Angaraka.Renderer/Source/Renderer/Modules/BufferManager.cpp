@@ -145,7 +145,7 @@ namespace Angaraka::Graphics::DirectX12 {
 
         // --- Create Constant Buffer ---
         // Constant buffers must be 256-byte aligned.
-        const UINT constantBufferSize = (sizeof(ModelViewProjectionConstantBuffer) + 255) & ~255;
+        const UINT constantBufferSize = (sizeof(MVPConstantBuffer) + 255) & ~255;
 
         CD3DX12_HEAP_PROPERTIES cbHeapProps(D3D12_HEAP_TYPE_UPLOAD);
         CD3DX12_RESOURCE_DESC cbResourceDesc = CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize);
@@ -166,9 +166,9 @@ namespace Angaraka::Graphics::DirectX12 {
         return true;
     }
 
-    void BufferManager::UpdateConstantBuffer(const ModelViewProjectionConstantBuffer& data) {
+    void BufferManager::UpdateConstantBuffer(const MVPConstantBuffer& data) {
         if (m_pCbvDataBegin) {
-            memcpy(m_pCbvDataBegin, &data, sizeof(ModelViewProjectionConstantBuffer));
+            memcpy(m_pCbvDataBegin, &data, sizeof(MVPConstantBuffer));
         }
         else {
             AGK_ERROR("BufferManager: Attempted to update unmapped constant buffer.");

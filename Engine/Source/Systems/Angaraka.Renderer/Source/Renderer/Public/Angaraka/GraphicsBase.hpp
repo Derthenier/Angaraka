@@ -16,6 +16,11 @@
 
 #include <Angaraka/Base.hpp>
 
+import Angaraka.Math;
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Vector4;
+import Angaraka.Math.DirectXInterop;
+
 namespace Angaraka::Graphics::DirectX12 {
 
     // Define the structure of a single vertex
@@ -25,12 +30,60 @@ namespace Angaraka::Graphics::DirectX12 {
         DirectX::XMFLOAT2 UV;       // UV 
     };
 
-    // Must be 256-byte aligned for D3D12 constant buffers
-    // Use __declspec(align(256)) for this
-    struct ModelViewProjectionConstantBuffer {
-        DirectX::XMMATRIX model;        // World transformation
-        DirectX::XMMATRIX view;         // Camera transformation (will add in a later sprint)
-        DirectX::XMMATRIX projection;   // Projection transformation (will add in a later sprint)
+    // ==================== Constant Buffer Helpers ====================
+
+    /**
+     * @brief Aligned structure for MVP constant buffer
+     * Ensures proper 16-byte alignment for GPU
+     */
+    struct alignas(16) MVPConstantBuffer {
+        DirectX::XMFLOAT4X4 model;
+        DirectX::XMFLOAT4X4 view;
+        DirectX::XMFLOAT4X4 projection;
+        DirectX::XMFLOAT4X4 mvp;  // Pre-multiplied for efficiency
+
+        void Update(const Math::Matrix4x4& modelMatrix,
+            const Math::Matrix4x4& viewMatrix,
+            const Math::Matrix4x4& projMatrix) {
+            // Convert to DirectX format
+            DirectX::XMMATRIX m = Math::MathConversion::ToDirectXMatrix(modelMatrix);
+            DirectX::XMMATRIX v = Math::MathConversion::ToDirectXMatrix(viewMatrix);
+            DirectX::XMMATRIX p = Math::MathConversion::ToDirectXMatrix(projMatrix);
+
+            // Store individual matrices
+            DirectX::XMStoreFloat4x4(&model, m);
+            DirectX::XMStoreFloat4x4(&view, v);
+            DirectX::XMStoreFloat4x4(&projection, p);
+
+            // Pre-multiply MVP
+            DirectX::XMMATRIX mvpMatrix = m * v * p;
+            DirectX::XMStoreFloat4x4(&mvp, mvpMatrix);
+        }
+    };
+
+    /**
+     * @brief Aligned structure for per-object constant buffer
+     */
+    struct alignas(16) PerObjectConstantBuffer {
+        DirectX::XMFLOAT4X4 world;
+        DirectX::XMFLOAT4X4 worldInverseTranspose;  // For normal transformation
+        DirectX::XMFLOAT4 color;
+        DirectX::XMFLOAT3 padding;  // Ensure 16-byte alignment
+        float metalness;
+        float roughness;
+        float ao;
+        float _padding[2];  // Pad to 16-byte boundary
+
+        void Update(const Math::Matrix4x4& worldMatrix, const Math::Vector4& objectColor = Math::Vector4(1, 1, 1, 1)) {
+            DirectX::XMMATRIX w = Math::MathConversion::ToDirectXMatrix(worldMatrix);
+            DirectX::XMStoreFloat4x4(&world, w);
+
+            // Calculate world inverse transpose for normal transformation
+            DirectX::XMMATRIX wit = DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, w));
+            DirectX::XMStoreFloat4x4(&worldInverseTranspose, wit);
+
+            color = Math::MathConversion::ToDirectXFloat4(objectColor);
+        }
     };
 }
 

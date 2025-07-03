@@ -48,8 +48,7 @@ namespace Angaraka { // Use the Angaraka namespace here
         void Present();
 
         void RenderTexture(Core::Resource* texture);
-        void RenderMesh(Core::Resource* mesh);
-        void RenderMesh(Core::Resource* resource, Math::Matrix4x4 dxWorldMatrix);
+        void RenderMesh(Core::Resource* resource, Math::Matrix4x4 worldMatrix);
 
         void OnWindowResize(unsigned int newWidth, unsigned int newHeight);
 

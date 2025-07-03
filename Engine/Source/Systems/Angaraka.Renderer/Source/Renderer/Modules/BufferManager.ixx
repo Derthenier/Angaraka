@@ -27,7 +27,7 @@ namespace Angaraka::Graphics::DirectX12 {
         }
 
         // Method to update the constant buffer data.
-        void UpdateConstantBuffer(const ModelViewProjectionConstantBuffer& data);
+        void UpdateConstantBuffer(const MVPConstantBuffer& data);
 
         // Accessor for the number of indices to draw.
         unsigned int GetNumIndices() const { return m_numIndices; }
