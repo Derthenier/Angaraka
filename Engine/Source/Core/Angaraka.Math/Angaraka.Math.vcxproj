@@ -161,6 +161,7 @@
     <ClInclude Include="Source\Math\Public\Angaraka\Math\BoundingBox.hpp" />
     <ClInclude Include="Source\Math\Public\Angaraka\Math\Color.hpp" />
     <ClInclude Include="Source\Math\Public\Angaraka\Math\Constants.hpp" />
+    <ClInclude Include="Source\Math\Public\Angaraka\Math\DirectXInterop.hpp" />
     <ClInclude Include="Source\Math\Public\Angaraka\Math\Frustum.hpp" />
     <ClInclude Include="Source\Math\Public\Angaraka\Math\MathConversion.hpp" />
     <ClInclude Include="Source\Math\Public\Angaraka\Math\Matrix44.hpp" />
