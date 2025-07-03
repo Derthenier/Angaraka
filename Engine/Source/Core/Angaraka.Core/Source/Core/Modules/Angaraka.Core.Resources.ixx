@@ -75,15 +75,23 @@ namespace Angaraka::Core {
          */
         virtual size_t GetSizeInBytes() const = 0;
 
+        /**
+         * @brief Check if the resource is currently loaded.
+         *
+         * This can be used to determine if the resource is ready for use.
+         * @return True if loaded, false otherwise.
+         */ 
+        virtual bool IsLoaded() const { return m_isLoaded; }
+
         // Optionally, add a virtual method to prepare for GPU upload,
         // or ensure GPU-specific setup happens in a specialized system.
 
     protected:
         // Protected constructor to ensure Resource is only created by derived classes.
         explicit Resource(const String& id) : m_id(id) {}
+        bool m_isLoaded{ false }; // Internal flag to track if resource is loaded
 
     private:
         String m_id; // Unique identifier for this resource (e.g., its file path)
-
     };
 }

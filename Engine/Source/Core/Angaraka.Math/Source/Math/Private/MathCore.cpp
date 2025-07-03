@@ -117,7 +117,7 @@ namespace Angaraka::Math
         return diff;
     }
 
-    F32 RadiansToDegress(F32 radians)
+    F32 RadiansToDegrees(F32 radians)
     {
         return radians * RadToDegF;
     }
@@ -239,7 +239,7 @@ namespace Angaraka::Math
 
     bool RayIntersectsSphere(const Vector3& rayOrigin, const Vector3& rayDirection,
         const Vector3& sphereCenter, F32 sphereRadius,
-        float& t1, float& t2)
+        F32& t1, F32& t2)
     {
         Vector3 normalizedDir = rayDirection.Normalized();
         Vector3 oc = rayOrigin - sphereCenter;
@@ -264,7 +264,7 @@ namespace Angaraka::Math
 
     bool RayIntersectsPlane(const Vector3& rayOrigin, const Vector3& rayDirection,
         const Vector3& planePoint, const Vector3& planeNormal,
-        float& t)
+        F32& t)
     {
         Vector3 normalizedNormal = planeNormal.Normalized();
         Vector3 normalizedDir = rayDirection.Normalized();
@@ -285,7 +285,7 @@ namespace Angaraka::Math
 
     bool RayIntersectsTriangle(const Vector3& rayOrigin, const Vector3& rayDirection,
         const Vector3& v0, const Vector3& v1, const Vector3& v2,
-        float& t, Vector3& barycentrics)
+        F32& t, Vector3& barycentrics)
     {
         // Moller-Trumbore intersection algorithm
         Vector3 edge1 = v1 - v0;

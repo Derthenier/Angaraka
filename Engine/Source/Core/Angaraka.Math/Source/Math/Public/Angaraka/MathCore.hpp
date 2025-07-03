@@ -90,9 +90,9 @@ namespace Angaraka::Math {
     F32 Mod(F32 x, F32 y);    // Floating point modulo
 
     // Angle utilities
-    F32 NormalizeAngle(F32 angle);           // Normalize to [-180, 180]
-    F32 NormalizeAngle360(F32 angle);        // Normalize to [0, 360]
-    F32 NormalizeAngleRadians(F32 angle);    // Normalize to [-PI, PI]
+    F32 NormalizeAngle(F32 angle);         // Normalize to [-180, 180]
+    F32 NormalizeAngle360(F32 angle);      // Normalize to [0, 360]
+    F32 NormalizeAngleRadians(F32 angle);  // Normalize to [-PI, PI]
     F32 AngleDifference(F32 a, F32 b);     // Shortest angle between two angles
     F32 RadiansToDegrees(F32 radians);
     F32 DegreesToRadians(F32 degrees);
@@ -125,17 +125,9 @@ namespace Angaraka::Math {
     F32 PointToPlaneDistance(const Vector3& point, const Vector3& planePoint, const Vector3& planeNormal);
 
     // Intersection tests
-    bool RayIntersectsSphere(const Vector3& rayOrigin, const Vector3& rayDirection,
-        const Vector3& sphereCenter, F32 sphereRadius,
-        float& t1, float& t2);
-
-    bool RayIntersectsPlane(const Vector3& rayOrigin, const Vector3& rayDirection,
-        const Vector3& planePoint, const Vector3& planeNormal,
-        float& t);
-
-    bool LineSegmentIntersect2D(const Vector2& a1, const Vector2& a2,
-        const Vector2& b1, const Vector2& b2,
-        Vector2& intersection);
+    bool RayIntersectsSphere(const Vector3& rayOrigin, const Vector3& rayDirection, const Vector3& sphereCenter, F32 sphereRadius, F32& t1, F32& t2);
+    bool RayIntersectsPlane(const Vector3& rayOrigin, const Vector3& rayDirection, const Vector3& planePoint, const Vector3& planeNormal, F32& t);
+    bool LineSegmentIntersect2D(const Vector2& a1, const Vector2& a2, const Vector2& b1, const Vector2& b2, Vector2& intersection);
 
     // Area/Volume calculations
     F32 TriangleArea(const Vector3& a, const Vector3& b, const Vector3& c);

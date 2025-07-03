@@ -29,31 +29,32 @@ namespace Angaraka::Graphics::DirectX12 {
 
     bool MeshResource::Load(const String& filePath, void* context) {
         AGK_INFO("MeshResource: Loading mesh from '{}'...", filePath);
+        m_isLoaded = false; // Reset loaded state
 
         DirectX12GraphicsSystem* graphicsSystem = static_cast<DirectX12GraphicsSystem*>(context);
         MeshManager* meshManager = graphicsSystem ? graphicsSystem->GetMeshManager() : nullptr;
         if (!meshManager) {
             AGK_ERROR("MeshResource: No MeshManager available for loading '{}'", filePath);
-            return false;
+            return m_isLoaded;
         }
 
         // Check if file exists
         if (!std::filesystem::exists(filePath)) {
             AGK_ERROR("MeshResource: File not found: '{}'", filePath);
-            return false;
+            return m_isLoaded;
         }
 
         // Load CPU-side mesh data
         Scope<MeshData> meshData = LoadMeshData(filePath);
         if (!meshData) {
             AGK_ERROR("MeshResource: Failed to load mesh data from '{}'", filePath);
-            return false;
+            return m_isLoaded;
         }
 
         // Validate mesh data
         if (!meshData->IsValid()) {
             AGK_ERROR("MeshResource: Invalid mesh data loaded from '{}'", filePath);
-            return false;
+            return m_isLoaded;
         }
 
         AGK_INFO("MeshResource: CPU mesh data loaded - {} vertices, {} indices, layout: {}",
@@ -63,7 +64,7 @@ namespace Angaraka::Graphics::DirectX12 {
         m_gpuMesh = meshManager->CreateGPUMesh(*meshData);
         if (!m_gpuMesh || !m_gpuMesh->IsValid()) {
             AGK_ERROR("MeshResource: Failed to create GPU mesh for '{}'", filePath);
-            return false;
+            return m_isLoaded;
         }
 
         // Keep CPU data if requested (useful for collision detection, etc.)
@@ -75,7 +76,8 @@ namespace Angaraka::Graphics::DirectX12 {
         AGK_INFO("MeshResource: Successfully loaded GPU mesh for '{}' - {} vertices, {} indices",
             filePath, m_gpuMesh->vertexCount, m_gpuMesh->indexCount);
 
-        return true;
+        m_isLoaded = true;
+        return m_isLoaded;
     }
 
     void MeshResource::Unload() {

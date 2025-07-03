@@ -33,10 +33,11 @@ namespace Angaraka::AI {
 
     bool AIModelResource::Load(const String& filePath, void* context) {
         AGK_INFO("AIModelResource: Loading AI model from '{0}'...", filePath);
+        m_isLoaded = false; // Reset loaded state
 
         if (!std::filesystem::exists(filePath)) {
             AGK_ERROR("AIModelResource: Model file not found: '{0}'", filePath);
-            return false;
+            return m_isLoaded;
         }
 
         try {
@@ -44,7 +45,7 @@ namespace Angaraka::AI {
             String metadataPath = filePath + ".meta";
             if (!LoadMetadata(metadataPath)) {
                 AGK_ERROR("AIModelResource: Failed to load metadata for '{0}'", filePath);
-                return false;
+                return m_isLoaded;
             }
 
             // Convert path to wide string for ONNX Runtime
@@ -61,7 +62,7 @@ namespace Angaraka::AI {
             // Validate model inputs/outputs match metadata
             if (!ValidateModelInputsOutputs()) {
                 AGK_ERROR("AIModelResource: Model validation failed for '{0}'", filePath);
-                return false;
+                return m_isLoaded;
             }
 
             // Estimate memory usage
@@ -82,8 +83,8 @@ namespace Angaraka::AI {
 
             AGK_INFO("AIModelResource: Successfully loaded '{0}' (Type: {1}, Architecture: {2}) in {3:.2f}ms, Memory: {4}MB",
                 filePath, m_metadata.modelType, m_metadata.architecture, loadTimeMs, m_memoryUsageMB);
-
-            return true;
+            m_isLoaded = true;
+            return m_isLoaded;
         }
         catch (const Ort::Exception& e) {
             AGK_ERROR("AIModelResource: ONNX Runtime error loading '{0}': {1}", filePath, e.what());

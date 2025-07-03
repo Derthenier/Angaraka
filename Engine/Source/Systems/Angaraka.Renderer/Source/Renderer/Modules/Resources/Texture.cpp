@@ -324,24 +324,30 @@ namespace Angaraka::Graphics::DirectX12 {
 
     bool TextureResource::Load(const String& filePath, void* context) {
         AGK_INFO("TextureResource: Loading texture from '{0}'...", filePath);
+        m_isLoaded = false; // Reset loaded state
 
         DirectX12GraphicsSystem* graphicsSystem = static_cast<DirectX12GraphicsSystem*>(context);
         TextureManager* textureManager = graphicsSystem ? graphicsSystem->GetTextureManager() : nullptr;
         if (!textureManager) {
             AGK_ERROR("TextureResource: TextureManager context is null. Cannot load texture.");
-            return false;
+            return m_isLoaded;
         }
         
         m_textureData = textureManager->LoadTexture(filePath);
 
         if (m_textureData) {
             AGK_INFO("TextureResource: Successfully loaded D3D12 texture data for '{0}'.", filePath);
-            return true;
+            m_isLoaded = true;
         }
         else {
             AGK_ERROR("TextureResource: Failed to load D3D12 texture data for '{0}'.", filePath);
-            return false;
         }
+
+        UINT srvIndex = GetSrvIndex();
+        m_srvGpuHandle = textureManager->GetSrvHeap()->GetGPUDescriptorHandleForHeapStart();
+        m_srvGpuHandle.Offset(srvIndex, textureManager->GetSrvDescriptorSize());
+
+        return m_isLoaded;
     }
 
     void TextureResource::Unload() {
@@ -360,6 +366,10 @@ namespace Angaraka::Graphics::DirectX12 {
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE TextureResource::GetSrvDescriptorHandle() const {
         return m_textureData ? m_textureData->SrvDescriptor : CD3DX12_CPU_DESCRIPTOR_HANDLE{};
+    }
+
+    CD3DX12_GPU_DESCRIPTOR_HANDLE TextureResource::GetGpuSrvDescriptorHandle() const {
+        return m_srvGpuHandle; // This is set during Load
     }
 
     const INT TextureResource::GetSrvIndex() const {

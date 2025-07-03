@@ -102,6 +102,7 @@ namespace Angaraka::Graphics::DirectX12 {
         // Getters for the underlying D3D12 texture data (e.g., for binding)
         ID3D12Resource* GetD3D12Resource() const;
         CD3DX12_CPU_DESCRIPTOR_HANDLE GetSrvDescriptorHandle() const;
+        CD3DX12_GPU_DESCRIPTOR_HANDLE GetGpuSrvDescriptorHandle() const;
         const INT GetSrvIndex() const;
 
     private:
@@ -110,8 +111,6 @@ namespace Angaraka::Graphics::DirectX12 {
         // or get direct access. Let's assume TextureManager gives us a simple ID or struct.
         Reference<Texture> m_textureData; // Assuming TextureManager::LoadTexture returns this
 
-        // Important: You need access to the D3D12Device and CommandList for TextureManager::LoadTexture.
-        // These would typically be provided to ResourceManager, and then to specific resource loaders.
-        // For simplicity here, we'll assume a way to get them.
+        CD3DX12_GPU_DESCRIPTOR_HANDLE m_srvGpuHandle; // GPU handle for the SRV
     };
 }
