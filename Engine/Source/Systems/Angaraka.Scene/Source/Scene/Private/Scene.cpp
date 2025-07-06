@@ -1,7 +1,6 @@
 module;
 
 #include "Angaraka/Base.hpp"
-#include "Angaraka/MathCore.hpp"
 #include <algorithm>
 #include <chrono>
 
@@ -11,6 +10,10 @@ import Angaraka.Scene.Component;
 import Angaraka.Core.ResourceCache;
 import Angaraka.Graphics.DirectX12;
 import Angaraka.Scene.Components.MeshRenderer;
+
+import Angaraka.Math;
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Quaternion;
 
 namespace Angaraka::SceneSystem {
 

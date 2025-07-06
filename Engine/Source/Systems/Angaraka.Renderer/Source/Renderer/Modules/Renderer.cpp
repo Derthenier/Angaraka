@@ -156,6 +156,12 @@ namespace Angaraka { // Use the Angaraka namespace here
         );
         AGK_INFO("DirectX12GraphicsSystem: Camera initialized.");
 
+        cbData.Update(
+            Math::Matrix4x4::Identity(), // Default world matrix
+            Math::Matrix4x4::Identity(),
+            Math::Matrix4x4::Identity()
+        );
+
         AGK_INFO("DirectX12GraphicsSystem: Initialization complete.");
         return true;
     }

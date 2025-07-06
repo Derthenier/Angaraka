@@ -1,7 +1,6 @@
 module;
 
 #include "Angaraka/Base.hpp"
-#include "Angaraka/MathCore.hpp"
 #include <algorithm>
 
 module Angaraka.Scene.Components.Light;
@@ -9,6 +8,10 @@ module Angaraka.Scene.Components.Light;
 import Angaraka.Scene.Component;
 import Angaraka.Scene.Transform;
 import Angaraka.Scene.Entity;
+
+import Angaraka.Math;
+import Angaraka.Math.Vector3;
+import Angaraka.Math.BoundingBox;
 
 namespace Angaraka::SceneSystem {
 
@@ -39,7 +42,7 @@ namespace Angaraka::SceneSystem {
             // Conservative sphere that contains the spot cone
             center = GetPosition();
             // Calculate radius based on cone angle and range
-            F32 halfAngle = Math::DegreesToRadians(m_outerConeAngle);
+            F32 halfAngle = Math::Util::DegreesToRadians(m_outerConeAngle);
             F32 coneRadius = m_range * std::tan(halfAngle);
             // Sphere must contain the cone base
             radius = std::sqrt(m_range * m_range + coneRadius * coneRadius);
@@ -77,7 +80,7 @@ namespace Angaraka::SceneSystem {
                 Math::Vector3 baseCenter = pos + dir * m_range;
 
                 // Cone base radius
-                F32 halfAngle = Math::DegreesToRadians(m_outerConeAngle);
+                F32 halfAngle = Math::Util::DegreesToRadians(m_outerConeAngle);
                 F32 baseRadius = m_range * std::tan(halfAngle);
 
                 // Start with position

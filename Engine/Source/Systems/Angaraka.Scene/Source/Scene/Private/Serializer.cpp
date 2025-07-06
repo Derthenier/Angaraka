@@ -1,7 +1,6 @@
 module;
 
 #include "Angaraka/Base.hpp"
-#include "Angaraka/MathCore.hpp"
 #include <yaml-cpp/yaml.h>
 #include <fstream>
 #include <sstream>
@@ -14,6 +13,10 @@ import Angaraka.Scene.Component;
 import Angaraka.Scene.Transform;
 import Angaraka.Scene.Components.MeshRenderer;
 import Angaraka.Scene.Components.Light;
+
+import Angaraka.Math;
+import Angaraka.Math.Vector3;
+import Angaraka.Math.Color;
 
 namespace Angaraka::SceneSystem {
 
@@ -357,9 +360,9 @@ namespace Angaraka::SceneSystem {
         Math::Vector3 euler = transform.GetLocalRotationEuler();
         if (euler.x != 0 || euler.y != 0 || euler.z != 0) {
             // Convert radians to degrees for readability
-            euler.x = Math::RadiansToDegrees(euler.x);
-            euler.y = Math::RadiansToDegrees(euler.y);
-            euler.z = Math::RadiansToDegrees(euler.z);
+            euler.x = Math::Util::RadiansToDegrees(euler.x);
+            euler.y = Math::Util::RadiansToDegrees(euler.y);
+            euler.z = Math::Util::RadiansToDegrees(euler.z);
             node["rotation"] = euler;
         }
 
@@ -378,9 +381,9 @@ namespace Angaraka::SceneSystem {
         if (node["rotation"]) {
             // Convert degrees back to radians
             Math::Vector3 euler = node["rotation"].as<Math::Vector3>();
-            euler.x = Math::DegreesToRadians(euler.x);
-            euler.y = Math::DegreesToRadians(euler.y);
-            euler.z = Math::DegreesToRadians(euler.z);
+            euler.x = Math::Util::DegreesToRadians(euler.x);
+            euler.y = Math::Util::DegreesToRadians(euler.y);
+            euler.z = Math::Util::DegreesToRadians(euler.z);
             transform.SetLocalRotationEuler(euler);
         }
 
@@ -487,7 +490,7 @@ namespace Angaraka::SceneSystem {
 
         // Color and intensity
         const auto& color = light->GetColor();
-        node["color"] = std::vector<F32>{ color.R(), color.G(), color.B()};
+        node["color"] = std::vector<F32>{ color.R, color.G, color.B};
         node["intensity"] = light->GetIntensity();
 
         // Type-specific properties

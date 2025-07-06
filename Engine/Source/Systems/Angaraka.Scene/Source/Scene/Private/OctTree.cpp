@@ -1,14 +1,16 @@
 module;
 
 #include "Angaraka/Base.hpp"
-#include "Angaraka/Math/BoundingBox.hpp"
-#include "Angaraka/Math/Frustum.hpp"
-#include "Angaraka/Math/Ray.hpp"
 #include <algorithm>
 #include <queue>
 #include <limits>
 
 module Angaraka.Scene.Octree;
+
+import Angaraka.Math;
+import Angaraka.Math.Frustum;
+import Angaraka.Math.BoundingBox;
+import Angaraka.Math.Ray;
 
 import Angaraka.Scene.Entity;
 import Angaraka.Scene.Components.MeshRenderer;

@@ -24,6 +24,9 @@
     <ClCompile Include="Source\AI\Private\Angaraka\Tokenizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\AI\Private\Angaraka\DirectMLCapabilityDetector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\AI\Public\Angaraka\AIModelResource.hpp">
@@ -36,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\AI\Public\Angaraka\Tokenizer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AI\Public\Angaraka\DirectMLCapabilityDetector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

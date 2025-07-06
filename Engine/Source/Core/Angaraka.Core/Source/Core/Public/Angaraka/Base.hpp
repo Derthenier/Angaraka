@@ -65,6 +65,29 @@ namespace Angaraka {
 
     using VoidPtr = void*;
     using String = std::string;
+    using WString = std::wstring;
+
+    inline String WStringToUTF8(const WString& wstr) {
+        if (wstr.empty()) return {};
+
+        int size = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
+        if (size <= 0) return {};
+
+        String result(size - 1, 0); // omit null terminator
+        WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, result.data(), size, nullptr, nullptr);
+        return result;
+    }
+
+    inline WString UTF8ToWString(const String& str) {
+        if (str.empty()) return {};
+
+        int size = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
+        if (size <= 0) return {};
+
+        WString wstr(size - 1, 0); // exclude null terminator
+        MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &wstr[0], size);
+        return wstr;
+    }
 
     template<typename T>
     using Scope = std::unique_ptr<T>;

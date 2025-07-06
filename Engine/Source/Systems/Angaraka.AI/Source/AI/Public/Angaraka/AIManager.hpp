@@ -13,6 +13,7 @@
 import Angaraka.Core.Resources;
 import Angaraka.Core.Config;
 import Angaraka.Core.ResourceCache;
+import Angaraka.Graphics.DirectX12;
 import Angaraka.Math.Vector3;
 
 namespace Angaraka::AI {
@@ -53,11 +54,12 @@ namespace Angaraka::AI {
         ~AIManager();
 
         // System lifecycle
-        bool Initialize(Reference<Angaraka::Core::CachedResourceManager> resourceManager);
+        bool Initialize(Reference<Angaraka::DirectX12GraphicsSystem> graphicsSystem, Reference<Angaraka::Core::CachedResourceManager> resourceManager);
         void Shutdown();
         void Update(F32 deltaTime);
 
         // Model management - NEW STRUCTURE
+        Scope<Ort::Session> CreateSession(const WString& modelPath, bool sharedModel = false);
         bool LoadSharedDialogueModel(const String& modelPath);
         bool LoadFactionConfigs(const String& modelsDirectory);
         bool LoadSharedTokenizer(const String& tokenizerPath);
@@ -114,17 +116,19 @@ namespace Angaraka::AI {
     private:
         Config::AISystemConfig m_config;
         AIPerformanceMetrics m_performanceMetrics;
+        Reference<Angaraka::DirectX12GraphicsSystem> m_graphicsSystem;
 
-        // Model storage and management - NEW STRUCTURE
-        Reference<AIModelResource> m_sharedDialogueModel;    // Single 600MB model for all factions
+        // Model storage and management
+        Reference<AIModelResource> m_sharedDialogueModel;   // Single 600MB model for all factions
         Reference<Tokenizer> m_sharedTokenizer;             // Single tokenizer for all factions
+        std::vector<I64> m_lastTokenSequence;
 
         std::unordered_map<String, Reference<FactionConfig>> m_factionConfigs;
 
         // Legacy model storage (for terrain/behavior models)
         std::unordered_map<String, Reference<AIModelResource>> m_loadedModels;
         std::unordered_map<String, std::vector<String>> m_factionModels; // faction -> model IDs
-        std::unordered_map<String, Reference<Tokenizer>> m_factionTokenizers; // DEPRECATED
+
         String m_activeFaction;
 
         // Resource management
@@ -177,11 +181,15 @@ namespace Angaraka::AI {
         String DecodeTokensEnhanced(const std::vector<I64>& tokens, const String& factionId);
         String DecodeGPTToken(I64 tokenId);
         String DecodeGPTTokenEnhanced(I64 tokenId);
+        String DecodeSpecificToken(I64 tokenId);
+        String EnhanceResponse(const String& baseText, const String& factionId);
         String CleanGeneratedText(const String& rawText, const String& factionId);
         bool IsGarbageText(const String& text);
         String ClassifyEmotion(const std::vector<F32>& emotionScores);
         void ApplyFactionDialogueStyle(DialogueResponse& response, const String& factionId);
         String GenerateFallbackResponse(const DialogueRequest& request);
+        String EnhanceDialogueResponse(const String& baseResponse, const String& factionId);
+        String RemoveRepetitiveWords(const String& text);
 
         // Logits processing helpers
         std::vector<I64> ConvertLogitsToTokens(const std::vector<F32>& logits);
@@ -197,6 +205,9 @@ namespace Angaraka::AI {
         String BuildFactionPrompt(Reference<FactionConfig> config, const DialogueRequest& request);
         std::vector<Ort::Value> CreateDialogueInputs(const String& prompt, const DialogueRequest& request, const std::vector<String>& inputNames, const std::vector<std::vector<I64>>& inputShapes);
         std::vector<I64> TokenizePrompt(const String& prompt);
+        Ort::Value CreateValidatedInt64Tensor(const std::vector<I64>& data, const std::vector<I64>& shape, const String& tensorName);
+        void DiagnoseInferenceInputs(const std::vector<Ort::Value>& inputs, const std::vector<String>& inputNames);
+        bool ValidateTokenSequence(const std::vector<I64>& tokens);
         void ApplyFactionPostProcessing(DialogueResponse& response, Reference<FactionConfig> config);
     };
 

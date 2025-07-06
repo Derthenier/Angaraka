@@ -106,12 +106,14 @@
   <ItemGroup>
     <ClCompile Include="Source\AI\Private\Angaraka\AIManager.cpp" />
     <ClCompile Include="Source\AI\Private\Angaraka\AIModelResource.cpp" />
+    <ClCompile Include="Source\AI\Private\Angaraka\DirectMLCapabilityDetector.cpp" />
     <ClCompile Include="Source\AI\Private\Angaraka\Tokenizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\AI\Public\Angaraka\AIBase.hpp" />
     <ClInclude Include="Source\AI\Public\Angaraka\AIManager.hpp" />
     <ClInclude Include="Source\AI\Public\Angaraka\AIModelResource.hpp" />
+    <ClInclude Include="Source\AI\Public\Angaraka\DirectMLCapabilityDetector.hpp" />
     <ClInclude Include="Source\AI\Public\Angaraka\Tokenizer.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -123,6 +125,9 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Angaraka.Math\Angaraka.Math.vcxproj">
       <Project>{55d8173b-e8a6-45b0-bab8-dda3ba0eb5ff}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Angaraka.Renderer\Angaraka.Renderer.vcxproj">
+      <Project>{1cf8a41d-c991-4861-9d71-f5b90a0caf01}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

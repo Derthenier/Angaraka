@@ -72,28 +72,6 @@ namespace ThreadsOfKaliyuga {
         Angaraka::Window window;
         Angaraka::Config::EngineConfig config;
 
-        Angaraka::String WStringToUTF8(const std::wstring& wstr) {
-            if (wstr.empty()) return {};
-
-            int size = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
-            if (size <= 0) return {};
-
-            Angaraka::String result(size - 1, 0); // omit null terminator
-            WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, result.data(), size, nullptr, nullptr);
-            return result;
-        }
-
-        std::wstring UTF8ToWString(const Angaraka::String& str) {
-            if (str.empty()) return {};
-
-            int size = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
-            if (size <= 0) return {};
-
-            std::wstring wstr(size - 1, 0); // exclude null terminator
-            MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &wstr[0], size);
-            return wstr;
-        }
-
         void OnBundleProgress(const Angaraka::Core::BundleLoadProgress& progress) {
             AGK_APP_INFO("Bundle '{}' loading: {:.1f}% ({}/{})",
                 progress.bundleName, progress.progress * 100.0f,
@@ -159,7 +137,7 @@ namespace ThreadsOfKaliyuga {
 
         // Create window
         Angaraka::WindowCreateInfo windowInfo;
-        windowInfo.Title = UTF8ToWString(config.window.title);
+        windowInfo.Title = Angaraka::UTF8ToWString(config.window.title);
         windowInfo.Width = config.window.width;
         windowInfo.Height = config.window.height;
         windowInfo.Fullscreen = config.renderer.fullscreen;
@@ -225,7 +203,7 @@ namespace ThreadsOfKaliyuga {
 
         // Initialize AI Manager
         m_aiManager = Angaraka::CreateReference<Angaraka::AI::AIManager>();
-        if (!m_aiManager->Initialize(m_resourceManager)) {
+        if (!m_aiManager->Initialize(m_graphicsSystem, m_resourceManager)) {
             AGK_APP_ERROR("Failed to initialize AIManager");
             return false;
         }
@@ -294,14 +272,14 @@ namespace ThreadsOfKaliyuga {
         SpawnTestNPCs();
 
         // load faction dialog models
-        if (!m_aiManager->LoadSharedDialogueModel("Assets/ai/dialogue.onnx")) {
-            AGK_APP_ERROR("Failed to load shared dialogue model");
-        }
         if (!m_aiManager->LoadFactionConfigs("Assets/ai")) {
             AGK_APP_ERROR("Failed to load faction configurations");
         }
         if (!m_aiManager->LoadSharedTokenizer("Assets/ai")) {
             AGK_APP_ERROR("Failed to load shared tokenizer");
+        }
+        if (!m_aiManager->LoadSharedDialogueModel("Assets/ai/dialogue.onnx")) {
+            AGK_APP_ERROR("Failed to load shared dialogue model");
         }
 
         return true;
@@ -401,13 +379,13 @@ namespace ThreadsOfKaliyuga {
         }
 
         // Update NPC Manager
-        if (m_npcManager) {
+        /*if (m_npcManager) {
             m_npcManager->Update(deltaTime);
 
             // Update player position for NPCs (this would come from player controller in real game)
             Vector3 playerPos = Vector3(0.0f, 0.0f, 0.0f); // Placeholder - get from actual player
             m_npcManager->UpdatePlayerLocation(playerPos);
-        }
+        }*/
 
         // Update Dialogue System
         if (m_dialogueSystem) {
@@ -454,6 +432,8 @@ namespace ThreadsOfKaliyuga {
             m_graphicsSystem.get()
         );
 
+        m_sceneManager->CreateTestScene();
+
         AGK_INFO("Scene initialized with {} objects", m_sceneManager->GetObjectCount());
         return true;
     }
@@ -463,8 +443,6 @@ namespace ThreadsOfKaliyuga {
     {
         if (m_sceneManager)
         {
-            // Load test scene
-            m_sceneManager->CreateTestScene();
             m_sceneManager->Update(deltaTime);
         }
     }

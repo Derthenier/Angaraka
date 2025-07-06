@@ -55,6 +55,7 @@ namespace Angaraka { // Use the Angaraka namespace here
         inline Angaraka::Camera* GetCamera() { return m_camera.get(); }
         inline Graphics::DirectX12::TextureManager* GetTextureManager() const { return m_textureManager.get(); }
         inline Graphics::DirectX12::MeshManager* GetMeshManager() const { return m_meshManager.get(); }
+        inline Graphics::DirectX12::DeviceManager* GetDeviceManager() const { return m_deviceManager.get(); }
 
         Reference<Core::GraphicsResourceFactory> GetGraphicsFactory();
 
